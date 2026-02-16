@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props) {
     description: contactData?.subtitle,
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/kontakt`,
     seo,
     image: settings?.defaultOgImage,
   });
@@ -39,7 +40,11 @@ export default async function ContactPage({ params }: Props) {
 
   return (
     <main className="relative min-h-screen">
-      <Contact lang={lang as Language} initialData={contactData} />
+      <Contact
+        lang={lang as Language}
+        initialData={contactData}
+        headingLevel="h1"
+      />
       <Footer />
     </main>
   );

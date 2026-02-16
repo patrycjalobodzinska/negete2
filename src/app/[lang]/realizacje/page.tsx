@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: Props) {
         : "Browse our projects and implementations",
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/realizacje`,
     seo,
     image: settings?.defaultOgImage,
   });

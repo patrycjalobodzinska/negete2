@@ -4,6 +4,7 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 import { getCachedFaqSection, getCachedSiteSettings } from "@/sanity/cache";
 import { FaqAccordion } from "../../components/FaqAccordion";
+import { FaqPageJsonLd } from "../../components/JsonLd";
 import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props) {
     description: faqData?.subtitle,
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/faq`,
     seo,
     image: settings?.defaultOgImage,
   });
@@ -40,7 +42,16 @@ export default async function FaqPage({ params }: Props) {
 
   return (
     <main className="relative min-h-screen">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24">
+      {faqData?.items && faqData.items.length > 0 && (
+        <FaqPageJsonLd
+          items={faqData.items.map((i) => ({
+            question: i.question,
+            answer: i.answer,
+          }))}
+          lang={lang}
+        />
+      )}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <Link
           href={lang === "pl" ? "/" : `/${lang}`}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium"
@@ -60,7 +71,9 @@ export default async function FaqPage({ params }: Props) {
         </header>
 
         {faqData?.items && faqData.items.length > 0 ? (
-          <FaqAccordion items={faqData.items} />
+          <div className="min-h-[28rem]">
+            <FaqAccordion items={faqData.items} />
+          </div>
         ) : (
           <p className="text-gray-400">
             {lang === "pl"

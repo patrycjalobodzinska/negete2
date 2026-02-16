@@ -3,55 +3,68 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { languages, languageNames, type Language } from "@/i18n/config";
+import { Globe } from "lucide-react";
 
-export function LanguageSwitcher() {
-  const pathname = usePathname();
+export function LanguageSwitcher({ variant = "navbar" }: { variant?: "navbar" | "footer" }) {
+  const pathname = usePathname() ?? "";
 
-  // Wyciągnij język z pathname
   const getCurrentLang = (): Language => {
     const segments = pathname.split("/").filter(Boolean);
     if (segments.length > 0 && languages.includes(segments[0] as Language)) {
       return segments[0] as Language;
     }
-    return "pl"; // domyślnie polski
+    return "pl";
   };
 
   const currentLang = getCurrentLang();
 
-  // Utwórz ścieżkę dla każdego języka
   const getLangPath = (lang: Language): string => {
+    const segments = pathname.split("/").filter(Boolean);
+    const isLangInPath =
+      segments.length > 0 && languages.includes(segments[0] as Language);
+    const restPath = isLangInPath ? segments.slice(1).join("/") : segments.join("/");
+
     if (lang === "pl") {
-      // Dla polskiego usuń prefiks języka z pathname
-      const segments = pathname.split("/").filter(Boolean);
-      if (segments.length > 0 && languages.includes(segments[0] as Language)) {
-        return "/" + segments.slice(1).join("/") || "/";
-      }
-      return pathname;
-    } else {
-      // Dla angielskiego dodaj prefiks /en
-      const segments = pathname.split("/").filter(Boolean);
-      if (segments.length > 0 && languages.includes(segments[0] as Language)) {
-        return `/en/${segments.slice(1).join("/")}`;
-      }
-      return `/en${pathname === "/" ? "" : pathname}`;
+      return restPath ? `/pl/${restPath}` : "/";
     }
+    return restPath ? `/en/${restPath}` : "/en";
   };
 
+  const isNavbar = variant === "navbar";
+
   return (
-    <nav className="flex gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-      {languages.map((lng) => (
-        <Link
-          key={lng}
-          href={getLangPath(lng)}
-          className={`rounded-full px-3 py-1 border ${
-            lng === currentLang
-              ? "bg-black text-white dark:bg-white dark:text-black"
-              : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          }`}
-        >
-          {languageNames[lng]}
-        </Link>
-      ))}
+    <nav
+      aria-label={currentLang === "pl" ? "Wybierz język" : "Choose language"}
+      className="flex items-center gap-2"
+    >
+
+      <div className="flex rounded-full border border-white/20 bg-black/20 p-0.5">
+        {languages.map((lng) => {
+          const isActive = lng === currentLang;
+          return (
+            <Link
+              key={lng}
+              href={getLangPath(lng)}
+              lang={lng}
+              hrefLang={lng}
+              aria-current={isActive ? "page" : undefined}
+              className={`
+                relative rounded-full px-3 py-1.5 text-sm font-medium
+                transition-all duration-200
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+                ${isNavbar ? "min-w-12" : ""}
+                ${
+                  isActive
+                    ? "bg-cyan-500/20 text-cyan-400 border border-cyan-400/40"
+                    : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                }
+              `}
+            >
+              {languageNames[lng]}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

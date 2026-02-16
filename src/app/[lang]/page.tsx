@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: Props) {
         : "Your external R&D department – from idea to product",
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}`,
     seo,
     image: settings?.defaultOgImage,
   });

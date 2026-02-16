@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { defaultLanguage, type Language } from "@/i18n/config";
+import { defaultLanguage, languages, type Language } from "@/i18n/config";
 import Aurora from "./components/Aurora";
 import AppShell from "./components/AppShell";
+import { OrganizationJsonLd, WebSiteJsonLd } from "./components/JsonLd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,16 +23,28 @@ export const metadata: Metadata = {
     "NeGeTe - projektowanie elektroniki, mechaniki i oprogramowania. Od pomysłu do produktu.",
 };
 
-export default function RootLayout({
+function getLangFromPathname(pathname: string): Language {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length > 0 && languages.includes(segments[0] as Language)) {
+    return segments[0] as Language;
+  }
+  return defaultLanguage;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lang: Language = defaultLanguage;
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const lang: Language = getLangFromPathname(pathname);
 
   return (
     <html lang={lang}>
       <head>
+        <OrganizationJsonLd />
+        <WebSiteJsonLd lang={lang} />
         <script
           dangerouslySetInnerHTML={{
             __html: `if('scrollRestoration'in history){history.scrollRestoration='manual'}`,

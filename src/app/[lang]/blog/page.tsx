@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: Props) {
         : "Articles and insights on technology and design",
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/blog`,
     seo,
     image: settings?.defaultOgImage,
   });

@@ -31,11 +31,14 @@ const FALLBACK: ContactSection = {
 interface ContactProps {
   lang?: Language;
   initialData?: ContactSection | null;
+  /** Na stronie /kontakt użyj H1 zamiast H2 */
+  headingLevel?: "h1" | "h2";
 }
 
 export default function Contact({
   lang: langProp,
   initialData: initialDataProp,
+  headingLevel = "h2",
 }: ContactProps) {
   const pathname = usePathname();
   const [contactData, setContactData] = useState<ContactSection | null>(
@@ -98,9 +101,15 @@ export default function Contact({
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
-            {data.heading}
-          </h2>
+          {headingLevel === "h1" ? (
+            <h1 className="text-3xl sm:text-4xl font-medium text-white mb-4">
+              {data.heading}
+            </h1>
+          ) : (
+            <h2 className="text-3xl sm:text-4xl font-medium text-white mb-4">
+              {data.heading}
+            </h2>
+          )}
           {data.subtitle && (
             <p className="text-gray-400 text-lg">{data.subtitle}</p>
           )}

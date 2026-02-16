@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: Props) {
     image: project.image,
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/realizacje/${slug}`,
     seo: project.seo,
   });
 }

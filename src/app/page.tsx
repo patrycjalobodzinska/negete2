@@ -17,6 +17,7 @@ export async function generateMetadata() {
     description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
     siteName: settings?.siteName,
     lang: "pl",
+    path: "/",
     seo,
     image: settings?.defaultOgImage,
   });

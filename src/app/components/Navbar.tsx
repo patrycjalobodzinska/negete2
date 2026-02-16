@@ -6,6 +6,7 @@ import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -112,7 +113,7 @@ export default function Navbar() {
               </Link>
             </div>
 
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => {
                 const active = isActive(link.href, link.key);
                 return (
@@ -128,6 +129,7 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+              <LanguageSwitcher variant="navbar" />
             </div>
 
             <button
@@ -155,7 +157,7 @@ export default function Navbar() {
             border: "1px solid rgba(255, 255, 255, 0.12)",
             boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
           }}>
-          <nav className="px-4 pt-3 pb-5 space-y-1">
+          <nav className="px-4 pt-3 pb-5 space-y-1" aria-label="Menu główne">
             {navLinks.map((link) => {
               const active = isActive(link.href, link.key);
               return (
@@ -172,6 +174,9 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <div className="pt-4 mt-4 border-t border-white/10">
+              <LanguageSwitcher variant="footer" />
+            </div>
           </nav>
         </div>
       </div>

@@ -9,7 +9,7 @@ export const ThreeDMarquee = ({
   getHref,
   className,
 }: {
-  items: { image: string; slug: string }[];
+  items: { image: string; slug: string; title?: string }[];
   getHref: (slug: string) => string;
   className?: string;
 }) => {
@@ -62,7 +62,7 @@ export const ThreeDMarquee = ({
                         ease: "easeInOut",
                       }}
                       src={item.image}
-                      alt={`Realizacja ${imageIndex + 1}`}
+                      alt={item.title || `Realizacja ${imageIndex + 1}`}
                       className="aspect-[970/700] rounded-lg object-cover ring ring-gray-950/5 hover:shadow-2xl"
                       width={970}
                       height={700}

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "../../../components/Footer";
+import { ArticleJsonLd } from "../../../components/JsonLd";
 import type { BlogPostSection } from "@/sanity/blog";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: Props) {
     image: post.mainImage,
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/blog/${slug}`,
     seo: post.seo,
   });
 }
@@ -120,6 +122,14 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="relative min-h-screen">
+      <ArticleJsonLd
+        title={post.title}
+        description={post.excerpt}
+        image={post.mainImage}
+        publishedAt={post.publishedAt}
+        url={`/${lang}/blog/${slug}`}
+        lang={lang}
+      />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
         <Link
           href={`/${lang}/blog`}

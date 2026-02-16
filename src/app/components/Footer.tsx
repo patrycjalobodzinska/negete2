@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { fetchFaqSection } from "@/sanity/faq";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import type { FaqSection } from "@/sanity/faq";
 
 const FOOTER_FAQ_PREVIEW_COUNT = 3;
@@ -256,13 +257,14 @@ export default function Footer() {
           </div>
         )}
 
-        {/* Dolna sekcja - Copyright i linki prawne */}
+        {/* Dolna sekcja - Copyright, język, linki prawne */}
         <div className="border-t border-white/10 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()} NEGETE. Wszelkie prawa zastrzeżone.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <LanguageSwitcher variant="footer" />
               {footerLinks.legal.map((link, index) => (
                 <Link
                   key={index}

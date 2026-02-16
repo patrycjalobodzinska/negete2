@@ -106,7 +106,11 @@ export default function Portfolio({
   const sourceForMarquee =
     projectsWithImages.length > 0 ? projectsWithImages : FALLBACK_PROJECTS;
 
-  let items = sourceForMarquee.map((p) => ({ image: p.image, slug: p.slug }));
+  let items = sourceForMarquee.map((p) => ({
+    image: p.image,
+    slug: p.slug,
+    title: p.title,
+  }));
 
   // Powiel aż min. 28 elementów (jak w przykładzie Aceternity – ~7–8 na kolumnę)
   while (items.length < 28) {

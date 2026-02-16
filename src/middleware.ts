@@ -20,19 +20,9 @@ export function middleware(request: NextRequest) {
     (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
   );
 
-  // Jeśli ścieżka już ma język, pozwól przejść dalej
-  if (pathnameHasLang) {
-    return NextResponse.next();
-  }
-
-  // Jeśli to root, pozwól przejść (domyślnie polski)
-  if (pathname === "/") {
-    return NextResponse.next();
-  }
-
-  // Dla innych ścieżek bez języka, dodaj domyślny język (pl) w kontekście
-  // ale nie przekierowuj - pozwól Next.js obsłużyć routing
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("x-pathname", pathname);
+  return response;
 }
 
 export const config = {

@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props) {
     image: processData?.heroImage?.url ?? settings?.defaultOgImage,
     siteName: settings?.siteName,
     lang,
+    path: `/${lang}/proces`,
     seo,
   });
 }

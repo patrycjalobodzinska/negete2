@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next + Sanity + i18n",
-  description: "Projekt startowy z Sanity i tłumaczeniami",
+  title: "NeGeTe | Twój zewnętrzny dział R&D",
+  description:
+    "NeGeTe - projektowanie elektroniki, mechaniki i oprogramowania. Od pomysłu do produktu.",
 };
 
 export default function RootLayout({

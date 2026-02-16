@@ -1,15 +1,34 @@
 import React from "react";
-import { getCachedBlogPostBySlug } from "@/sanity/cache";
+import { getCachedBlogPostBySlug, getCachedSiteSettings } from "@/sanity/cache";
 import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "../../../components/Footer";
 import type { BlogPostSection } from "@/sanity/blog";
+import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ lang: string; slug: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { lang, slug } = await params;
+  if (!languages.includes(lang as Language)) return {};
+  const [post, settings] = await Promise.all([
+    getCachedBlogPostBySlug(slug, lang as Language),
+    getCachedSiteSettings(lang as Language),
+  ]);
+  if (!post) return {};
+  return buildMetadata({
+    title: post.title,
+    description: post.excerpt,
+    image: post.mainImage,
+    siteName: settings?.siteName,
+    lang,
+    seo: post.seo,
+  });
+}
 
 function BlogSection({ section }: { section: BlogPostSection }) {
   if (section._type === "paragraphSection" && section.content) {

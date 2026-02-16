@@ -17,6 +17,12 @@ export interface BlogPostSection {
   [key: string]: unknown;
 }
 
+export interface BlogPostSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: string;
+}
+
 export interface BlogPostDetail {
   _id: string;
   title: string;
@@ -26,6 +32,7 @@ export interface BlogPostDetail {
   mainImageAlt?: string;
   publishedAt: string;
   sections: BlogPostSection[];
+  seo?: BlogPostSeo;
 }
 
 /** Liczba opublikowanych artykułów. Pusty publishedAt = widoczny od razu. */
@@ -86,7 +93,8 @@ export async function fetchBlogPostBySlug(
       excerptEn,
       mainImage{ ..., altPl, altEn },
       publishedAt,
-      sections[]
+      sections[],
+      seo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } }
     }
   `;
   const data = await sanityClient.fetch<any | null>(query, { slug });
@@ -129,6 +137,21 @@ export async function fetchBlogPostBySlug(
     return mapped;
   };
 
+  const seoRaw = data.seo;
+  const seo: BlogPostSeo | undefined = seoRaw
+    ? {
+        metaTitle:
+          (lang === "pl" ? seoRaw.metaTitlePl : seoRaw.metaTitleEn) ||
+          seoRaw.metaTitlePl,
+        metaDescription:
+          (lang === "pl" ? seoRaw.metaDescriptionPl : seoRaw.metaDescriptionEn) ||
+          seoRaw.metaDescriptionPl,
+        ogImage: seoRaw.ogImage
+          ? urlFor(seoRaw.ogImage).width(1200).height(630).fit("clip").url()
+          : undefined,
+      }
+    : undefined;
+
   return {
     _id: data._id,
     title: data[titleKey] || data.titlePl || "",
@@ -140,5 +163,6 @@ export async function fetchBlogPostBySlug(
     mainImageAlt: data.mainImage?.[altKey] || data.mainImage?.altPl || "",
     publishedAt: data.publishedAt || "",
     sections: (data.sections || []).map(mapSection),
+    seo,
   };
 }

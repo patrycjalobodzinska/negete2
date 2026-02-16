@@ -39,6 +39,12 @@ export interface ProcessPageCta {
   link: string;
 }
 
+export interface ProcessPageSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: string;
+}
+
 export interface ProcessPageData {
   heading: string;
   intro?: string;
@@ -48,6 +54,7 @@ export interface ProcessPageData {
   };
   sections: ProcessSection[];
   cta: ProcessPageCta;
+  seo?: ProcessPageSeo;
 }
 
 /**
@@ -127,6 +134,7 @@ export async function fetchProcessPage(
       },
       headingPl,
       headingEn,
+      seo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } },
       ctaTitlePl,
       ctaTitleEn,
       ctaDescriptionPl,
@@ -198,6 +206,21 @@ export async function fetchProcessPage(
     link: `/${lang}/kontakt`,
   };
 
+  const seoRaw = data.seo;
+  const seo: ProcessPageSeo | undefined = seoRaw
+    ? {
+        metaTitle:
+          (lang === "pl" ? seoRaw.metaTitlePl : seoRaw.metaTitleEn) ||
+          seoRaw.metaTitlePl,
+        metaDescription:
+          (lang === "pl" ? seoRaw.metaDescriptionPl : seoRaw.metaDescriptionEn) ||
+          seoRaw.metaDescriptionPl,
+        ogImage: seoRaw.ogImage
+          ? urlFor(seoRaw.ogImage).width(1200).height(630).fit("clip").url()
+          : undefined,
+      }
+    : undefined;
+
   return {
     heading: data[headingKey] || data.headingPl || "",
     intro: data[introKey] || data.introPl || "",
@@ -209,5 +232,6 @@ export async function fetchProcessPage(
         : undefined,
     sections,
     cta,
+    seo,
   };
 }

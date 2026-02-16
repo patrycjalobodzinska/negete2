@@ -20,6 +20,11 @@ export const project = defineType({
       title: "Pełna treść projektu",
       options: { columns: 2 },
     },
+    {
+      name: "seo",
+      title: "SEO / Meta",
+      options: { columns: 2 },
+    },
   ],
   fields: [
     defineField({
@@ -126,6 +131,13 @@ export const project = defineType({
       type: "text",
       rows: 3,
       fieldset: "description",
+    }),
+    defineField({
+      name: "seo",
+      title: "Meta tytuł / opis / OG obraz",
+      type: "seoFields",
+      fieldset: "seo",
+      description: "Opcjonalne nadpisanie SEO. Puste = użycie tytułu i opisu projektu.",
     }),
     defineField({
       name: "sections",

@@ -2,12 +2,31 @@ import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Footer from "../../components/Footer";
-import { getCachedFaqSection } from "@/sanity/cache";
+import { getCachedFaqSection, getCachedSiteSettings } from "@/sanity/cache";
 import { FaqAccordion } from "../../components/FaqAccordion";
+import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ lang: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { lang } = await params;
+  if (!languages.includes(lang as Language)) return {};
+  const [settings, faqData] = await Promise.all([
+    getCachedSiteSettings(lang as Language),
+    getCachedFaqSection(lang as Language),
+  ]);
+  const seo = settings?.faqPageSeo;
+  return buildMetadata({
+    title: faqData?.heading ?? (lang === "pl" ? "FAQ" : "FAQ"),
+    description: faqData?.subtitle,
+    siteName: settings?.siteName,
+    lang,
+    seo,
+    image: settings?.defaultOgImage,
+  });
+}
 
 export default async function FaqPage({ params }: Props) {
   const { lang } = await params;

@@ -67,6 +67,13 @@ interface ProjectRaw {
     altEn?: string;
   }>;
   publishedAt?: string;
+  seo?: {
+    metaTitlePl?: string;
+    metaTitleEn?: string;
+    metaDescriptionPl?: string;
+    metaDescriptionEn?: string;
+    ogImage?: SanityImageSource;
+  };
 }
 
 interface PortfolioSectionRaw {
@@ -157,9 +164,16 @@ export interface ProjectSection {
   [key: string]: any;
 }
 
+export interface ProjectSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: string;
+}
+
 export interface ProjectDetail extends Project {
   sections?: ProjectSection[];
   publishedAt?: string;
+  seo?: ProjectSeo;
 }
 
 /**
@@ -250,7 +264,8 @@ export async function fetchProjectBySlug(
           }
         }
       },
-      publishedAt
+      publishedAt,
+      seo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } }
     }
   `;
 
@@ -317,6 +332,21 @@ export async function fetchProjectBySlug(
     return mapped;
   });
 
+  const seoRaw = data.seo;
+  const seo: ProjectSeo | undefined = seoRaw
+    ? {
+        metaTitle:
+          (lang === "pl" ? seoRaw.metaTitlePl : seoRaw.metaTitleEn) ||
+          seoRaw.metaTitlePl,
+        metaDescription:
+          (lang === "pl" ? seoRaw.metaDescriptionPl : seoRaw.metaDescriptionEn) ||
+          seoRaw.metaDescriptionPl,
+        ogImage: seoRaw.ogImage
+          ? urlFor(seoRaw.ogImage).width(1200).height(630).fit("clip").url()
+          : undefined,
+      }
+    : undefined;
+
   return {
     _id: data._id,
     title: data[titleKey] || data.titlePl || "",
@@ -331,6 +361,7 @@ export async function fetchProjectBySlug(
     categoryLabel,
     sections: mappedSections,
     publishedAt: data.publishedAt,
+    seo,
   };
 }
 

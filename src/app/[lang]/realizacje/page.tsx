@@ -1,15 +1,34 @@
-import { getCachedAllProjects } from "@/sanity/cache";
-import { defaultLanguage, type Language, languages } from "@/i18n/config";
+import { getCachedAllProjects, getCachedSiteSettings } from "@/sanity/cache";
+import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "../../components/ui/badge";
 import Footer from "../../components/Footer";
+import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ lang: string }>;
   searchParams: Promise<{ category?: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { lang } = await params;
+  if (!languages.includes(lang as Language)) return {};
+  const settings = await getCachedSiteSettings(lang as Language);
+  const seo = settings?.realizacjeListPageSeo;
+  return buildMetadata({
+    title: lang === "pl" ? "Wszystkie realizacje" : "All Projects",
+    description:
+      lang === "pl"
+        ? "Przeglądaj nasze projekty i realizacje"
+        : "Browse our projects and implementations",
+    siteName: settings?.siteName,
+    lang,
+    seo,
+    image: settings?.defaultOgImage,
+  });
+}
 
 export default async function ProjectsPage({ params, searchParams }: Props) {
   const { lang } = await params;

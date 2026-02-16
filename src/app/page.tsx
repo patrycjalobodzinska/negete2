@@ -6,6 +6,21 @@ import Process from "./components/Process";
 import TrustedBy from "./components/TrustedBy";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import { getCachedSiteSettings } from "@/sanity/cache";
+import { buildMetadata } from "@/lib/metadata";
+
+export async function generateMetadata() {
+  const settings = await getCachedSiteSettings(defaultLanguage);
+  const seo = settings?.homePageSeo;
+  return buildMetadata({
+    title: "Strona główna",
+    description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
+    siteName: settings?.siteName,
+    lang: "pl",
+    seo,
+    image: settings?.defaultOgImage,
+  });
+}
 
 // Strona główna bez prefiksu języka (domyślnie polski)
 export default async function Home() {

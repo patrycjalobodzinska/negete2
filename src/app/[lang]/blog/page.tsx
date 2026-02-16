@@ -1,16 +1,36 @@
 import {
   getCachedPublishedBlogPosts,
   getCachedPublishedBlogCount,
+  getCachedSiteSettings,
 } from "@/sanity/cache";
 import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "../../components/Footer";
+import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ lang: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { lang } = await params;
+  if (!languages.includes(lang as Language)) return {};
+  const settings = await getCachedSiteSettings(lang as Language);
+  const seo = settings?.blogListPageSeo;
+  return buildMetadata({
+    title: lang === "pl" ? "Blog" : "Blog",
+    description:
+      lang === "pl"
+        ? "Artykuły i przemyślenia o technologii i projektowaniu"
+        : "Articles and insights on technology and design",
+    siteName: settings?.siteName,
+    lang,
+    seo,
+    image: settings?.defaultOgImage,
+  });
+}
 
 export default async function BlogPage({ params }: Props) {
   const { lang } = await params;

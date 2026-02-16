@@ -10,6 +10,11 @@ export const processPage = defineType({
       title: "Nagłówek strony",
       options: { columns: 2 },
     },
+    {
+      name: "seo",
+      title: "SEO / Meta",
+      options: { columns: 2 },
+    },
   ],
   fields: [
     defineField({
@@ -54,6 +59,13 @@ export const processPage = defineType({
       title: "Nagłówek (English)",
       type: "string",
       fieldset: "heading",
+    }),
+    defineField({
+      name: "seo",
+      title: "Meta tytuł / opis / OG obraz",
+      type: "seoFields",
+      fieldset: "seo",
+      description: "SEO dla strony Proces. Puste = użycie nagłówka i wstępu.",
     }),
     defineField({
       name: "ctaTitlePl",

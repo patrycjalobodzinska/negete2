@@ -13,6 +13,7 @@ import {
   fetchBlogPostBySlug,
 } from "./blog";
 import { fetchFaqSection } from "./faq";
+import { fetchSiteSettings } from "./siteSettings";
 
 /** Czas życia cache w sekundach (1h). Na Vercel używa edge cache. */
 const REVALIDATE = 3600;
@@ -114,6 +115,14 @@ export async function getCachedFaqSection(lang: Language) {
   return unstable_cache(
     () => fetchFaqSection(lang),
     ["faq", lang],
+    { revalidate: REVALIDATE }
+  )();
+}
+
+export async function getCachedSiteSettings(lang: Language) {
+  return unstable_cache(
+    () => fetchSiteSettings(lang),
+    ["site-settings", lang],
     { revalidate: REVALIDATE }
   )();
 }

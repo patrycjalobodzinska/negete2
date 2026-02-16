@@ -1,4 +1,4 @@
-import { getCachedProjectBySlug } from "@/sanity/cache";
+import { getCachedProjectBySlug, getCachedSiteSettings } from "@/sanity/cache";
 import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -8,10 +8,31 @@ import { ArrowLeft } from "lucide-react";
 import Footer from "@/app/components/Footer";
 import ProjectGallery from "@/app/components/ProjectGallery";
 import ProjectImageGrid from "@/app/components/ProjectImageGrid";
+import { buildMetadata } from "@/lib/metadata";
 
 type Props = {
   params: Promise<{ lang: string; slug: string }>;
 };
+
+export async function generateMetadata({ params }: Props) {
+  const { lang, slug } = await params;
+  if (!languages.includes(lang as Language)) return {};
+  const [project, settings] = await Promise.all([
+    getCachedProjectBySlug(slug, lang as Language),
+    getCachedSiteSettings(lang as Language),
+  ]);
+  if (!project) return {};
+  const heroSection = project.sections?.find((s: any) => s._type === "heroSection");
+  const title = heroSection?.title ?? project.title;
+  return buildMetadata({
+    title,
+    description: project.description,
+    image: project.image,
+    siteName: settings?.siteName,
+    lang,
+    seo: project.seo,
+  });
+}
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { lang, slug } = await params;

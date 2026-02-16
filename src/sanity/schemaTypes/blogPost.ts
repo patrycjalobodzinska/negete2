@@ -57,6 +57,12 @@ export const blogPost = defineType({
         "Artykuł pojawi się dopiero od tej daty. Puste = widoczny od razu.",
     }),
     defineField({
+      name: "seo",
+      title: "SEO / Meta",
+      type: "seoFields",
+      description: "Opcjonalne nadpisanie meta tytułu i opisu. Puste = użycie tytułu i leadu.",
+    }),
+    defineField({
       name: "sections",
       title: "Treść artykułu",
       type: "array",

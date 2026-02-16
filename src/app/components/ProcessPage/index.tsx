@@ -1,0 +1,345 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import {
+  fetchProcessPage,
+  type ProcessPageData,
+  type ProcessPageCta,
+} from "@/sanity/process";
+import type { Language } from "@/i18n/config";
+import {
+  ICONS,
+  PATH_D,
+  PATH_D_MOBILE,
+  FALLBACK_STEPS,
+  IMG_TOPS,
+  CARD_TOPS,
+} from "./constants";
+import { ProcessHero } from "./ProcessHero";
+import { ProcessCta } from "./ProcessCta";
+import { useProcessAnimations } from "./useProcessAnimations";
+
+export default function ProcessPage({
+  lang = "pl",
+  initialData,
+}: {
+  lang?: Language;
+  initialData?: ProcessPageData | null;
+}) {
+  const [processData, setProcessData] = useState<ProcessPageData | null>(initialData ?? null);
+  const [isMobile, setIsMobile] = useState(true);
+
+  const pathRef = useRef<SVGPathElement>(null);
+  const pathMobileRef = useRef<SVGPathElement>(null);
+  const svgSectionRef = useRef<HTMLElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const imgRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const heroTitleRef = useRef<HTMLHeadingElement>(null);
+  const heroIntroRef = useRef<HTMLParagraphElement>(null);
+  const heroLineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialData) return;
+    fetchProcessPage(lang).then((data) => setProcessData(data));
+  }, [lang, initialData]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const sections = processData?.sections?.length ? processData.sections : FALLBACK_STEPS;
+  const hasFiveSections = sections.length === 5;
+  const sectionsToRender = hasFiveSections ? sections : sections.slice(0, 4);
+  const heading = processData?.heading || "Nasz proces";
+  const intro = processData?.intro || "Od pomysłu do realizacji";
+  const cta: ProcessPageCta = processData?.cta ?? {
+    title: "Gotowy na start?",
+    description:
+      "Każdy wielki projekt zaczyna się od pierwszego kroku. Porozmawiajmy o Twoich celach.",
+    buttonText: "Skontaktuj się",
+    link: `/${lang}/kontakt`,
+  };
+
+  useProcessAnimations(
+    {
+      pathRef,
+      pathMobileRef,
+      svgSectionRef,
+      cardRefs,
+      imgRefs,
+      heroTitleRef,
+      heroIntroRef,
+      heroLineRef,
+    },
+    processData
+  );
+
+  return (
+    <div className="relative mx-auto" style={{ overflow: "visible" }}>
+      <ProcessHero
+        heading={heading}
+        intro={intro}
+        heroTitleRef={heroTitleRef}
+        heroIntroRef={heroIntroRef}
+        heroLineRef={heroLineRef}
+      />
+
+      <section
+        ref={svgSectionRef}
+        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-72"
+      >
+        <div className="absolute blur-sm inset-0 z-0 pointer-events-none">
+          <svg
+            className="absolute inset-0 w-full h-full hidden md:block"
+            viewBox="-50 100 900 2700"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+          >
+            <path
+              ref={pathRef}
+              d={PATH_D}
+              stroke="#1943b5"
+              strokeOpacity="0.5"
+              strokeWidth="150"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              strokeDasharray="99999"
+              strokeDashoffset="99999"
+              style={{ opacity: 0 }}
+            />
+          </svg>
+          <svg
+            className="absolute inset-0 w-full h-full md:hidden"
+            viewBox="0 0 400 2000"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+          >
+            <path
+              ref={pathMobileRef}
+              d={PATH_D_MOBILE}
+              stroke="#1e3a8a"
+              strokeOpacity="0.5"
+              strokeWidth="180"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              strokeDasharray="99999"
+              strokeDashoffset="99999"
+              style={{ opacity: 0 }}
+            />
+          </svg>
+        </div>
+
+        {!isMobile && (
+          <div className="relative w-full mx-auto max-w-[1500px] z-10 h-full">
+            {sectionsToRender.map((section, index) => {
+              const isLastAndCentered = hasFiveSections && index === 4;
+              const isEven = index % 2 === 0;
+              const imgTop = isLastAndCentered ? "88%" : (IMG_TOPS[index] ?? "18%");
+              const cardTop = CARD_TOPS[index] ?? "4%";
+              const imgPositionClasses = isLastAndCentered
+                ? "left-1/2 -translate-x-1/2"
+                : isEven
+                  ? "left-[3%] right-auto"
+                  : "left-auto right-[3%]";
+              const cardPositionClasses = isLastAndCentered
+                ? "left-1/2 -translate-x-1/2"
+                : isEven
+                  ? "left-auto right-[4%]"
+                  : "left-[4%] right-auto";
+              const IconCmp = ICONS[section.icon ?? ""] ?? ICONS.Search;
+
+              return (
+                <div key={section.id}>
+                  <div
+                    className={`absolute z-[15] aspect-square w-[min(580px,42vw)] ${imgPositionClasses}`}
+                    style={{ top: imgTop }}
+                  >
+                    <div
+                      ref={(el) => {
+                        imgRefs.current[index] = el;
+                      }}
+                      className={`relative w-full aspect-square rounded-2xl overflow-hidden ${
+                        !section.image || section.image.withBorder ? "border-2" : ""
+                      }`}
+                      style={{
+                        ...((!section.image || section.image.withBorder) && {
+                          borderColor: `${section.color}80`,
+                          boxShadow: `0 16px 48px ${section.color}30`,
+                        }),
+                      }}
+                    >
+                      {section.image ? (
+                        <Image
+                          src={section.image.url}
+                          alt={section.image.alt}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center bg-white/5"
+                          style={{ color: section.color }}
+                        >
+                          <IconCmp className="w-16 h-16" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div
+                    ref={(el) => {
+                      cardRefs.current[index] = el;
+                    }}
+                    className={`absolute z-20 w-[min(580px,52vw)] ${cardPositionClasses}`}
+                    style={{ top: cardTop }}
+                  >
+                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
+                      <span
+                        className="inline-block text-xs font-semibold tracking-wider uppercase mb-3"
+                        style={{ color: section.color }}
+                      >
+                        Krok {index + 1}
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                        {section.title}
+                      </h3>
+                      <p className="text-gray-400 leading-relaxed text-lg mb-6">
+                        {section.description}
+                      </p>
+                      {section.details && section.details.length > 0 && (
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                          {section.details.map((detail, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10"
+                            >
+                              <div
+                                className="w-2 h-2 rounded-full mt-2 shrink-0"
+                                style={{
+                                  background: section.color,
+                                  boxShadow: `0 0 8px ${section.color}`,
+                                }}
+                              />
+                              <p className="text-gray-300 text-sm leading-relaxed">{detail}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {!hasFiveSections && (
+              <ProcessCta
+                cta={cta}
+                variant="inline-desktop"
+                cardRef={(el) => {
+                  cardRefs.current[sectionsToRender.length] = el;
+                }}
+              />
+            )}
+          </div>
+        )}
+
+        {isMobile && (
+          <div className="relative w-full z-10 px-4 flex flex-col gap-2 pt-24 pb-12">
+            {sectionsToRender.map((section, index) => {
+              const IconCmp = ICONS[section.icon ?? ""] ?? ICONS.Search;
+              return (
+                <div key={section.id} className="flex flex-col gap-4">
+                  <div
+                    ref={(el) => {
+                      imgRefs.current[index] = el;
+                    }}
+                    className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 ${
+                      !section.image || section.image.withBorder ? "border-2" : ""
+                    }`}
+                    style={{
+                      ...((!section.image || section.image.withBorder) && {
+                        borderColor: `${section.color}80`,
+                        boxShadow: `0 16px 48px ${section.color}30`,
+                      }),
+                    }}
+                  >
+                    {section.image ? (
+                      <Image
+                        src={section.image.url}
+                        alt={section.image.alt}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center bg-white/5"
+                        style={{ color: section.color }}
+                      >
+                        <IconCmp className="w-12 h-12" />
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    ref={(el) => {
+                      cardRefs.current[index] = el;
+                    }}
+                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl"
+                  >
+                    <span
+                      className="inline-block text-xs font-semibold tracking-wider uppercase mb-2"
+                      style={{ color: section.color }}
+                    >
+                      Krok {index + 1}
+                    </span>
+                    <h3 className="text-xl font-bold text-white mb-3">{section.title}</h3>
+                    <p className="text-gray-400 leading-relaxed text-base mb-4">
+                      {section.description}
+                    </p>
+                    {section.details && section.details.length > 0 && (
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        {section.details.map((detail, i) => (
+                          <div
+                            key={i}
+                            className="flex items-start gap-2 p-3 rounded-xl bg-white/5 border border-white/10"
+                          >
+                            <div
+                              className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                              style={{
+                                background: section.color,
+                                boxShadow: `0 0 6px ${section.color}`,
+                              }}
+                            />
+                            <p className="text-gray-300 text-xs leading-relaxed">{detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {!hasFiveSections && (
+              <ProcessCta
+                cta={cta}
+                variant="inline-mobile"
+                cardRef={(el) => {
+                  cardRefs.current[sectionsToRender.length] = el;
+                }}
+              />
+            )}
+          </div>
+        )}
+      </section>
+
+      {hasFiveSections && <ProcessCta cta={cta} variant="standalone" />}
+    </div>
+  );
+}

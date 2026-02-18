@@ -81,9 +81,6 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
 
   // SVG Path animation - maksymalnie uproszczona wersja
   useEffect(() => {
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return; // Wyłącz animacje SVG na mobile dla lepszej wydajności
-    
     const path = pathRef.current;
     const pathMobile = pathMobileRef.current;
     const svgSection = svgSectionRef.current;
@@ -99,15 +96,16 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
       const footer = document.querySelector("footer");
       const scrollConfig = {
         trigger: svgSection,
-        start: "top 60%",
+        start: "top 50%",
         end: footer ? "bottom bottom" : "bottom 70%",
-        scrub: 0.5,
+        scrub: true,
       };
 
-      // Animacja SVG - użyj wartości bezpośrednio z useLayoutEffect (bez parseFloat)
+      // Animacja SVG - najprostsza możliwa
       paths.forEach((p) => {
-        const pathLength = p.getTotalLength();
-        
+        const pathLength = parseFloat(p.style.strokeDasharray);
+        if (!pathLength) return;
+
         gsap.fromTo(
           p,
           { strokeDashoffset: pathLength, opacity: 0 },
@@ -124,22 +122,38 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
       imgRefs.current.forEach((el) => el && (el.style.opacity = "0.5"));
       cardRefs.current.forEach((el) => el && (el.style.opacity = "0.5"));
 
-      // Cards - prostsze rozwiązanie bez onUpdate (lepsza wydajność)
-      const thresholds = [0.2, 0.4, 0.6, 0.8, 0.95];
-      thresholds.forEach((thr, i) => {
+      // Prostsze animacje cards - użyj ScrollTrigger dla każdego elementu osobno
+      cardRefs.current.forEach((card, i) => {
+        if (!card) return;
+        const img = imgRefs.current[i];
+        
         ScrollTrigger.create({
-          trigger: svgSection,
-          start: `top ${100 - thr * 100}%`,
+          trigger: card,
+          start: "top 80%",
           onEnter: () => {
-            const card = cardRefs.current[i];
-            const img = imgRefs.current[i];
-            if (card) card.style.opacity = "1";
+            card.style.opacity = "1";
             if (img) img.style.opacity = "1";
           },
         });
       });
 
-      // Parallax wyłączony - powodował problemy z wydajnością
+      // Parallax tylko na desktop
+      const isMobileView = window.matchMedia("(max-width: 767px)").matches;
+      if (!isMobileView) {
+        cardRefs.current.forEach((card) => {
+          if (!card) return;
+          gsap.to(card, {
+            y: -120,
+            ease: "none",
+            scrollTrigger: {
+              trigger: card,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        });
+      }
     });
 
     // Jeden refresh

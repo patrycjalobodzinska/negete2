@@ -45,6 +45,20 @@ const MOCK_SERVICES = [
     description:
       "Weryfikacja koncepcji poprzez druk 3D, frezowanie CNC oraz montaż próbny układów elektronicznych (PCBA).",
   },
+  {
+    iconKey: "Award",
+    title: "Certyfikacja i Testy",
+    slug: "certyfikacja",
+    description:
+      "Przygotowanie produktu do oznaczenia znakiem CE, badania wstępne oraz tworzenie dokumentacji wymaganej prawem.",
+  },
+  {
+    iconKey: "Factory",
+    title: "Produkcja Seryjna",
+    slug: "produkcja",
+    description:
+      "Organizacja łańcucha dostaw, nadzór nad produkcją elektroniki, kontrola jakości i skalowanie produkcji.",
+  },
 ];
 
 type Props = {
@@ -115,8 +129,9 @@ export default async function UslugiPage({ params }: Props) {
             const IconComponent =
               SERVICE_ICONS[service.iconKey] || Cpu;
             return (
-              <div
+              <Link
                 key={idx}
+                href={`/${lang}/uslugi/${service.slug}`}
                 className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
@@ -132,7 +147,7 @@ export default async function UslugiPage({ params }: Props) {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

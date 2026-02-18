@@ -36,15 +36,43 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
     });
   }, [pathRef, pathMobileRef]);
 
-  useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  useLayoutEffect(() => {
+    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
     const title = heroTitleRef.current;
     const intro = heroIntroRef.current;
     const line = heroLineRef.current;
 
-    if (title) tl.fromTo(title, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8 });
-    if (intro) tl.fromTo(intro, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5");
-    if (line) tl.fromTo(line, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6 }, "-=0.35");
+    if (isMobile) {
+      // Na mobile: całkowicie wyłącz animacje dla lepszej wydajności
+      // Ustaw opacity synchronicznie przed pierwszym renderem
+      if (title) {
+        title.classList.remove("opacity-0");
+        title.style.opacity = "1";
+      }
+      if (intro) {
+        intro.classList.remove("opacity-0");
+        intro.style.opacity = "1";
+      }
+      if (line) {
+        line.classList.remove("opacity-0");
+        line.style.opacity = "1";
+      }
+      return;
+    }
+  }, [heroTitleRef, heroIntroRef, heroLineRef]);
+
+  useEffect(() => {
+    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+    if (isMobile) return; // Na mobile animacje są wyłączone w useLayoutEffect
+
+    // Desktop: pełne animacje GSAP
+    const title = heroTitleRef.current;
+    const intro = heroIntroRef.current;
+    const line = heroLineRef.current;
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    if (title) tl.fromTo(title, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, force3D: true });
+    if (intro) tl.fromTo(intro, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, force3D: true }, "-=0.5");
+    if (line) tl.fromTo(line, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, force3D: true }, "-=0.35");
 
     return () => {
       tl.kill();

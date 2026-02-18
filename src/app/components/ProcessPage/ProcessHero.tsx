@@ -20,18 +20,21 @@ export function ProcessHero({
       <div className="text-center md:pt-36 pt-26 md:pb-16 px-4">
         <h1
           ref={heroTitleRef}
+          data-hero-title
           className="text-5xl sm:text-6xl lg:text-8xl font-medium text-white md:mb-12 mb-8 leading-tight opacity-0"
         >
           {heading}
         </h1>
         <p
           ref={heroIntroRef}
+          data-hero-intro
           className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto opacity-0"
         >
           {intro}
         </p>
         <div
           ref={heroLineRef}
+          data-hero-line
           className="h-1 w-48 sm:w-96 mx-auto md:mt-36 mt-12 rounded-full origin-center z-10 opacity-0"
           style={{
             background: "linear-gradient(90deg, transparent, #1e3a8a, transparent)",

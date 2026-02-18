@@ -515,7 +515,15 @@ export default async function UslugaDetailPage({ params }: Props) {
   }
 
   const servicesData = await getCachedServicesSection(lang as Language);
-  const sanityService = servicesData?.services?.find((s) => s.slug === slug);
+
+  // Try matching Sanity service by slug, or by index if Sanity services have no slug
+  const sanityService =
+    servicesData?.services?.find((s) => s.slug === slug) ||
+    servicesData?.services?.find(
+      (_s, i) =>
+        !_s.slug &&
+        MOCK_SERVICE_DETAILS[i]?.slug === slug
+    );
   const mockService = MOCK_SERVICE_DETAILS.find((s) => s.slug === slug);
 
   if (!sanityService && !mockService) {
@@ -525,10 +533,10 @@ export default async function UslugaDetailPage({ params }: Props) {
   const isEn = lang === "en";
 
   // Use Sanity data if available, otherwise use mock
-  const title = sanityService?.title || (isEn ? mockService!.titleEn : mockService!.title);
+  const title = sanityService?.title || (isEn ? mockService?.titleEn : mockService?.title) || slug;
   const description =
-    sanityService?.description || (isEn ? mockService!.descriptionEn : mockService!.description);
-  const iconKey = sanityService?.iconKey || mockService!.iconKey;
+    sanityService?.description || (isEn ? mockService?.descriptionEn : mockService?.description) || "";
+  const iconKey = sanityService?.iconKey || mockService?.iconKey || "Cpu";
   const IconComponent = SERVICE_ICONS[iconKey] || Cpu;
 
   // Mock-specific rich content

@@ -91,10 +91,16 @@ export default async function UslugiPage({ params }: Props) {
   const servicesData = await getCachedServicesSection(lang as Language);
   const services =
     servicesData?.services && servicesData.services.length > 0
-      ? servicesData.services.map((s) => ({
+      ? servicesData.services.map((s, i) => ({
           iconKey: s.iconKey || "Cpu",
           title: s.title,
-          slug: s.slug || "usluga",
+          slug:
+            s.slug ||
+            MOCK_SERVICES[i]?.slug ||
+            s.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, ""),
           description: s.description,
         }))
       : MOCK_SERVICES;

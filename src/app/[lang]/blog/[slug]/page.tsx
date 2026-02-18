@@ -8,6 +8,9 @@ import Footer from "../../../components/Footer";
 import { ArticleJsonLd } from "../../../components/JsonLd";
 import type { BlogPostSection } from "@/sanity/blog";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string; slug: string }>;
@@ -135,7 +138,7 @@ export default async function BlogPostPage({ params }: Props) {
           href={`/${lang}/blog`}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-8 text-sm font-medium"
         >
-          ← {lang === "pl" ? "Powrót do bloga" : "Back to blog"}
+          ← {t(lang as Language, "common.backToBlog")}
         </Link>
 
         <article>
@@ -182,7 +185,7 @@ export default async function BlogPostPage({ params }: Props) {
             href={`/${lang}/blog`}
             className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
           >
-            ← {lang === "pl" ? "Wszystkie artykuły" : "All articles"}
+            ← {t(lang as Language, "common.allArticles")}
           </Link>
         </div>
       </div>

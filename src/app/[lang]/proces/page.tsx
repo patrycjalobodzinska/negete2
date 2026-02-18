@@ -4,6 +4,9 @@ import ProcessPage from "../../components/ProcessPage";
 import Footer from "../../components/Footer";
 import { getCachedProcessPage, getCachedSiteSettings } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -18,7 +21,7 @@ export async function generateMetadata({ params }: Props) {
   ]);
   const seo = processData?.seo ?? settings?.processPageSeo;
   return buildMetadata({
-    title: processData?.heading ?? (lang === "pl" ? "Nasz proces" : "Our process"),
+    title: processData?.heading ?? t(lang as Language, "proces.title"),
     description: processData?.intro,
     image: processData?.heroImage?.url ?? settings?.defaultOgImage,
     siteName: settings?.siteName,

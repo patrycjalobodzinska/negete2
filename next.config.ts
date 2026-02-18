@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Cache na Vercel – strony z Sanity revalidowane co godzinę
+  // Cache na Vercel – szybsze ładowanie
   experimental: {
     staleTimes: {
-      static: 3600,
-      dynamic: 60,
+      static: 86400, // 24h dla stron statycznych
+      dynamic: 3600,  // 1h dla dynamicznych
     },
   },
   images: {

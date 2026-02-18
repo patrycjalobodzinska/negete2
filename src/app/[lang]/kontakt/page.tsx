@@ -2,8 +2,11 @@ import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Contact from "../../components/Contact";
 import Footer from "../../components/Footer";
-import { getCachedContactSection, getCachedSiteSettings } from "@/sanity/cache";
+import { getCachedContactSection, getCachedFooterData, getCachedSiteSettings } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -12,13 +15,14 @@ type Props = {
 export async function generateMetadata({ params }: Props) {
   const { lang } = await params;
   if (!languages.includes(lang as Language)) return {};
-  const [settings, contactData] = await Promise.all([
+  const [settings, contactData, footerData] = await Promise.all([
     getCachedSiteSettings(lang as Language),
     getCachedContactSection(lang as Language),
+    getCachedFooterData(lang as Language),
   ]);
   const seo = settings?.contactPageSeo;
   return buildMetadata({
-    title: contactData?.heading ?? (lang === "pl" ? "Kontakt" : "Contact"),
+    title: contactData?.heading ?? t(lang as Language, "kontakt.title"),
     description: contactData?.subtitle,
     siteName: settings?.siteName,
     lang,
@@ -36,13 +40,17 @@ export default async function ContactPage({ params }: Props) {
     notFound();
   }
 
-  const contactData = await getCachedContactSection(lang as Language);
+  const [contactData, footerData] = await Promise.all([
+    getCachedContactSection(lang as Language),
+    getCachedFooterData(lang as Language),
+  ]);
 
   return (
     <main className="relative min-h-screen">
       <Contact
         lang={lang as Language}
         initialData={contactData}
+        contactItems={footerData?.contactItems ?? null}
         headingLevel="h1"
       />
       <Footer />

@@ -56,6 +56,13 @@ export const servicesSection = defineType({
           type: "object",
           fields: [
             defineField({
+              name: "slug",
+              title: "Slug (URL)",
+              type: "slug",
+              description: "Używany w linkach do podstrony usługi, np. projektowanie-pcb",
+              options: { source: "titlePl", maxLength: 96 },
+            }),
+            defineField({
               name: "iconKey",
               title: "Ikona (klucz)",
               type: "string",

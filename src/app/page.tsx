@@ -6,8 +6,11 @@ import Process from "./components/Process";
 import TrustedBy from "./components/TrustedBy";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import { getCachedSiteSettings } from "@/sanity/cache";
+import { getCachedSiteSettings, getCachedPortfolioSection } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+
+/** ISR – cache 1h na Vercel */
+export const revalidate = 3600;
 
 export async function generateMetadata() {
   const settings = await getCachedSiteSettings(defaultLanguage);
@@ -25,11 +28,12 @@ export async function generateMetadata() {
 
 // Strona główna bez prefiksu języka (domyślnie polski)
 export default async function Home() {
+  const portfolioData = await getCachedPortfolioSection(defaultLanguage);
   return (
     <main className="relative min-h-screen">
       <HeroAlt />
       <Services lang={defaultLanguage} />
-      <Portfolio lang={defaultLanguage} />
+      <Portfolio lang={defaultLanguage} initialData={portfolioData} />
       <Process lang={defaultLanguage} />
       <TrustedBy lang={defaultLanguage} />
       <Contact lang={defaultLanguage} />

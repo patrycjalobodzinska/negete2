@@ -2,22 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Send, User, Building, MessageSquare } from "lucide-react";
+import { Mail, Send, User, Building, MessageSquare, Phone } from "lucide-react";
 import Image from "next/image";
 import { fetchContactSection, type ContactSection } from "@/sanity/contact";
+import { fetchFooterData } from "@/sanity/footer";
 import { languages, type Language } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 import { usePathname } from "next/navigation";
+import type { FooterContactItem } from "@/sanity/footer";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FALLBACK: ContactSection = {
   heading: "Kontakt",
   subtitle: "Skontaktuj się z nami i zbudujmy coś razem",
-  personName: "Bartłomiej Zachara",
-  personRole: "Founder & Lead Engineer",
-  personImage: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=800",
-  email: "b.zachara@negete.pl",
-  bio: "Z pasją projektuję i tworzę zaawansowane urządzenia elektroniczne. Specjalizuję się w kompleksowym rozwoju produktów - od koncepcji, przez projekt PCB, oprogramowanie embedded, aż po druk 3D obudów. Jeśli masz pomysł na innowacyjny produkt elektroniczny, chętnie pomogę Ci go zrealizować.",
+  people: [
+    {
+      name: "Bartłomiej Zachara",
+      role: "Founder & Lead Engineer",
+      image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=800",
+      email: "b.zachara@negete.pl",
+      bio: "Z pasją projektuję i tworzę zaawansowane urządzenia elektroniczne. Specjalizuję się w kompleksowym rozwoju produktów - od koncepcji, przez projekt PCB, oprogramowanie embedded, aż po druk 3D obudów.",
+    },
+  ],
   nameLabel: "Imię",
   companyLabel: "Nazwa firmy",
   messageLabel: "Opisz krótko jaki produkt chcesz z nami zbudować?",
@@ -31,6 +38,8 @@ const FALLBACK: ContactSection = {
 interface ContactProps {
   lang?: Language;
   initialData?: ContactSection | null;
+  /** Dane kontaktowe (mail, tel) do wyświetlenia po prawej – z footerContactItems */
+  contactItems?: FooterContactItem[] | null;
   /** Na stronie /kontakt użyj H1 zamiast H2 */
   headingLevel?: "h1" | "h2";
 }
@@ -38,11 +47,15 @@ interface ContactProps {
 export default function Contact({
   lang: langProp,
   initialData: initialDataProp,
+  contactItems: contactItemsProp,
   headingLevel = "h2",
 }: ContactProps) {
   const pathname = usePathname();
   const [contactData, setContactData] = useState<ContactSection | null>(
     initialDataProp ?? null
+  );
+  const [contactItems, setContactItems] = useState<FooterContactItem[] | null>(
+    contactItemsProp ?? null
   );
   const [formData, setFormData] = useState({
     firstName: "",
@@ -84,23 +97,91 @@ export default function Contact({
       .catch((err) => console.error("Błąd pobierania sekcji kontakt:", err));
   }, [lang, initialDataProp]);
 
+  useEffect(() => {
+    if (contactItemsProp) return;
+    fetchFooterData(lang)
+      .then((data) => data?.contactItems && setContactItems(data.contactItems))
+      .catch((err) => console.error("Błąd pobierania stopki:", err));
+  }, [lang, contactItemsProp]);
+
   const data = contactData || FALLBACK;
+
+  const mailItem = contactItems?.find((i) => i.icon === "Mail");
+  const phoneItem = contactItems?.find((i) => i.icon === "Phone");
 
   return (
     <section
       data-section="contact"
-      className="relative py-24 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent"
-      style={{
-        borderTop: "1px solid rgba(0, 240, 255, 0.5)",
-        boxShadow: "0 0 20px rgba(0, 240, 255, 0.15)",
-      }}>
+      className="relative py-24 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
       <div className="max-w-7xl mx-auto">
+        {/* Sekcja O nas – jedna karta na osobę: zdjęcie, imię nazwisko, stanowisko, mail, opis – flex wrap, neon border */}
+        {data.people.length > 0 && (
+          <div className="mb-20">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-3xl sm:text-4xl font-medium text-white mb-12 text-center">
+              {t(lang, "about.title")}
+            </motion.h2>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              {data.people.map((person, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="rounded-xl border-2 border-cyan-400/50 bg-white/5 shadow-lg shadow-cyan-500/10 overflow-hidden w-full max-w-sm">
+                  <div className="p-4">
+                    <div className="relative aspect-square w-28 sm:w-56 mx-auto rounded-lg overflow-hidden">
+                      {person.image ? (
+                        <Image
+                          src={person.image}
+                          alt={person.name}
+                          fill
+                          className="object-cover"
+                          sizes="128px"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-white/10 flex items-center justify-center text-cyan-400 text-2xl font-bold">
+                          {person.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4 text-center">
+                      <h3 className="font-bold text-white text-base">{person.name}</h3>
+                      {person.role && (
+                        <p className="text-cyan-400 text-sm mt-1">{person.role}</p>
+                      )}
+                      {person.email && (
+                        <a
+                          href={`mailto:${person.email}`}
+                          className="text-gray-400 hover:text-cyan-400 text-sm mt-2 inline-flex items-center justify-center gap-1 transition-colors">
+                          <Mail className="w-4 h-4 shrink-0" />
+                          {person.email}
+                        </a>
+                      )}
+                    </div>
+                    {person.bio && (
+                      <p className="text-gray-400 text-sm leading-relaxed mt-4 text-left">
+                        {person.bio}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sekcja Kontakt – formularz i dane kontaktowe */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16">
+          className="text-center mb-12">
           {headingLevel === "h1" ? (
             <h1 className="text-3xl sm:text-4xl font-medium text-white mb-4">
               {data.heading}
@@ -115,65 +196,16 @@ export default function Contact({
           )}
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch lg:items-start justify-center">
+          {/* Formularz – węższy po lewej */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-8">
-            {data.personImage && (
-              <div className="relative aspect-square max-w-md mx-auto lg:mx-0 rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_25px_rgba(59,130,246,0.15)]">
-                <Image
-                  src={data.personImage}
-                  alt={data.personName}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 400px"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-2xl font-bold text-white mb-1">
-                    {data.personName}
-                  </h3>
-                  {data.personRole && (
-                    <p className="text-cyan-400 text-lg">{data.personRole}</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8">
-              {data.email && (
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="p-3 rounded-lg bg-cyan-500/20 border border-cyan-400/30">
-                    <Mail className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-1">Email</h4>
-                    <a
-                      href={`mailto:${data.email}`}
-                      className="text-cyan-400 hover:text-cyan-300 transition-colors duration-300">
-                      {data.email}
-                    </a>
-                  </div>
-                </div>
-              )}
-              {data.bio && (
-                <div className={data.email ? "border-t border-white/10 pt-6" : ""}>
-                  <p className="text-gray-300 leading-relaxed">{data.bio}</p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}>
+            className="w-full max-w-md shrink-0">
             <form
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 space-y-6"
+              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 setSubmitStatus("idle");
@@ -318,7 +350,7 @@ export default function Contact({
                 disabled={isSubmitting}
                 className="w-full px-8 py-4 rounded-lg font-medium text-cyan-400 border border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500/20 hover:border-cyan-400/70 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group">
                 {isSubmitting ? (
-                  lang === "pl" ? "Wysyłanie..." : "Sending..."
+                  t(lang, "contact.sending")
                 ) : (
                   <>
                     {data.submitButton}
@@ -327,6 +359,46 @@ export default function Contact({
                 )}
               </button>
             </form>
+          </motion.div>
+
+          {/* Mail i tel po prawej */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-sm shrink-0">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+              {mailItem && (
+                <a
+                  href={mailItem.url?.startsWith("mailto:") ? mailItem.url : `mailto:${mailItem.url || mailItem.text}`}
+                  className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
+                    <Mail className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-500 mb-0.5">{t(lang, "contact.email")}</p>
+                    <p className="font-medium truncate">{mailItem.text}</p>
+                  </div>
+                </a>
+              )}
+              {phoneItem && (
+                <a
+                  href={phoneItem.url?.startsWith("tel:") ? phoneItem.url : `tel:${phoneItem.url || phoneItem.text}`}
+                  className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
+                    <Phone className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-500 mb-0.5">{t(lang, "contact.phone")}</p>
+                    <p className="font-medium truncate">{phoneItem.text}</p>
+                  </div>
+                </a>
+              )}
+              {(!mailItem && !phoneItem) && (
+                <p className="text-gray-500 text-sm">{t(lang, "contact.noContactInfo")}</p>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>

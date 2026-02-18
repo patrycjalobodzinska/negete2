@@ -10,6 +10,7 @@ import {
 } from "@/sanity/portfolio";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import type { Language } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 import { ThreeDMarquee } from "./ui/3d-marquee";
 
 // Fallback projekty (używane gdy brak danych z Sanity)
@@ -133,7 +134,7 @@ export default function Portfolio({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {lang === "pl" ? "Zobacz więcej" : "See more"}
+              {t(lang, "portfolio.seeMore")}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
             </motion.span>
           </Link>

@@ -9,6 +9,9 @@ import Link from "next/link";
 import Image from "next/image";
 import Footer from "../../components/Footer";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -20,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
   const settings = await getCachedSiteSettings(lang as Language);
   const seo = settings?.blogListPageSeo;
   return buildMetadata({
-    title: lang === "pl" ? "Blog" : "Blog",
+    title: t(lang as Language, "blog.title"),
     description:
       lang === "pl"
         ? "Artykuły i przemyślenia o technologii i projektowaniu"
@@ -51,12 +54,10 @@ export default async function BlogPage({ params }: Props) {
       <main className="relative min-h-screen">
         <div className="max-w-7xl mx-auto px-6 py-32 text-center">
           <h1 className="text-3xl sm:text-4xl font-medium text-white mb-4">
-            {lang === "pl" ? "Blog" : "Blog"}
+            {t(lang as Language, "blog.title")}
           </h1>
           <p className="text-gray-400 text-xl">
-            {lang === "pl"
-              ? "Wkrótce dostępne artykuły"
-              : "Articles coming soon"}
+            {t(lang as Language, "blog.comingSoon")}
           </p>
         </div>
         <Footer />
@@ -69,12 +70,10 @@ export default async function BlogPage({ params }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="mb-12 lg:mb-16">
           <h1 className="text-3xl sm:text-4xl font-medium text-white mb-6 leading-tight">
-            {lang === "pl" ? "Blog" : "Blog"}
+            {t(lang as Language, "blog.title")}
           </h1>
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl">
-            {lang === "pl"
-              ? "Artykuły i przemyślenia o technologii i projektowaniu"
-              : "Articles and insights on technology and design"}
+            {t(lang as Language, "blog.description")}
           </p>
         </div>
 

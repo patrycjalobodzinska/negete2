@@ -13,9 +13,14 @@ import {
   getCachedHomepageProcess,
   getCachedTrustedBy,
   getCachedContactSection,
+  getCachedFooterData,
   getCachedSiteSettings,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+/** ISR – cache 1h, szybsze ładowanie na Vercel */
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -27,11 +32,8 @@ export async function generateMetadata({ params }: Props) {
   const settings = await getCachedSiteSettings(lang as Language);
   const seo = settings?.homePageSeo;
   return buildMetadata({
-    title: lang === "pl" ? "Strona główna" : "Home",
-    description:
-      lang === "pl"
-        ? "Twój zewnętrzny dział R&D – od pomysłu do produktu"
-        : "Your external R&D department – from idea to product",
+    title: t(lang as Language, "home.title"),
+    description: t(lang as Language, "home.description"),
     siteName: settings?.siteName,
     lang,
     path: `/${lang}`,
@@ -48,13 +50,14 @@ export default async function Home({ params }: Props) {
     notFound();
   }
 
-  const [servicesData, portfolioData, processData, trustedByData, contactData] =
+  const [servicesData, portfolioData, processData, trustedByData, contactData, footerData] =
     await Promise.all([
       getCachedServicesSection(lang as Language),
       getCachedPortfolioSection(lang as Language),
       getCachedHomepageProcess(lang as Language),
       getCachedTrustedBy(lang as Language),
       getCachedContactSection(lang as Language),
+      getCachedFooterData(lang as Language),
     ]);
 
   return (
@@ -64,7 +67,11 @@ export default async function Home({ params }: Props) {
       <Portfolio lang={lang as Language} initialData={portfolioData} />
       <Process lang={lang as Language} initialData={processData} />
       <TrustedBy lang={lang as Language} initialData={trustedByData} />
-      <Contact lang={lang as Language} initialData={contactData} />
+      <Contact
+        lang={lang as Language}
+        initialData={contactData}
+        contactItems={footerData?.contactItems ?? null}
+      />
       <Footer />
     </main>
   );

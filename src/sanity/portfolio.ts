@@ -172,6 +172,7 @@ export interface ProjectSeo {
 
 export interface ProjectDetail extends Project {
   sections?: ProjectSection[];
+  gallery?: { url: string; alt?: string }[];
   publishedAt?: string;
   seo?: ProjectSeo;
 }
@@ -221,11 +222,8 @@ export async function fetchProjectBySlug(
         _type == "gallerySection" => {
           titlePl,
           titleEn,
-          images[]{
-            ...,
-            altPl,
-            altEn
-          }
+          descriptionPl,
+          descriptionEn
         },
         _type == "specsSection" => {
           titlePl,
@@ -264,6 +262,7 @@ export async function fetchProjectBySlug(
           }
         }
       },
+      gallery[]{ ..., altPl, altEn },
       publishedAt,
       seo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } }
     }
@@ -298,10 +297,8 @@ export async function fetchProjectBySlug(
       mapped.content = section[lang === "pl" ? "contentPl" : "contentEn"] || section.contentPl;
     } else if (section._type === "gallerySection") {
       mapped.title = section[titleKey] || section.titlePl;
-      mapped.images = section.images?.map((img: any) => ({
-        url: urlFor(img).width(1200).url(),
-        alt: img[altKey] || img.altPl || "",
-      }));
+      mapped.description =
+        section[lang === "pl" ? "descriptionPl" : "descriptionEn"] || section.descriptionPl;
     } else if (section._type === "specsSection") {
       mapped.title = section[titleKey] || section.titlePl;
       mapped.specs = section.specs?.map((spec: any) => ({
@@ -347,6 +344,11 @@ export async function fetchProjectBySlug(
       }
     : undefined;
 
+  const gallery = data.gallery?.map((img: any) => ({
+    url: urlFor(img).width(1200).url(),
+    alt: img[altKey] || img.altPl || "",
+  }));
+
   return {
     _id: data._id,
     title: data[titleKey] || data.titlePl || "",
@@ -360,6 +362,7 @@ export async function fetchProjectBySlug(
     category: data.customCategory || data.category,
     categoryLabel,
     sections: mappedSections,
+    gallery,
     publishedAt: data.publishedAt,
     seo,
   };

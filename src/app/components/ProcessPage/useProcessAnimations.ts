@@ -66,6 +66,13 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
 
     const ctx = gsap.context(() => {
       const footer = document.querySelector("footer");
+      const scrollTriggerConfig = {
+        trigger: svgSection,
+        start: "top 35%",
+        ...(footer ? { endTrigger: footer, end: "bottom bottom" } : { end: "bottom 70%" }),
+        scrub: true,
+      };
+
       [path, pathMobile].forEach((p) => {
         if (!p) return;
         const pathLength = p.getTotalLength();
@@ -76,14 +83,40 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
             strokeDashoffset: 0,
             opacity: 1,
             ease: "none",
-            scrollTrigger: {
-              trigger: svgSection,
-              start: "top 35%",
-              ...(footer ? { endTrigger: footer, end: "bottom bottom" } : { end: "bottom 70%" }),
-              scrub: true,
-            },
+            scrollTrigger: scrollTriggerConfig,
           }
         );
+      });
+
+      const initHidden = () => {
+        imgRefs.current.forEach((el) => el && gsap.set(el, { opacity: 0.5 }));
+        cardRefs.current.forEach((el) => el && gsap.set(el, { opacity: 0.5 }));
+      };
+      initHidden();
+      requestAnimationFrame(initHidden);
+
+      const thresholds = [0.15, 0.35, 0.55, 0.75, 0.92];
+      const animated = new Set<number>();
+
+      ScrollTrigger.create({
+        ...scrollTriggerConfig,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          if (progress < 0.05) {
+            animated.clear();
+            imgRefs.current.forEach((el) => el && gsap.set(el, { opacity: 0.5 }));
+            cardRefs.current.forEach((el) => el && gsap.set(el, { opacity: 0.5 }));
+          }
+          thresholds.forEach((thr, i) => {
+            if (progress >= thr && !animated.has(i)) {
+              animated.add(i);
+              const imgEl = imgRefs.current[i];
+              const cardEl = cardRefs.current[i];
+              if (imgEl) gsap.to(imgEl, { opacity: 1, duration: 0.5, ease: "power2.out" });
+              if (cardEl) gsap.to(cardEl, { opacity: 1, duration: 0.5, ease: "power2.out" });
+            }
+          });
+        },
       });
 
       const isMobileView = window.matchMedia("(max-width: 767px)").matches;
@@ -91,17 +124,6 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
 
       cardRefs.current.forEach((card) => {
         if (!card) return;
-        gsap.fromTo(
-          card,
-          { opacity: 0, scale: 0.96 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.75,
-            ease: "power2.out",
-            scrollTrigger: { trigger: card, start: "top 88%", once: true },
-          }
-        );
         gsap.to(card, {
           y: parallaxY,
           ease: "none",
@@ -112,21 +134,6 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
             scrub: true,
           },
         });
-      });
-
-      imgRefs.current.forEach((imgEl) => {
-        if (!imgEl) return;
-        gsap.fromTo(
-          imgEl,
-          { opacity: 0, scale: 0.88 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.9,
-            ease: "back.out(1.5)",
-            scrollTrigger: { trigger: imgEl, start: "top 88%", once: true },
-          }
-        );
       });
     });
 

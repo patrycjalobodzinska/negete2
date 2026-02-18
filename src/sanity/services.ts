@@ -5,6 +5,7 @@ export interface ServiceItem {
   iconKey?: string | null;
   title: string;
   description: string;
+  slug?: string;
 }
 
 export interface ServicesSection {
@@ -26,6 +27,7 @@ interface ServicesSectionRaw {
     titleEn?: string;
     descriptionPl?: string;
     descriptionEn?: string;
+    slug?: { current?: string } | string;
   }>;
 }
 
@@ -45,6 +47,7 @@ export async function fetchServicesSection(
       introPl,
       introEn,
       services[]{
+        slug{ current },
         iconKey,
         titlePl,
         titleEn,
@@ -75,6 +78,10 @@ export async function fetchServicesSection(
         iconKey: service.iconKey,
         title: service[titleKey] || service.titlePl || "",
         description: service[descriptionKey] || service.descriptionPl || "",
+        slug:
+          typeof service.slug === "string"
+            ? service.slug
+            : service.slug?.current,
       })) || [],
   };
 }

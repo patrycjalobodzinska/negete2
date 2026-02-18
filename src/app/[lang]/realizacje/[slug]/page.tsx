@@ -1,5 +1,6 @@
 import { getCachedProjectBySlug, getCachedSiteSettings } from "@/sanity/cache";
 import { type Language, languages } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Badge } from "@/app/components/ui/badge";
@@ -9,6 +10,8 @@ import Footer from "@/app/components/Footer";
 import ProjectGallery from "@/app/components/ProjectGallery";
 import ProjectImageGrid from "@/app/components/ProjectImageGrid";
 import { buildMetadata } from "@/lib/metadata";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string; slug: string }>;
@@ -59,14 +62,14 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <>
       <div className="min-h-screen ">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-26 sm:pb-24">
             {/* Powrót */}
             <Link
               href={`/${lang}/realizacje`}
               className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 group text-sm font-medium"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              {lang === "pl" ? "Powrót do realizacji" : "Back to projects"}
+              {t(lang as Language, "common.backToProjects")}
             </Link>
 
             {/* Nagłówek – tytuł i kategoria bez tła */}
@@ -121,8 +124,10 @@ export default async function ProjectDetailPage({ params }: Props) {
                   return (
                     <ProjectGallery
                       key={index}
-                      images={section.images || []}
+                      images={project.gallery || []}
                       title={section.title}
+                      description={section.description}
+                      gridCols="sm:grid-cols-2 lg:grid-cols-3"
                     />
                   );
                 }
@@ -218,7 +223,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {lang === "pl" ? "Wszystkie realizacje" : "All projects"}
+                {t(lang as Language, "common.allProjects")}
               </Link>
             </div>
           </div>

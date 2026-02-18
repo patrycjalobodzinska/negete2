@@ -6,7 +6,7 @@ export const contactSection = defineType({
   type: "document",
   groups: [
     { name: "heading", title: "Nagłówek" },
-    { name: "person", title: "Osoba kontaktowa" },
+    { name: "people", title: "Osoby kontaktowe" },
     { name: "form", title: "Formularz" },
   ],
   fields: [
@@ -39,53 +39,30 @@ export const contactSection = defineType({
       initialValue: "Get in touch and let's build something together",
     }),
     defineField({
-      name: "personImage",
-      title: "Zdjęcie osoby",
-      type: "image",
-      group: "person",
-      options: { hotspot: true },
-    }),
-    defineField({
-      name: "personNamePl",
-      title: "Imię i nazwisko (Polski)",
-      type: "string",
-      group: "person",
-    }),
-    defineField({
-      name: "personNameEn",
-      title: "Imię i nazwisko (English)",
-      type: "string",
-      group: "person",
-    }),
-    defineField({
-      name: "personRolePl",
-      title: "Stanowisko (Polski)",
-      type: "string",
-      group: "person",
-    }),
-    defineField({
-      name: "personRoleEn",
-      title: "Stanowisko (English)",
-      type: "string",
-      group: "person",
-    }),
-    defineField({
-      name: "email",
-      title: "Email kontaktowy",
-      type: "string",
-      group: "person",
-    }),
-    defineField({
-      name: "bioPl",
-      title: "Opis / Bio (Polski)",
-      type: "text",
-      group: "person",
-    }),
-    defineField({
-      name: "bioEn",
-      title: "Opis / Bio (English)",
-      type: "text",
-      group: "person",
+      name: "people",
+      title: "Osoby kontaktowe",
+      type: "array",
+      group: "people",
+      of: [
+        {
+          type: "object",
+          name: "contactPerson",
+          title: "Osoba",
+          fields: [
+            { name: "image", title: "Zdjęcie", type: "image", options: { hotspot: true } },
+            { name: "namePl", title: "Imię i nazwisko (Polski)", type: "string" },
+            { name: "nameEn", title: "Imię i nazwisko (English)", type: "string" },
+            { name: "rolePl", title: "Stanowisko (Polski)", type: "string" },
+            { name: "roleEn", title: "Stanowisko (English)", type: "string" },
+            { name: "email", title: "Email", type: "string" },
+            { name: "bioPl", title: "Opis / Bio (Polski)", type: "text" },
+            { name: "bioEn", title: "Opis / Bio (English)", type: "text" },
+          ],
+          preview: {
+            select: { title: "namePl" },
+          },
+        },
+      ],
     }),
     defineField({
       name: "nameLabelPl",

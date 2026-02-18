@@ -5,7 +5,7 @@ import { getBaseUrl } from "@/lib/site-url";
 
 const baseUrl = getBaseUrl();
 
-const staticPaths = ["", "faq", "kontakt", "proces", "blog", "realizacje"] as const;
+const staticPaths = ["", "faq", "kontakt", "proces", "uslugi", "blog", "realizacje"] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Strony statyczne w obu językach
   for (const lang of languages) {
-    const prefix = lang === "pl" ? `/${lang}` : `/${lang}`;
+    const prefix = `/${lang}`;
     for (const path of staticPaths) {
       const url = path ? `${baseUrl}${prefix}/${path}` : `${baseUrl}${prefix}`;
       entries.push({
@@ -41,6 +41,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (post.slug) {
         entries.push({
           url: `${baseUrl}/${lang}/blog/${post.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.8,
+        });
+      }
+    }
+  }
+
+  // Usługi
+  const servicesDoc = await sanityClient.fetch<{
+    services?: { slug?: { current?: string } }[];
+  } | null>(`*[_type == "servicesSection"][0]{ services[] { slug { current } } }`);
+  const serviceSlugs = servicesDoc?.services ?? [];
+  for (const lang of languages) {
+    for (const s of serviceSlugs) {
+      const slug = s.slug?.current;
+      if (slug) {
+        entries.push({
+          url: `${baseUrl}/${lang}/uslugi/${slug}`,
           lastModified: new Date(),
           changeFrequency: "monthly",
           priority: 0.8,

@@ -9,10 +9,12 @@ type ImageItem = { url: string; alt?: string };
 export default function ProjectGallery({
   images,
   title,
+  description,
   gridCols = "sm:grid-cols-2",
 }: {
   images: ImageItem[];
   title?: string;
+  description?: string;
   gridCols?: string;
 }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -29,15 +31,20 @@ export default function ProjectGallery({
   const goNext = () =>
     setCurrentIndex((i) => (i < images.length - 1 ? i + 1 : 0));
 
-  if (!images || images.length === 0) return null;
+  const hasImages = images && images.length > 0;
+  if (!title && !description && !hasImages) return null;
 
   return (
     <section className="space-y-6">
       {title && (
         <h2 className="text-xl font-medium text-white">{title}</h2>
       )}
+      {description && (
+        <p className="text-gray-400 leading-relaxed">{description}</p>
+      )}
+      {hasImages && (
       <div className={`grid grid-cols-1 ${gridCols} gap-4`}>
-        {images.map((img, imgIndex) => (
+        {images!.map((img, imgIndex) => (
           <button
             key={imgIndex}
             type="button"
@@ -53,7 +60,8 @@ export default function ProjectGallery({
           </button>
         ))}
       </div>
-      {lightboxOpen && (
+      )}
+      {lightboxOpen && hasImages && (
         <ImageLightbox
           images={images}
           currentIndex={currentIndex}

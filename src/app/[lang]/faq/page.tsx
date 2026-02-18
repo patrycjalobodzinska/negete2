@@ -6,6 +6,9 @@ import { getCachedFaqSection, getCachedSiteSettings } from "@/sanity/cache";
 import { FaqAccordion } from "../../components/FaqAccordion";
 import { FaqPageJsonLd } from "../../components/JsonLd";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -20,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
   ]);
   const seo = settings?.faqPageSeo;
   return buildMetadata({
-    title: faqData?.heading ?? (lang === "pl" ? "FAQ" : "FAQ"),
+    title: faqData?.heading ?? t(lang as Language, "faq.title"),
     description: faqData?.subtitle,
     siteName: settings?.siteName,
     lang,
@@ -56,12 +59,12 @@ export default async function FaqPage({ params }: Props) {
           href={lang === "pl" ? "/" : `/${lang}`}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium"
         >
-          ← {lang === "pl" ? "Strona główna" : "Home"}
+          ← {t(lang as Language, "common.backToHome")}
         </Link>
 
         <header className="mb-12">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            {faqData?.heading ?? (lang === "pl" ? "FAQ" : "FAQ")}
+            {faqData?.heading ?? t(lang as Language, "faq.title")}
           </h1>
           {faqData?.subtitle && (
             <p className="text-xl text-gray-400 leading-relaxed">
@@ -76,9 +79,7 @@ export default async function FaqPage({ params }: Props) {
           </div>
         ) : (
           <p className="text-gray-400">
-            {lang === "pl"
-              ? "Brak pytań. Dodaj je w Sanity Studio."
-              : "No questions yet. Add them in Sanity Studio."}
+            {t(lang as Language, "faq.noQuestions")}
           </p>
         )}
       </div>

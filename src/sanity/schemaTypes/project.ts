@@ -225,6 +225,8 @@ export const project = defineType({
           type: "object",
           name: "gallerySection",
           title: "Sekcja Galerii",
+          description:
+            "Blok pozycjonujący – wybierz miejsce na stronie, gdzie ma się pojawić galeria. Zdjęcia pochodzą z głównej „Galeria zdjęć” u góry formularza.",
           fields: [
             defineField({
               name: "titlePl",
@@ -237,27 +239,16 @@ export const project = defineType({
               type: "string",
             }),
             defineField({
-              name: "images",
-              title: "Zdjęcia",
-              type: "array",
-              of: [
-                {
-                  type: "image",
-                  options: { hotspot: true },
-                  fields: [
-                    {
-                      name: "altPl",
-                      title: "Tekst alternatywny (Polski)",
-                      type: "string",
-                    },
-                    {
-                      name: "altEn",
-                      title: "Tekst alternatywny (English)",
-                      type: "string",
-                    },
-                  ],
-                },
-              ],
+              name: "descriptionPl",
+              title: "Opis (Polski)",
+              type: "text",
+              rows: 2,
+            }),
+            defineField({
+              name: "descriptionEn",
+              title: "Opis (English)",
+              type: "text",
+              rows: 2,
             }),
           ],
           preview: {

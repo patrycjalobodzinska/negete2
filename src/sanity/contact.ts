@@ -2,14 +2,18 @@ import { sanityClient } from "./client";
 import { type Language } from "@/i18n/config";
 import { urlFor } from "./image";
 
+export interface ContactPerson {
+  name: string;
+  role?: string;
+  image?: string;
+  email?: string;
+  bio?: string;
+}
+
 export interface ContactSection {
   heading: string;
   subtitle?: string;
-  personName: string;
-  personRole?: string;
-  personImage?: string;
-  email?: string;
-  bio?: string;
+  people: ContactPerson[];
   nameLabel: string;
   companyLabel: string;
   messageLabel: string;
@@ -29,14 +33,16 @@ export async function fetchContactSection(
       headingEn,
       subtitlePl,
       subtitleEn,
-      personImage,
-      personNamePl,
-      personNameEn,
-      personRolePl,
-      personRoleEn,
-      email,
-      bioPl,
-      bioEn,
+      people[]{
+        image,
+        namePl,
+        nameEn,
+        rolePl,
+        roleEn,
+        email,
+        bioPl,
+        bioEn
+      },
       nameLabelPl,
       nameLabelEn,
       companyLabelPl,
@@ -63,9 +69,6 @@ export async function fetchContactSection(
   }
 
   const headingKey = lang === "pl" ? "headingPl" : "headingEn";
-  const nameKey = lang === "pl" ? "personNamePl" : "personNameEn";
-  const roleKey = lang === "pl" ? "personRolePl" : "personRoleEn";
-  const bioKey = lang === "pl" ? "bioPl" : "bioEn";
   const nameLabelKey = lang === "pl" ? "nameLabelPl" : "nameLabelEn";
   const companyLabelKey = lang === "pl" ? "companyLabelPl" : "companyLabelEn";
   const messageLabelKey = lang === "pl" ? "messageLabelPl" : "messageLabelEn";
@@ -75,16 +78,23 @@ export async function fetchContactSection(
   const requiredKey = lang === "pl" ? "requiredErrorPl" : "requiredErrorEn";
   const invalidEmailKey = lang === "pl" ? "invalidEmailPl" : "invalidEmailEn";
 
+  const people: ContactPerson[] = (data.people || []).map((p: any) => {
+    const nameKey = lang === "pl" ? "namePl" : "nameEn";
+    const roleKey = lang === "pl" ? "rolePl" : "roleEn";
+    const bioKey = lang === "pl" ? "bioPl" : "bioEn";
+    return {
+      name: p[nameKey] || p.namePl || "",
+      role: p[roleKey] || p.rolePl,
+      image: p.image ? urlFor(p.image).width(800).height(800).url() : undefined,
+      email: p.email,
+      bio: p[bioKey] || p.bioPl,
+    };
+  });
+
   return {
     heading: data[headingKey] || data.headingPl || "Kontakt",
     subtitle: data[lang === "pl" ? "subtitlePl" : "subtitleEn"] || data.subtitlePl,
-    personName: data[nameKey] || data.personNamePl || "",
-    personRole: data[roleKey] || data.personRolePl,
-    personImage: data.personImage
-      ? urlFor(data.personImage).width(800).height(800).url()
-      : undefined,
-    email: data.email,
-    bio: data[bioKey] || data.bioPl,
+    people,
     nameLabel: data[nameLabelKey] || data.nameLabelPl || "Imię",
     companyLabel: data[companyLabelKey] || data.companyLabelPl || "Nazwa firmy",
     messageLabel: data[messageLabelKey] || data.messageLabelPl || "",

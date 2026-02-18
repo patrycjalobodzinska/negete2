@@ -16,7 +16,7 @@ export function ProcessHero({
   heroLineRef,
 }: ProcessHeroProps) {
   return (
-    <div className="relative flex flex-col justify-center">
+    <div className="relative flex flex-col min-h-screen justify-center">
       <div className="text-center md:pt-36 pt-26 md:pb-16 px-4">
         <h1
           ref={heroTitleRef}
@@ -32,7 +32,7 @@ export function ProcessHero({
         </p>
         <div
           ref={heroLineRef}
-          className="h-1 w-48 sm:w-96 mx-auto md:mt-26 mt-12 rounded-full origin-center opacity-0"
+          className="h-1 w-48 sm:w-96 mx-auto md:mt-36 mt-12 rounded-full origin-center z-10 opacity-0"
           style={{
             background: "linear-gradient(90deg, transparent, #1e3a8a, transparent)",
             boxShadow:

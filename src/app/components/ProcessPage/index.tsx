@@ -52,7 +52,12 @@ export default function ProcessPage({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  const sections = processData?.sections?.length ? processData.sections : FALLBACK_STEPS;
+  // Gdy brak danych z Sanity – nic nie pokazuj (bez migania placeholderów przy odświeżeniu)
+  const sections = !processData
+    ? []
+    : processData.sections?.length
+      ? processData.sections
+      : FALLBACK_STEPS;
   const hasFiveSections = sections.length === 5;
   const sectionsToRender = hasFiveSections ? sections : sections.slice(0, 4);
   const heading = processData?.heading || "Nasz proces";
@@ -91,9 +96,9 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-72"
+        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-140"
       >
-        <div className="absolute blur-sm inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
             className="absolute inset-0 w-full h-full hidden md:block"
             viewBox="-50 100 900 2700"
@@ -101,17 +106,26 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
+            <defs>
+              <filter id="processPathGlow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <path
               ref={pathRef}
               d={PATH_D}
-              stroke="#1943b5"
-              strokeOpacity="0.5"
-              strokeWidth="150"
+              stroke="#00f0ff"
+              strokeWidth="6"
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
               strokeDasharray="99999"
               strokeDashoffset="99999"
+              filter="url(#processPathGlow)"
               style={{ opacity: 0 }}
             />
           </svg>
@@ -122,17 +136,26 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
+            <defs>
+              <filter id="processPathGlowMobile" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <path
               ref={pathMobileRef}
               d={PATH_D_MOBILE}
-              stroke="#1e3a8a"
-              strokeOpacity="0.5"
-              strokeWidth="180"
+              stroke="#00f0ff"
+              strokeWidth="8"
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
               strokeDasharray="99999"
               strokeDashoffset="99999"
+              filter="url(#processPathGlowMobile)"
               style={{ opacity: 0 }}
             />
           </svg>
@@ -167,7 +190,7 @@ export default function ProcessPage({
                       ref={(el) => {
                         imgRefs.current[index] = el;
                       }}
-                      className={`relative w-full aspect-square rounded-2xl overflow-hidden ${
+                      className={`relative w-full aspect-square rounded-2xl overflow-hidden opacity-0 ${
                         !section.image || section.image.withBorder ? "border-2" : ""
                       }`}
                       style={{
@@ -198,7 +221,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className={`absolute z-20 w-[min(580px,52vw)] ${cardPositionClasses}`}
+                    className={`absolute z-20 w-[min(580px,52vw)] opacity-0 ${cardPositionClasses}`}
                     style={{ top: cardTop }}
                   >
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
@@ -261,7 +284,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       imgRefs.current[index] = el;
                     }}
-                    className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 ${
+                    className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 opacity-0 ${
                       !section.image || section.image.withBorder ? "border-2" : ""
                     }`}
                     style={{
@@ -291,7 +314,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl"
+                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl opacity-0"
                   >
                     <span
                       className="inline-block text-xs font-semibold tracking-wider uppercase mb-2"

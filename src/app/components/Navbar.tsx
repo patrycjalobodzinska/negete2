@@ -6,6 +6,7 @@ import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { t } from "@/i18n/dictionary";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export default function Navbar() {
@@ -25,12 +26,13 @@ export default function Navbar() {
   }, []);
 
   const baseNavLinks = [
-    { name: "O nas", href: "/", key: "home" },
-    { name: "Projekty", href: "/realizacje", key: "projects" },
-    { name: "Proces", href: "/proces", key: "process" },
-    { name: "Blog", href: "/blog", key: "blog" },
-    { name: "FAQ", href: "/faq", key: "faq" },
-    { name: "Kontakt", href: "/kontakt", key: "contact" },
+    { name: t(lang, "nav.home"), href: "/", key: "home" },
+    { name: t(lang, "nav.projects"), href: "/realizacje", key: "projects" },
+    { name: t(lang, "nav.process"), href: "/proces", key: "process" },
+    { name: t(lang, "nav.services"), href: "/uslugi", key: "services" },
+    { name: t(lang, "nav.blog"), href: "/blog", key: "blog" },
+    { name: t(lang, "nav.faq"), href: "/faq", key: "faq" },
+    { name: t(lang, "nav.contact"), href: "/kontakt", key: "contact" },
   ];
 
   const navLinks = baseNavLinks.filter(

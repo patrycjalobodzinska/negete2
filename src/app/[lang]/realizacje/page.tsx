@@ -6,6 +6,9 @@ import Image from "next/image";
 import { Badge } from "../../components/ui/badge";
 import Footer from "../../components/Footer";
 import { buildMetadata } from "@/lib/metadata";
+import { t } from "@/i18n/dictionary";
+
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -18,11 +21,8 @@ export async function generateMetadata({ params }: Props) {
   const settings = await getCachedSiteSettings(lang as Language);
   const seo = settings?.realizacjeListPageSeo;
   return buildMetadata({
-    title: lang === "pl" ? "Wszystkie realizacje" : "All Projects",
-    description:
-      lang === "pl"
-        ? "Przeglądaj nasze projekty i realizacje"
-        : "Browse our projects and implementations",
+    title: t(lang as Language, "realizacje.title"),
+    description: t(lang as Language, "realizacje.browse"),
     siteName: settings?.siteName,
     lang,
     path: `/${lang}/realizacje`,
@@ -59,12 +59,10 @@ export default async function ProjectsPage({ params, searchParams }: Props) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-26 md:py-36">
             <div className="mb-12 lg:mb-16">
               <h1 className="text-3xl sm:text-4xl font-medium text-white mb-6 leading-tight">
-                {lang === "pl" ? "Wszystkie realizacje" : "All Projects"}
+                {t(lang as Language, "realizacje.title")}
               </h1>
               <p className="text-lg sm:text-xl text-gray-400 max-w-2xl">
-                {lang === "pl"
-                  ? "Przeglądaj nasze projekty i realizacje"
-                  : "Browse our projects and implementations"}
+                {t(lang as Language, "realizacje.browse")}
               </p>
             </div>
 
@@ -78,7 +76,7 @@ export default async function ProjectsPage({ params, searchParams }: Props) {
                       ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 text-cyan-400 shadow-lg shadow-cyan-500/20"
                       : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
                   }`}>
-                  {lang === "pl" ? "Wszystkie" : "All"}
+                  {t(lang as Language, "common.all")}
                 </Link>
                 {categories.map((category) => {
                   const categoryLabel = projects.find((p) => p.category === category)?.categoryLabel || category;

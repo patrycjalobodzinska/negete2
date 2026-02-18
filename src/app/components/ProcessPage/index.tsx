@@ -126,7 +126,6 @@ export default function ProcessPage({
               strokeDasharray="99999"
               strokeDashoffset="99999"
               filter="url(#processPathGlow)"
-              style={{ opacity: 0 }}
             />
           </svg>
           <svg
@@ -156,7 +155,6 @@ export default function ProcessPage({
               strokeDasharray="99999"
               strokeDashoffset="99999"
               filter="url(#processPathGlowMobile)"
-              style={{ opacity: 0 }}
             />
           </svg>
         </div>

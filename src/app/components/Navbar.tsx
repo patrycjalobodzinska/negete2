@@ -50,19 +50,30 @@ export default function Navbar() {
 
   // Animacja wejścia navbara z góry
   useEffect(() => {
-    if (navRef.current) {
-      gsap.set(navRef.current, { y: -100, opacity: 0 });
-      setTimeout(() => {
-        if (navRef.current) {
-          gsap.to(navRef.current, {
-            y: 0,
-            opacity: 1,
-            duration: 1.2,
-            ease: "power2.out",
-          });
-        }
-      }, 800);
+    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+    const nav = navRef.current;
+    if (!nav) return;
+
+    if (isMobile) {
+      // Na mobile: wyłącz animację dla lepszej wydajności
+      nav.style.opacity = "1";
+      nav.style.transform = "translateY(0)";
+      return;
     }
+
+    // Desktop: pełna animacja z hardware acceleration
+    gsap.set(nav, { y: -100, opacity: 0, force3D: true });
+    setTimeout(() => {
+      if (nav) {
+        gsap.to(nav, {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          force3D: true,
+        });
+      }
+    }, 300);
   }, []);
 
   // Początkowy stan menu (ukryte)
@@ -81,17 +92,19 @@ export default function Navbar() {
       gsap.to(menu, {
         opacity: 1,
         y: 0,
-        duration: 0.35,
-        ease: "power2.out",
+        duration: 0.25,
+        ease: "power1.out",
         overwrite: true,
+        force3D: true,
       });
     } else {
       gsap.to(menu, {
         opacity: 0,
         y: -12,
-        duration: 0.25,
-        ease: "power2.in",
+        duration: 0.2,
+        ease: "power1.in",
         overwrite: true,
+        force3D: true,
       });
     }
   }, [isMobileMenuOpen]);

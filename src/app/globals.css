@@ -56,4 +56,21 @@ body {
   [data-hero-line] {
     opacity: 1 !important;
   }
+  
+  /* Wyłącz smooth scroll na mobile dla lepszej wydajności */
+  html {
+    scroll-behavior: auto !important;
+  }
+  
+  /* Optymalizacja renderowania dla lepszej wydajności */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Wyłącz animacje transitions na mobile jeśli powodują problemy */
+  nav,
+  header {
+    will-change: auto;
+  }
 }

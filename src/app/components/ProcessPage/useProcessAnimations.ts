@@ -103,10 +103,21 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
 
       [path, pathMobile].forEach((p) => {
         if (!p) return;
-        const pathLength = p.getTotalLength();
+        const pathLength = parseFloat(p.style.strokeDasharray) || p.getTotalLength();
+        // Upewnij się, że strokeDasharray jest ustawione
+        if (!p.style.strokeDasharray || p.style.strokeDasharray === "99999") {
+          p.style.strokeDasharray = String(pathLength);
+        }
+        // Ustaw początkowy stan przed animacją (użyj wartości z useLayoutEffect jeśli dostępna)
+        const initialOffset = parseFloat(p.style.strokeDashoffset) || pathLength;
+        gsap.set(p, {
+          strokeDashoffset: initialOffset,
+          opacity: 0,
+        });
+        // Animuj rysowanie linii
         gsap.fromTo(
           p,
-          { strokeDashoffset: pathLength, opacity: 0 },
+          { strokeDashoffset: initialOffset, opacity: 0 },
           {
             strokeDashoffset: 0,
             opacity: 1,

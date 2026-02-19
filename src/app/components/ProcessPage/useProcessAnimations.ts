@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useLayoutEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface ProcessAnimationRefs {
   pathRef: React.RefObject<SVGPathElement | null>;
@@ -15,11 +13,13 @@ interface ProcessAnimationRefs {
   heroLineRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function useProcessAnimations(refs: ProcessAnimationRefs, processData: unknown) {
+/** Proste animacje bez GSAP/ScrollTrigger – tylko CSS + Intersection Observer. */
+export function useProcessAnimations(
+  refs: ProcessAnimationRefs,
+  processData: unknown,
+  isMobile: boolean
+) {
   const {
-    pathRef,
-    pathMobileRef,
-    svgSectionRef,
     cardRefs,
     imgRefs,
     heroTitleRef,
@@ -27,127 +27,52 @@ export function useProcessAnimations(refs: ProcessAnimationRefs, processData: un
     heroLineRef,
   } = refs;
 
-  // SVG initialization - tylko raz w useLayoutEffect
+  // Hero: po wejściu pokaż elementy (prosty fade, bez GSAP)
   useLayoutEffect(() => {
-    const paths = [pathRef.current, pathMobileRef.current].filter(Boolean) as SVGPathElement[];
-    paths.forEach((path) => {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = String(len);
-      path.style.strokeDashoffset = String(len);
-      path.style.opacity = "0";
-    });
-  }, [pathRef, pathMobileRef]);
-
-  // Hero animations - mobile wyłączone
-  useLayoutEffect(() => {
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
     const title = heroTitleRef.current;
     const intro = heroIntroRef.current;
     const line = heroLineRef.current;
 
-    if (isMobile) {
-      if (title) {
-        title.classList.remove("opacity-0");
-        title.style.opacity = "1";
-      }
-      if (intro) {
-        intro.classList.remove("opacity-0");
-        intro.style.opacity = "1";
-      }
-      if (line) {
-        line.classList.remove("opacity-0");
-        line.style.opacity = "1";
-      }
-      return;
+    if (title) {
+      title.classList.remove("opacity-0");
+      title.style.transition = "opacity 0.4s ease-out";
     }
-  }, [heroTitleRef, heroIntroRef, heroLineRef]);
+    if (intro) {
+      intro.classList.remove("opacity-0");
+      intro.style.transition = "opacity 0.4s ease-out 0.1s";
+    }
+    if (line) {
+      line.classList.remove("opacity-0");
+      line.style.transition = "opacity 0.4s ease-out 0.2s";
+    }
 
-  useEffect(() => {
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return;
-
-    const title = heroTitleRef.current;
-    const intro = heroIntroRef.current;
-    const line = heroLineRef.current;
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    if (title) tl.fromTo(title, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, force3D: true });
-    if (intro) tl.fromTo(intro, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, force3D: true }, "-=0.5");
-    if (line) tl.fromTo(line, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, force3D: true }, "-=0.35");
-
-    return () => {
-      tl.kill();
-    };
-  }, [heroTitleRef, heroIntroRef, heroLineRef]);
-
-  // SVG Path animation - maksymalnie uproszczona wersja
-  useEffect(() => {
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return; // Wyłącz animacje SVG na mobile dla lepszej wydajności
-    
-    const path = pathRef.current;
-    const pathMobile = pathMobileRef.current;
-    const svgSection = svgSectionRef.current;
-    
-    if (!svgSection || (!path && !pathMobile)) return;
-
-    const ctx = gsap.context(() => {
-      const paths: SVGPathElement[] = [];
-      if (path) paths.push(path);
-      if (pathMobile) paths.push(pathMobile);
-
-      // Prosty ScrollTrigger config
-      const footer = document.querySelector("footer");
-      const scrollConfig = {
-        trigger: svgSection,
-        start: "top 60%",
-        end: footer ? "bottom bottom" : "bottom 70%",
-        scrub: 0.5,
-      };
-
-      // Animacja SVG - użyj wartości bezpośrednio z useLayoutEffect (bez parseFloat)
-      paths.forEach((p) => {
-        const pathLength = p.getTotalLength();
-        
-        gsap.fromTo(
-          p,
-          { strokeDashoffset: pathLength, opacity: 0 },
-          {
-            strokeDashoffset: 0,
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: scrollConfig,
-          }
-        );
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (title) title.style.opacity = "1";
+        if (intro) intro.style.opacity = "1";
+        if (line) line.style.opacity = "1";
       });
-
-      // Cards - prostsze animacje bez onUpdate
-      imgRefs.current.forEach((el) => el && (el.style.opacity = "0.5"));
-      cardRefs.current.forEach((el) => el && (el.style.opacity = "0.5"));
-
-      // Cards - prostsze rozwiązanie bez onUpdate (lepsza wydajność)
-      const thresholds = [0.2, 0.4, 0.6, 0.8, 0.95];
-      thresholds.forEach((thr, i) => {
-        ScrollTrigger.create({
-          trigger: svgSection,
-          start: `top ${100 - thr * 100}%`,
-          onEnter: () => {
-            const card = cardRefs.current[i];
-            const img = imgRefs.current[i];
-            if (card) card.style.opacity = "1";
-            if (img) img.style.opacity = "1";
-          },
-        });
-      });
-
-      // Parallax wyłączony - powodował problemy z wydajnością
     });
 
-    // Jeden refresh
-    const timeout = setTimeout(() => ScrollTrigger.refresh(), 200);
+    return () => cancelAnimationFrame(rafId);
+  }, [heroTitleRef, heroIntroRef, heroLineRef]);
 
-    return () => {
-      clearTimeout(timeout);
-      ctx.revert();
-    };
-  }, [pathRef, pathMobileRef, svgSectionRef, cardRefs, imgRefs, processData]);
+  // Karty: wyłączone animacje – pokazuj od razu (najprostsze rozwiązanie)
+  useEffect(() => {
+    // Po załadowaniu danych ustaw karty i obrazy jako widoczne
+    const t = setTimeout(() => {
+      cardRefs.current.forEach((el) => {
+        if (el) {
+          el.style.opacity = "1";
+        }
+      });
+      imgRefs.current.forEach((el) => {
+        if (el) {
+          el.style.opacity = "1";
+        }
+      });
+    }, 100);
+
+    return () => clearTimeout(t);
+  }, [cardRefs, imgRefs, processData, isMobile]);
 }

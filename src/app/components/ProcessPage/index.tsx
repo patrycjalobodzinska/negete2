@@ -81,7 +81,8 @@ export default function ProcessPage({
       heroIntroRef,
       heroLineRef,
     },
-    processData
+    processData,
+    isMobile
   );
 
   return (
@@ -106,15 +107,6 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
-            <defs>
-              <filter id="processPathGlow" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
             <path
               ref={pathRef}
               d={PATH_D}
@@ -123,9 +115,6 @@ export default function ProcessPage({
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
-              strokeDasharray="99999"
-              strokeDashoffset="99999"
-              filter="url(#processPathGlow)"
             />
           </svg>
           <svg
@@ -135,15 +124,6 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
-            <defs>
-              <filter id="processPathGlowMobile" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
             <path
               ref={pathMobileRef}
               d={PATH_D_MOBILE}
@@ -152,9 +132,6 @@ export default function ProcessPage({
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
-              strokeDasharray="99999"
-              strokeDashoffset="99999"
-              filter="url(#processPathGlowMobile)"
             />
           </svg>
         </div>
@@ -188,7 +165,7 @@ export default function ProcessPage({
                       ref={(el) => {
                         imgRefs.current[index] = el;
                       }}
-                      className={`relative w-full aspect-square rounded-2xl overflow-hidden opacity-0 ${
+                      className={`relative w-full aspect-square rounded-2xl overflow-hidden ${
                         !section.image || section.image.withBorder ? "border-2" : ""
                       }`}
                       style={{
@@ -219,7 +196,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className={`absolute z-20 w-[min(580px,52vw)] opacity-0 ${cardPositionClasses}`}
+                    className={`absolute z-20 w-[min(580px,52vw)] ${cardPositionClasses}`}
                     style={{ top: cardTop }}
                   >
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
@@ -282,7 +259,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       imgRefs.current[index] = el;
                     }}
-                    className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 opacity-0 ${
+                    className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 ${
                       !section.image || section.image.withBorder ? "border-2" : ""
                     }`}
                     style={{
@@ -312,7 +289,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl opacity-0"
+                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl"
                   >
                     <span
                       className="inline-block text-xs font-semibold tracking-wider uppercase mb-2"

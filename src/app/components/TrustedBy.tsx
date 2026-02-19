@@ -59,6 +59,7 @@ export default function TrustedBy({
             opacity: 1,
             y: 0,
             duration: 0.6,
+            force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -77,6 +78,7 @@ export default function TrustedBy({
               scale: 1,
               duration: 0.5,
               delay: index * 0.08,
+              force3D: true,
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top 80%",

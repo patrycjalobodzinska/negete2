@@ -3,453 +3,217 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-export default function HeroAlt() {
-  const maskLeftRef = useRef<SVGPathElement>(null);
-  const maskRightRef = useRef<SVGPathElement>(null);
-  const neonGlowRef = useRef<HTMLDivElement>(null);
+export default function NeonWiderSpacingSafari() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const h1Ref = useRef<HTMLHeadingElement>(null);
-  const h2Ref = useRef<HTMLHeadingElement>(null);
-  const ctaButtonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const coreLettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const glowLettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+
+  const text = "NEGETE";
+
+  // Pozycje startowe (bez zmian, bo działają dobrze)
+  const startPositions = [
+    { x: -550, y: 60, rotation: -30 }, // N (Jeszcze szerzej)
+    { x: -350, y: -40, rotation: -20 }, // E
+    { x: -180, y: 30, rotation: -10 }, // G
+    { x: 180, y: -30, rotation: 10 }, // E
+    { x: 350, y: 40, rotation: 20 }, // T
+    { x: 550, y: -60, rotation: 30 }, // E (Jeszcze szerzej)
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Ukryj wszystkie elementy na początku - natychmiast, przed jakimikolwiek animacjami
-      if (svgRef.current) {
-        gsap.set(svgRef.current, {
-          opacity: 0,
-          visibility: "hidden",
-          immediateRender: true,
-        });
-      }
-
-      // Ukryj wszystkie litery natychmiast
-      const allLetters = letterRefs.current.filter(Boolean);
-      allLetters.forEach((letter) => {
-        if (letter) {
-          gsap.set(letter, {
-            opacity: 0,
-            visibility: "hidden",
-            immediateRender: true,
-          });
-        }
+      // --- SETUP SVG ---
+      const paths = svgRef.current?.querySelectorAll("path");
+      if (!paths) return;
+      paths.forEach((path) => {
+        const length = path.getTotalLength();
+        gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
       });
 
-      if (h2Ref.current) {
-        gsap.set(h2Ref.current, {
-          opacity: 0,
-          y: 50,
-          visibility: "hidden",
-          immediateRender: true,
-        });
-      }
-      if (ctaButtonRef.current) {
-        gsap.set(ctaButtonRef.current, {
-          opacity: 0,
-          y: 50,
-          visibility: "hidden",
-          immediateRender: true,
-        });
-      }
+      // --- SETUP LITER ---
+      const coreLetters = coreLettersRef.current.filter(Boolean);
+      const glowLetters = glowLettersRef.current.filter(Boolean);
 
-      const animateHalf = (maskRef: React.RefObject<SVGPathElement | null>) => {
-        if (maskRef.current) {
-          const length = maskRef.current.getTotalLength();
-          gsap.set(maskRef.current, {
-            strokeDasharray: length,
-            strokeDashoffset: length,
-            force3D: true,
-          });
-          return gsap.to(maskRef.current, {
-            strokeDashoffset: 0,
-            duration: 2.0, // Krótsza animacja
-            delay: 0.5,
-            ease: "power1.out", // Prostsze easing
-            force3D: true,
-          });
-        }
-        return null;
-      };
-
-      // Na mobile: pogrubienie linii SVG (większy strokeWidth w maskach)
-      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-      if (maskLeftRef.current) maskLeftRef.current.setAttribute("stroke-width", isMobile ? "140" : "100");
-      if (maskRightRef.current) maskRightRef.current.setAttribute("stroke-width", isMobile ? "140" : "100");
-
-      // Pokaż SVG tuż przed rozpoczęciem animacji (maski potrzebują widocznego SVG)
-      setTimeout(() => {
-        if (svgRef.current) {
-          gsap.set(svgRef.current, {
-            opacity: 1,
-            visibility: "visible",
-          });
-        }
-      }, 0);
-
-      const leftAnimation = animateHalf(maskLeftRef);
-      const rightAnimation = animateHalf(maskRightRef);
-
-      // Animacja oddalenia - zaczyna się pod koniec rysowania
-      if (svgRef.current && (leftAnimation || rightAnimation)) {
-        const totalDuration = 0.5 + 2.0; // delay + duration
-        const startDelay = 0.5 + 2.0 * 0.6; // zaczyna się gdy zostało ~40% rysowania
-        // Ustaw początkową większą skalę, żeby obiekt wychodził poza granice
-        gsap.set(svgRef.current, {
-          scale: 1.3,
-          force3D: true,
+      // 1. SETUP RDZENI (Moving Layer)
+      coreLetters.forEach((letter, i) => {
+        const pos = startPositions[i];
+        gsap.set(letter, {
+          autoAlpha: 0,
+          x: pos.x,
+          y: pos.y,
+          rotation: pos.rotation,
+          scale: 0.4, // Mniejszy start dla większego dramatyzmu
           transformOrigin: "center center",
         });
-        gsap.to(svgRef.current, {
-          scale: 0.85,
-          duration: 1.5, // Krótsza animacja
-          delay: startDelay,
-          ease: "power1.out", // Prostsze easing
-          force3D: true,
-        });
-      }
+      });
 
-      if (neonGlowRef.current) {
-        // Zoptymalizowana animacja glow - mniej częsta aktualizacja
-        gsap.set(neonGlowRef.current, {
-          willChange: "opacity",
-        });
-        gsap.to(neonGlowRef.current, {
-          opacity: 0.5,
-          duration: 3, // Dłuższa animacja = mniej aktualizacji
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut", // Płynniejsze easing
-        });
-      }
+      // 2. SETUP POŚWIAT (Static Layer)
+      gsap.set(glowLetters, {
+        autoAlpha: 0,
+        x: 0,
+        y: 0,
+        rotation: 0,
+        scale: 1,
+        transformOrigin: "center center",
+      });
 
-      // Animacja napisu NEGETE - każda litera osobno
-      // Kolejność: N(0), E(1), G(2), E(3), T(4), E(5)
-      const letters = letterRefs.current.filter(Boolean);
-      if (letters.length > 0) {
-        // Różne pozycje startowe dla każdej litery
-        const startPositions = [
-          { x: -600, y: -100 }, // N - zza ekranu od lewej i z góry
-          { x: -400, y: 100 }, // E - z lewej i z dołu
-          { x: 0, y: -150 }, // G - z góry
-          { x: 400, y: 100 }, // E - z prawej i z dołu
-          { x: 600, y: -100 }, // T - zza ekranu od prawej i z góry
-          { x: 500, y: 150 }, // E - z prawej i z dołu (ostatnia)
-        ];
+      // --- TIMELINE ---
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.inOut", force3D: true },
+      });
 
-        // Ustawiamy początkowy stan wszystkich liter
-        letters.forEach((letter, index) => {
-          if (letter) {
-            const startPos = startPositions[index];
-            // Całkowicie wyłącz blur dla wszystkich liter dla lepszej wydajności
-            // Użyj CSS zamiast GSAP dla lepszej wydajności
-            letter.style.willChange = "transform, opacity";
-            letter.style.transform = `translate3d(${startPos.x}px, ${startPos.y}px, 0) scale(0.5)`;
-            letter.style.opacity = "0";
-            letter.style.filter = "none"; // Wyłącz blur dla wszystkich
-            letter.style.backfaceVisibility = "hidden";
-            letter.style.transformStyle = "preserve-3d";
-            letter.style.perspective = "1000px";
-            gsap.set(letter, {
-              opacity: 0,
-              visibility: "hidden",
-              x: startPos.x,
-              y: startPos.y,
-              scale: 0.5,
-              force3D: true,
-              transformPerspective: 1000,
-              backfaceVisibility: "hidden",
-            });
-          }
-        });
+      // Animacja tła
+      tl.to(svgRef.current, {
+        autoAlpha: 1,
+        y: -60,
+        scale: 1.15,
+        duration: 2.5,
+      })
+        .to(
+          paths,
+          {
+            strokeDashoffset: 0,
+            duration: 3,
+            stagger: 0,
+          },
+          "-=2",
+        )
 
-        // Animujemy – litery wracają do naturalnego ustawienia w linii (x:0, y:0)
-        setTimeout(() => {
-          letters.forEach((letter, index) => {
-            if (letter) {
-              gsap.to(letter, {
-                opacity: 1,
-                visibility: "visible",
-                x: 0,
-                y: 0,
-                z: 0,
-                scale: 1,
-                duration: 1.0,
-                delay: 1.5 + index * 0.2,
-                ease: "power1.out",
-                force3D: true,
-                transformPerspective: 1000,
-                backfaceVisibility: "hidden",
-                onComplete: function () {
-                  if (letter) letter.style.willChange = "auto";
-                },
-              });
-            }
-          });
-        }, 100);
-      }
+        // === ANIMACJA LITER ===
 
-      // Animacja nagłówków i przycisku CTA - pojawiają się od połowy animacji liter NEGETE
-      // Ustaw początkowy stan natychmiast, zanim cokolwiek się wyświetli
-      const textElements = [h2Ref.current, ctaButtonRef.current].filter(
-        Boolean
-      );
-      if (textElements.length > 0 && letters.length > 0) {
-        // Ustaw początkowy stan natychmiast
-        gsap.set(textElements, {
-          opacity: 0,
-          y: 50,
-          visibility: "hidden",
-          force3D: true,
-          immediateRender: true,
-        });
+        // a) Wlot RDZENI (Białe z lekkim cieniem)
+        .to(
+          coreLetters,
+          {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotation: 0,
+            duration: 1.8, // Trochę wolniejszy lot
+            stagger: {
+              each: 0.12,
+              from: "center",
+            },
+            ease: "back.out(1.5)", // Mocniejsze "odbicie" przy lądowaniu
+          },
+          "-=2.2",
+        )
 
-        // Oblicz moment połowy animacji liter
-        // Pierwsza litera: delay 1.5s, ostatnia: delay 1.5 + 5*0.2 = 2.5s, duration 1.0s
-        // Połowa animacji: (1.5 + 2.5 + 1.0/2) / 2 ≈ 2.25s
-        const firstLetterStart = 1.5; // delay pierwszej litery
-        const lastLetterStart = 1.5 + (letters.length - 1) * 0.2; // delay ostatniej litery
-        const letterDuration = 1.0; // duration animacji każdej litery
-        const animationMiddle =
-          (firstLetterStart + lastLetterStart + letterDuration) / 2;
-        const middleTime = animationMiddle * 1000; // konwersja na ms
-
-        // Animacja w połowie animacji liter NEGETE
-        setTimeout(() => {
-          if (h2Ref.current && ctaButtonRef.current) {
-            // H2 pojawia się pierwszy - zoptymalizowana animacja
-            gsap.to(h2Ref.current, {
-              opacity: 1,
-              y: 0,
-              visibility: "visible",
-              duration: 0.6, // Krótsza animacja
-              ease: "power1.out", // Prostsze easing
-              force3D: true,
-            });
-
-            // Przycisk pojawia się po H2 z delikatnym delayem
-            gsap.to(ctaButtonRef.current, {
-              opacity: 1,
-              y: 0,
-              visibility: "visible",
-              duration: 0.6, // Krótsza animacja
-              delay: 0.15, // Mniejsze opóźnienie
-              ease: "power1.out", // Prostsze easing
-              force3D: true,
-            });
-          }
-        }, 100 + middleTime); // 100ms (setTimeout delay) + połowa animacji liter
-      }
-    });
+        // b) Rozpalenie POŚWIATY (Ciężki neon w miejscu)
+        .to(
+          glowLetters,
+          {
+            autoAlpha: 1,
+            duration: 2.0,
+            stagger: {
+              each: 0.12,
+              from: "center",
+            },
+            ease: "power2.inOut",
+          },
+          "<+=0.4",
+        ); // Późniejszy zapłon
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  const scrollToContact = () => {
-    const contactSection = document.querySelector('[data-section="contact"]');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    } else {
-      // Fallback - scroll do ostatniej sekcji
-      const sections = document.querySelectorAll("section");
-      if (sections.length > 0) {
-        sections[sections.length - 1].scrollIntoView({ behavior: "smooth" });
-      }
-    }
+  // --- STYLE CSS ZMIANY ---
+
+  const baseTextStyle =
+    "absolute left-0 top-0 w-full h-full flex justify-center items-center font-sans font-light text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-widest pointer-events-none select-none gap-12 sm:gap-16 md:gap-20 lg:gap-24 xl:gap-32";
+
+  // 1. ZMIANA SPACINGU: Usunięte mx, odstępy kontrolowane przez gap na kontenerze
+  const letterStyle = "inline-block";
+
+  // 2. ZMIANA GŁÓWNEGO NEONU: Poszerzony ostatni cień (z 70px na 100px), żeby wypełnił luki
+  const neonFilterStyle = {
+    filter: `
+      drop-shadow(0 0 2px #fff)
+      drop-shadow(0 0 10px #3949ab)
+      drop-shadow(0 0 35px #1a237e)
+      drop-shadow(0 0 100px rgba(26, 35, 126, 0.7))
+    `,
+    WebkitFilter: `
+      drop-shadow(0 0 2px #fff)
+      drop-shadow(0 0 10px #3949ab)
+      drop-shadow(0 0 35px #1a237e)
+      drop-shadow(0 0 100px rgba(26, 35, 126, 0.7))
+    `,
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center bg-[#020202] overflow-hidden">
       <svg
         ref={svgRef}
-        className="absolute inset-0  md:top-0 w-full h-full pointer-events-none opacity-0 invisible md:translate-y-0 translate-y-[-8%]"
         viewBox="0 0 1000 600"
+        className="absolute inset-0 w-full h-full max-w-[1500px] pointer-events-none opacity-0 m-auto"
         preserveAspectRatio="xMidYMid slice"
         style={{
-          transformOrigin: "center center",
-          overflow: "visible",
           willChange: "transform",
           transform: "translateZ(0)",
-          backfaceVisibility: "hidden",
+          ...neonFilterStyle,
         }}>
-        <defs>
-          {/* Maski rysujące od dołu-środka na boki i w górę */}
-          <mask id="maskLeft">
-            <path
-              ref={maskLeftRef}
-              d="M 502 309 A 520 450 0 0 1 -25 -146"
-              stroke="white"
-              strokeWidth="100"
-              fill="none"
-            />
-          </mask>
-
-          <mask id="maskRight">
-            <path
-              ref={maskRightRef}
-              d="M 502 309 A 520 450 0 0 0 1026 -134"
-              stroke="white"
-              strokeWidth="100"
-              fill="none"
-            />
-          </mask>
-
-          <filter
-            id="neonGlowEffect"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%">
-            <feGaussianBlur stdDeviation="30" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          <filter
-            id="mainElementBlur"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%">
-            <feGaussianBlur stdDeviation="15" />
-          </filter>
-
-          <filter
-            id="strongGlowEffect"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%">
-            <feGaussianBlur stdDeviation="35" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          <filter
-            id="extraStrongGlowEffect"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%">
-            <feGaussianBlur stdDeviation="45" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          {/* Filtr dla granatowej poświaty */}
-          <filter
-            id="navyGlowEffect"
-            x="-150%"
-            y="-150%"
-            width="400%"
-            height="400%">
-            <feGaussianBlur stdDeviation="50" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-
-        {/* Granatowa poświata - używa dokładnie tych samych path co główny element */}
-        <g
-          filter="url(#navyGlowEffect)"
-          opacity="0.7"
-          style={{ willChange: "auto" }}>
-          {/* Lewa strona - identyczna jak główny element */}
-          <path
-            mask="url(#maskLeft)"
-            d="M 502 309 A 520 450 0 0 1 -25 -146 L -12 -147.5 A 517.5 448.5 0 0 0 502 307.5 Z"
-            fill="#1a237e"
-          />
-          {/* Prawa strona - identyczna jak główny element */}
-          <path
-            mask="url(#maskRight)"
-            d="M 502 309 A 520 450 0 0 0 1026 -134 L 1013 -135.5 A 517.5 448.5 0 0 1 502 307.5 Z"
-            fill="#1a237e"
-          />
-        </g>
-
-        {/* Biała poświata blisko elementu */}
-        <g
-          filter="url(#neonGlowEffect)"
-          opacity="0.6"
-          style={{ willChange: "auto" }}>
-          <path
-            mask="url(#maskLeft)"
-            d="M 502 309 A 520 450 0 0 1 -25 -146 L -12 -147.5 A 517.5 448.5 0 0 0 502 307.5 Z"
-            fill="#ffffff"
-          />
-          <path
-            mask="url(#maskRight)"
-            d="M 502 309 A 520 450 0 0 0 1026 -134 L 1013 -135.5 A 517.5 448.5 0 0 1 502 307.5 Z"
-            fill="#ffffff"
-          />
-        </g>
-
-        {/* Główny element biały */}
-        <g filter="url(#mainElementBlur)" style={{ willChange: "auto" }}>
-          {/* Lewa strona dolnego półkola - cieńsza na dole, grubsza na końcach u góry */}
-          <path
-            mask="url(#maskLeft)"
-            d="M 502 309 A 520 450 0 0 1 -25 -146 L -12 -147.5 A 517.5 448.5 0 0 0 502 307.5 Z"
-            fill="#ffffff"
-          />
-
-          {/* Prawa strona dolnego półkola */}
-          <path
-            mask="url(#maskRight)"
-            d="M 502 309 A 520 450 0 0 0 1026 -134 L 1013 -135.5 A 517.5 448.5 0 0 1 502 307.5 Z"
-            fill="#ffffff"
-          />
+        <g fill="none" stroke="white" strokeWidth="4" strokeLinecap="round">
+          <path d="M 502 309 A 520 450 0 0 1 -25 -146" />
+          <path d="M 502 309 A 520 450 0 0 0 1026 -134" />
         </g>
       </svg>
 
-      {/* H1 dla SEO - wizualnie ukryty, ale dostępny dla wyszukiwarek */}
-      <h1 className="sr-only">
-        NeGeTe - Twój Zewnętrzny Dział R&D | Projektowanie Elektroniki,
-        Mechaniki i Oprogramowania
-      </h1>
-
-      {/* Napis NEGETE + CTA – na mobile: litery wyżej, tekst i przycisk niżej */}
-      <div className="absolute top-80 justify-end sm:top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-full max-w-full  overflow-visible px-3 sm:px-4 flex flex-col items-center gap-4 sm:gap-8">
-        <div className="pointer-events-none w-full flex justify-center">
+      <div className="relative z-10 w-full h-[200px]">
+        {/* WARSTWA 1: POŚWIATA (Static Glow) */}
         <div
-          className="flex items-baseline justify-center gap-5 min-[400px]:gap-6 sm:gap-12 md:gap-16 lg:gap-26 xl:gap-32 overflow-visible"
-          style={{
-            fontFamily: "var(--font-orbitron), sans-serif",
-          }}>
-          {"NEGETE".split("").map((letter, index) => (
+          className={`${baseTextStyle} text-transparent`}
+          style={neonFilterStyle}>
+          {text.split("").map((letter, i) => (
             <span
-              key={index}
+              key={`glow-${i}`}
               ref={(el) => {
-                letterRefs.current[index] = el;
+                glowLettersRef.current[i] = el;
               }}
-              className="text-6xl min-[400px]:text-7xl sm:text-6xl md:text-8xl lg:text-9xl xl:text-[120px] font-medium sm:font-light text-white relative whitespace-nowrap opacity-0 invisible"
+              className={`${letterStyle} will-change-[opacity]`}
               style={{
-                willChange: "transform, opacity, filter",
-                transform: "translate3d(0, 0, 0)",
-                backfaceVisibility: "hidden",
-                WebkitFontSmoothing: "antialiased",
-                textShadow:
-                  "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6), 0 0 60px rgba(255, 255, 255, 0.4)",
-                display: "inline-block",
-                transformOrigin: "center center",
-                perspective: "1000px",
-                WebkitBackfaceVisibility: "hidden",
+                filter: `
+                  drop-shadow(0 0 2px #fff)
+                  drop-shadow(0 0 10px #3949ab)
+                  drop-shadow(0 0 35px #1a237e)
+                  drop-shadow(0 0 100px rgba(26, 35, 126, 0.7))
+                  drop-shadow(0 4px 15px rgba(0, 0, 0, 0.5))
+                `,
               }}>
               {letter}
             </span>
           ))}
         </div>
-        </div>
-        {/* Na mobile większy odstęp – tekst i przycisk niżej */}
-        <div className="flex md:hidden flex-col items-center gap-4 mt-26 sm:mt-12">
-        <h2
-          ref={h2Ref}
-          className="text-center text-base sm:text-lg md:text-xl text-gray-300 max-w-md mx-auto px-4 opacity-0 invisible">
-          Twój zewnętrzny dział R&D – od pomysłu do produktu
-        </h2>
-        <button
-          ref={ctaButtonRef}
-          onClick={scrollToContact}
-          className="px-6 py-3 rounded-full border border-cyan-400/50 bg-cyan-500/10 text-cyan-400 font-medium hover:bg-cyan-500/20 hover:border-cyan-400/70 transition-colors pointer-events-auto opacity-0 invisible">
-          Skontaktuj się
-        </button>
+
+        {/* WARSTWA 2: RDZEŃ (Moving Core) */}
+        <div className={`${baseTextStyle} mt-12 text-white`}>
+          {text.split("").map((letter, i) => (
+            <span
+              key={`core-${i}`}
+              ref={(el) => {
+                coreLettersRef.current[i] = el;
+              }}
+              // 3. ZMIANA CIENIA RDZENIA:
+              // Wyraźniejszy cień dla głębi
+              className={`${letterStyle} will-change-transform`}
+              style={
+                {
+                  textShadow:
+                    "3px 3px 6px rgba(0, 0, 0, 1) !important, 6px 6px 12px rgba(0, 0, 0, 1) !important, 9px 9px 18px rgba(0, 0, 0, 0.9) !important, 12px 12px 24px rgba(0, 0, 0, 0.8) !important",
+                  filter:
+                    "drop-shadow(0 8px 16px rgba(0, 0, 0, 1)) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.8)) !important",
+                  WebkitTextStroke: "0.5px rgba(0, 0, 0, 0.3)",
+                } as React.CSSProperties
+              }>
+              {letter}
+            </span>
+          ))}
         </div>
       </div>
     </section>

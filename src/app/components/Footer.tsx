@@ -61,6 +61,7 @@ export default function Footer() {
             opacity: 1,
             y: 0,
             duration: 0.8,
+            force3D: true,
             scrollTrigger: {
               trigger: footerRef.current,
               start: "top 90%",
@@ -79,6 +80,7 @@ export default function Footer() {
               y: 0,
               duration: 0.6,
               delay: index * 0.1,
+              force3D: true,
               scrollTrigger: {
                 trigger: footerRef.current,
                 start: "top 90%",

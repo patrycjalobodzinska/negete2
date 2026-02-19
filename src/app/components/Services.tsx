@@ -73,6 +73,7 @@ export default function Services({
             opacity: 1,
             y: 0,
             duration: 0.8,
+            force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -91,6 +92,7 @@ export default function Services({
             x: 0,
             duration: 0.8,
             delay: 0.2,
+            force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -109,6 +111,7 @@ export default function Services({
             x: 0,
             duration: 0.8,
             delay: 0.3,
+            force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -126,6 +129,7 @@ export default function Services({
             scale: 1,
             duration: 0.6,
             delay: 0.5,
+            force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -145,6 +149,7 @@ export default function Services({
               y: 0,
               duration: 0.6,
               delay: 0.4 + index * 0.1,
+              force3D: true,
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top 80%",

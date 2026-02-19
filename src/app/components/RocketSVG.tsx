@@ -89,6 +89,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
           visibility: "visible",
           duration: 2.5, // Wolniejszy wjazd
           ease: "power2.out",
+          force3D: true,
           onComplete: () => {
             // Po wlataniu - szybszy bounce tylko w pionie
             if (rocketRef.current) {
@@ -99,6 +100,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
                 ease: "sine.inOut",
                 yoyo: true,
                 repeat: -1,
+                force3D: true,
               });
             }
             if (glowRef.current) {
@@ -109,6 +111,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
                 ease: "sine.inOut",
                 yoyo: true,
                 repeat: -1,
+                force3D: true,
               });
             }
           },
@@ -123,6 +126,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
             visibility: "visible",
             duration: 2.5, // Wolniejszy wjazd (zgodny z rakietą)
             ease: "power2.out",
+            force3D: true,
           });
         }
       };
@@ -154,6 +158,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
           if (glowRef.current) {
@@ -164,6 +169,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
         },
@@ -177,6 +183,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
           if (glowRef.current) {
@@ -187,6 +194,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
         },
@@ -205,6 +213,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
           if (glowRef.current) {
@@ -215,6 +224,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
               scale: 0.8,
               duration: 1.2,
               ease: "power2.in",
+              force3D: true,
             });
           }
         },

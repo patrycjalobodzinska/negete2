@@ -2,8 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ChevronDown } from "lucide-react";
+import type { Language } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 
-export default function NeonSideFlyInSafari() {
+interface HeroAltProps {
+  lang?: Language;
+}
+
+export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
+  const subtitleRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -136,6 +144,21 @@ export default function NeonSideFlyInSafari() {
           "+=0.5",
         );
       }
+
+      // d) Subtitle + scroll indicator fade in
+      if (subtitleRef.current) {
+        gsap.set(subtitleRef.current, { autoAlpha: 0, y: 20 });
+        tl.to(
+          subtitleRef.current,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1.2,
+            ease: "power2.out",
+          },
+          "-=2",
+        );
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -177,11 +200,15 @@ export default function NeonSideFlyInSafari() {
     `,
   };
 
+  const handleScrollDown = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+  };
+
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* SVG TŁA (Linie) */}
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-12">
+      {/* SVG TLA (Linie) */}
       <svg
         ref={svgRef}
         viewBox="0 0 1000 600"
@@ -198,10 +225,9 @@ export default function NeonSideFlyInSafari() {
         </g>
       </svg>
 
-      {/* KONTENER NA TEKST (Dwie nałożone warstwy) */}
+      {/* KONTENER NA TEKST (Dwie nalozone warstwy) */}
       <div className="relative z-10 w-full h-[200px]">
-        {/* WARSTWA 1: POŚWIATA (Glow Layer - Static) */}
-        {/* Tekst jest przezroczysty, widać tylko ciężki cień CSS. STOI W MIEJSCU. */}
+        {/* WARSTWA 1: POSWIATA (Glow Layer - Static) */}
         <div
           className={`${baseTextStyle} text-[#4fc3f7] neon-glow-layer`}
           style={{ textShadow: neonTextShadow }}>
@@ -211,15 +237,13 @@ export default function NeonSideFlyInSafari() {
               ref={(el) => {
                 glowLettersRef.current[i] = el;
               }}
-              className={`${letterStyle} will-change-[opacity]`} // Tylko opacity się zmienia
-            >
+              className={`${letterStyle} will-change-[opacity]`}>
               {letter}
             </span>
           ))}
         </div>
 
-        {/* WARSTWA 2: RDZEŃ (Core Layer - Moving) */}
-        {/* Bialy tekst z neonowym cieniem. TO ON SIE RUSZA. */}
+        {/* WARSTWA 2: RDZEN (Core Layer - Moving) */}
         <div className={`${baseTextStyle} text-white`} style={{ textShadow: coreTextShadow }}>
           {text.split("").map((letter, i) => (
             <span
@@ -232,6 +256,28 @@ export default function NeonSideFlyInSafari() {
             </span>
           ))}
         </div>
+      </div>
+
+      {/* PODTYTUL + STRZALKA SCROLL (widoczne glownie na mobile) */}
+      <div
+        ref={subtitleRef}
+        className="relative z-10 mt-10 flex flex-col items-center gap-6 invisible opacity-0">
+        <p
+          className="text-sm sm:text-base tracking-[0.25em] uppercase text-white/70 font-light text-center"
+          style={{
+            textShadow: "0 0 8px rgba(79, 195, 247, 0.3)",
+          }}>
+          {t(lang, "hero.subtitle")}
+        </p>
+        <button
+          onClick={handleScrollDown}
+          aria-label={t(lang, "hero.scroll")}
+          className="group flex flex-col items-center gap-2 text-white/50 hover:text-white/80 transition-colors cursor-pointer">
+          <span className="text-xs tracking-widest uppercase hidden sm:block">
+            {t(lang, "hero.scroll")}
+          </span>
+          <ChevronDown className="w-6 h-6 animate-bounce" />
+        </button>
       </div>
     </section>
   );

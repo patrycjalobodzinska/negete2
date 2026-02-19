@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface ProcessAnimationRefs {
   pathRef: React.RefObject<SVGPathElement | null>;
@@ -13,13 +17,16 @@ interface ProcessAnimationRefs {
   heroLineRef: React.RefObject<HTMLDivElement | null>;
 }
 
-/** Proste animacje bez GSAP/ScrollTrigger – tylko CSS + Intersection Observer. */
+/** Animacje z GSAP i ScrollTrigger - przywrócone */
 export function useProcessAnimations(
   refs: ProcessAnimationRefs,
   processData: unknown,
   isMobile: boolean
 ) {
   const {
+    pathRef,
+    pathMobileRef,
+    svgSectionRef,
     cardRefs,
     imgRefs,
     heroTitleRef,
@@ -27,52 +34,149 @@ export function useProcessAnimations(
     heroLineRef,
   } = refs;
 
-  // Hero: po wejściu pokaż elementy (prosty fade, bez GSAP)
+  // Hero: animacja fade-in
   useLayoutEffect(() => {
-    const title = heroTitleRef.current;
-    const intro = heroIntroRef.current;
-    const line = heroLineRef.current;
-
-    if (title) {
-      title.classList.remove("opacity-0");
-      title.style.transition = "opacity 0.4s ease-out";
-    }
-    if (intro) {
-      intro.classList.remove("opacity-0");
-      intro.style.transition = "opacity 0.4s ease-out 0.1s";
-    }
-    if (line) {
-      line.classList.remove("opacity-0");
-      line.style.transition = "opacity 0.4s ease-out 0.2s";
-    }
-
-    const rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (title) title.style.opacity = "1";
-        if (intro) intro.style.opacity = "1";
-        if (line) line.style.opacity = "1";
-      });
+    const ctx = gsap.context(() => {
+      if (heroTitleRef.current) {
+        gsap.fromTo(
+          heroTitleRef.current,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: 0.2,
+            ease: "power2.out",
+            force3D: true,
+          }
+        );
+      }
+      if (heroIntroRef.current) {
+        gsap.fromTo(
+          heroIntroRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            delay: 0.4,
+            ease: "power2.out",
+            force3D: true,
+          }
+        );
+      }
+      if (heroLineRef.current) {
+        gsap.fromTo(
+          heroLineRef.current,
+          { opacity: 0, scaleX: 0 },
+          {
+            opacity: 1,
+            scaleX: 1,
+            duration: 0.8,
+            delay: 0.6,
+            ease: "power2.out",
+            force3D: true,
+          }
+        );
+      }
     });
 
-    return () => cancelAnimationFrame(rafId);
+    return () => ctx.revert();
   }, [heroTitleRef, heroIntroRef, heroLineRef]);
 
-  // Karty: wyłączone animacje – pokazuj od razu (najprostsze rozwiązanie)
+  // SVG Path: animacja rysowania podczas scrollowania
   useEffect(() => {
-    // Po załadowaniu danych ustaw karty i obrazy jako widoczne
-    const t = setTimeout(() => {
-      cardRefs.current.forEach((el) => {
-        if (el) {
-          el.style.opacity = "1";
-        }
-      });
-      imgRefs.current.forEach((el) => {
-        if (el) {
-          el.style.opacity = "1";
-        }
-      });
-    }, 100);
+    if (!svgSectionRef.current) return;
 
-    return () => clearTimeout(t);
-  }, [cardRefs, imgRefs, processData, isMobile]);
+    const ctx = gsap.context(() => {
+      const path = isMobile ? pathMobileRef.current : pathRef.current;
+      if (!path) return;
+
+      const pathLength = path.getTotalLength();
+      gsap.set(path, {
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength,
+      });
+
+      ScrollTrigger.create({
+        trigger: svgSectionRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.5,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          // Szybsze rysowanie na końcu
+          const easedProgress = gsap.utils.clamp(0, 1, progress * 1.2);
+          gsap.set(path, {
+            strokeDashoffset: pathLength * (1 - easedProgress),
+            force3D: true,
+          });
+        },
+      });
+    }, svgSectionRef.current);
+
+    return () => ctx.revert();
+  }, [pathRef, pathMobileRef, svgSectionRef, isMobile]);
+
+  // Karty i obrazy: animacja podczas scrollowania
+  useEffect(() => {
+    if (!svgSectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const cards = cardRefs.current.filter(Boolean);
+      const images = imgRefs.current.filter(Boolean);
+
+      cards.forEach((card, index) => {
+        if (!card) return;
+        gsap.set(card, {
+          opacity: 0.5,
+          y: 50,
+          force3D: true,
+        });
+
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top 80%",
+          end: "top 20%",
+          scrub: true,
+          onEnter: () => {
+            gsap.to(card, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              force3D: true,
+            });
+          },
+        });
+      });
+
+      images.forEach((img, index) => {
+        if (!img) return;
+        gsap.set(img, {
+          opacity: 0.5,
+          scale: 0.95,
+          force3D: true,
+        });
+
+        ScrollTrigger.create({
+          trigger: img,
+          start: "top 80%",
+          end: "top 20%",
+          scrub: true,
+          onEnter: () => {
+            gsap.to(img, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.8,
+              ease: "power2.out",
+              force3D: true,
+            });
+          },
+        });
+      });
+    }, svgSectionRef.current);
+
+    return () => ctx.revert();
+  }, [cardRefs, imgRefs, svgSectionRef, processData, isMobile]);
 }

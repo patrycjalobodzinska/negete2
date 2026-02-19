@@ -43,6 +43,8 @@ const dictionaries: Record<Language, Record<string, string>> = {
     "contact.noContactInfo": "Dodaj dane kontaktowe w Sanity (Ustawienia → Stopka → Dane kontaktowe).",
     "home.title": "Strona główna",
     "home.description": "Twój zewnętrzny dział R&D – od pomysłu do produktu",
+    "hero.subtitle": "Elektronika \u00B7 Mechanika \u00B7 Oprogramowanie",
+    "hero.scroll": "Przewiń w dół",
   },
   en: {
     "nav.home": "About us",
@@ -86,6 +88,8 @@ const dictionaries: Record<Language, Record<string, string>> = {
     "contact.noContactInfo": "Add contact details in Sanity (Settings → Footer → Contact items).",
     "home.title": "Home",
     "home.description": "Your external R&D department – from idea to product",
+    "hero.subtitle": "Electronics \u00B7 Mechanics \u00B7 Software",
+    "hero.scroll": "Scroll down",
   },
 };
 

@@ -32,11 +32,15 @@ export function ProcessHero({
         >
           {intro}
         </p>
-        {/* Linia jest teraz czescia SVG path -- zostawiamy ref dla animacji */}
         <div
           ref={heroLineRef}
           data-hero-line
-          className="md:mt-36 mt-12"
+          className="h-1 w-48 sm:w-96 mx-auto md:mt-36 mt-12 rounded-full origin-center z-10 opacity-0"
+          style={{
+            background: "linear-gradient(90deg, transparent, #00f0ff, transparent)",
+            boxShadow:
+              "0 0 20px 4px rgba(0,240,255,0.4), 0 0 60px 12px rgba(0,240,255,0.2)",
+          }}
         />
       </div>
     </div>

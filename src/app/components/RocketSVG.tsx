@@ -134,7 +134,7 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
       // Sekcja 2 (Services) - element wlatuje od dolu
       ScrollTrigger.create({
         trigger: servicesSection,
-        start: "top 85%", // Wczesniejsze pojawienie sie
+        start: "top 50%", // Późniejsze pojawienie się - gdy sekcja jest bardziej widoczna
         end: "bottom 20%",
         onEnter: () => {
           animateRocketIn();

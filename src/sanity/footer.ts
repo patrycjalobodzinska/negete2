@@ -21,24 +21,25 @@ export interface FooterData {
 export async function fetchFooterData(
   lang: Language = "pl"
 ): Promise<FooterData | null> {
-  const query = `
-    *[_type == "siteSettings" && _id == "siteSettings"][0]{
-      footerDescriptionPl,
-      footerDescriptionEn,
-      footerContactItems[]{
-        icon,
-        textPl,
-        textEn,
-        url
-      },
-      footerSocialLinks[]{
-        icon,
-        url
+  try {
+    const query = `
+      *[_type == "siteSettings" && _id == "siteSettings"][0]{
+        footerDescriptionPl,
+        footerDescriptionEn,
+        footerContactItems[]{
+          icon,
+          textPl,
+          textEn,
+          url
+        },
+        footerSocialLinks[]{
+          icon,
+          url
+        }
       }
-    }
-  `;
-  const data = await sanityClient.fetch<any | null>(query);
-  if (!data) return null;
+    `;
+    const data = await sanityClient.fetch<any | null>(query, {}, { useCdn: false });
+    if (!data) return null;
 
   const descKey = lang === "pl" ? "footerDescriptionPl" : "footerDescriptionEn";
   const description =
@@ -62,5 +63,14 @@ export async function fetchFooterData(
     })
   );
 
-  return { description, contactItems, socialLinks };
+    return { description, contactItems, socialLinks };
+  } catch (error) {
+    console.error("Error fetching footer data:", error);
+    // Zwróć domyślne wartości w przypadku błędu
+    return {
+      description: "Twój zewnętrzny dział R&D. Od pomysłu do seryjnej produkcji.",
+      contactItems: [],
+      socialLinks: [],
+    };
+  }
 }

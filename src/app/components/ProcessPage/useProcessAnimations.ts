@@ -84,38 +84,94 @@ export function useProcessAnimations(
     return () => ctx.revert();
   }, [heroTitleRef, heroIntroRef, heroLineRef]);
 
-  // SVG Path: animacja rysowania podczas scrollowania
+  // SVG Path: animacja rysowania podczas scrollowania + dynamiczne dostosowanie pozycji startowej
   useEffect(() => {
     if (!svgSectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const path = isMobile ? pathMobileRef.current : pathRef.current;
-      if (!path) return;
+    const path = isMobile ? pathMobileRef.current : pathRef.current;
+    const svg = path?.closest("svg");
+    if (!path || !svg) return;
 
+    // Funkcja do obliczenia pozycji bordera względem SVG viewBox
+    const updatePathStartPosition = () => {
+      if (!heroLineRef.current || !svgSectionRef.current || isMobile) return;
+
+      const borderRect = heroLineRef.current.getBoundingClientRect();
+      const sectionRect = svgSectionRef.current.getBoundingClientRect();
+
+      // Oblicz pozycję bordera względem sekcji SVG
+      const borderTopRelativeToSection = borderRect.top - sectionRect.top;
+      const sectionHeight = sectionRect.height;
+
+      // ViewBox: "-50 100 900 2700" -> y start: 100, height: 2700
+      const viewBoxY = 100;
+      const viewBoxHeight = 2700;
+      
+      // Oblicz pozycję Y w viewBox (uwzględniając, że sekcja może być przesunięta przez -mt-[40vh])
+      const borderYInViewBox = viewBoxY + (borderTopRelativeToSection / sectionHeight) * viewBoxHeight;
+
+      // Aktualizuj ścieżkę - zmień startową pozycję Y
+      const currentPath = path.getAttribute("d") || "";
+      // Znajdź i zamień pierwszą pozycję Y w ścieżce (po M 400)
+      const updatedPath = currentPath.replace(/M 400 \d+/, `M 400 ${Math.round(borderYInViewBox)}`);
+      path.setAttribute("d", updatedPath);
+    };
+
+    // Funkcja do inicjalizacji i setupu animacji
+    const initAndSetup = () => {
+      updatePathStartPosition();
+      // Po aktualizacji ścieżki, oblicz nową długość
       const pathLength = path.getTotalLength();
       gsap.set(path, {
         strokeDasharray: pathLength,
         strokeDashoffset: pathLength,
       });
+    };
+
+    const ctx = gsap.context(() => {
+      setTimeout(initAndSetup, 100); // Małe opóźnienie, żeby elementy były już wyrenderowane
+      window.addEventListener("resize", initAndSetup);
+      window.addEventListener("scroll", updatePathStartPosition); // Tylko aktualizacja pozycji przy scroll, bez resetowania animacji
 
       ScrollTrigger.create({
         trigger: svgSectionRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: 4,
+        scrub: true, // Smooth scrollowanie
         onUpdate: (self) => {
           const progress = self.progress;
-          // Rownomierny postep - liniowy, scrub:4 zapewnia lagodnosc
+          // Oblicz długość dynamicznie, bo ścieżka może się zmieniać
+          const currentPathLength = path.getTotalLength();
+          // Spowolnienie animacji - zmniejszamy progress, żeby animacja była wolniejsza
+          const slowedProgress = progress * 0.65; // Trochę szybciej niż 0.6
+          // Custom easing - wolniejszy na początku (power2), ale przyspiesza pod koniec (power1)
+          // Dla pierwszych 60% użyj power2.out, dla reszty bardziej liniowy
+          let easedProgress;
+          if (slowedProgress < 0.6) {
+            easedProgress = 1 - Math.pow(1 - slowedProgress, 2); // Wolniej na początku
+          } else {
+            // Mapuj z zakresu [0.6, 0.65] na [0.64, 1.0]
+            const startValue = 1 - Math.pow(1 - 0.6, 2); // Wartość w punkcie 0.6
+            const range = 1.0 - startValue;
+            const t = (slowedProgress - 0.6) / (0.65 - 0.6); // Normalizuj do [0, 1]
+            easedProgress = startValue + t * range; // Mapuj liniowo do [startValue, 1.0]
+          }
+          // Upewnij się, że easedProgress nie przekracza 1
+          easedProgress = Math.min(1, easedProgress);
           gsap.set(path, {
-            strokeDashoffset: pathLength * (1 - progress),
+            strokeDashoffset: currentPathLength * (1 - easedProgress),
             force3D: true,
           });
         },
       });
     }, svgSectionRef.current);
 
-    return () => ctx.revert();
-  }, [pathRef, pathMobileRef, svgSectionRef, isMobile]);
+    return () => {
+      window.removeEventListener("resize", initAndSetup);
+      window.removeEventListener("scroll", updatePathStartPosition);
+      ctx.revert();
+    };
+  }, [pathRef, pathMobileRef, svgSectionRef, heroLineRef, isMobile]);
 
   // Karty i obrazy: animacja podczas scrollowania
   useEffect(() => {

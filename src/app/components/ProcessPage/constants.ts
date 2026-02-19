@@ -2,7 +2,10 @@ import type React from "react";
 import * as LucideIcons from "lucide-react";
 import type { ProcessSection } from "@/sanity/process";
 
-export const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+export const ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   Search: LucideIcons.Search,
   Layers: LucideIcons.Layers,
   Box: LucideIcons.Box,
@@ -14,8 +17,8 @@ export const ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 export const PATH_D =
-  "M 200 160 L 600 160" +  // Linia pozioma (dawny border hero)
-  " C 600 160, 500 200, 400 280" + // Lagodne przejscie w dol
+  "M 400 160" +  // Start od środka bordera (x=400 to środek viewBox, y=160 to wysokość bordera)
+  " C 400 200, 400 240, 400 280" + // Płynne zejście w dół od środka bordera
   " C 400 340, 120 420, 60 580" +
   " C 0 740, 120 800, 350 840" +
   " C 580 880, 780 940, 760 1100" +

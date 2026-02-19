@@ -45,7 +45,7 @@ export default function ProcessPage({
   }, [lang, initialData]);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
+    const mq = window.matchMedia("(max-width: 1023px)"); // lg breakpoint
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     setIsMobile(mq.matches);
     mq.addEventListener("change", handler);
@@ -97,11 +97,11 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-[40vh]"
+        className="relative lg:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 lg:-mt-[40vh]"
       >
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
-            className="absolute inset-0 w-full h-full hidden md:block"
+            className="absolute inset-0 w-full h-full hidden lg:block"
             viewBox="-50 100 900 2700"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ export default function ProcessPage({
             />
           </svg>
           <svg
-            className="absolute inset-0 w-full h-full md:hidden"
+            className="absolute inset-0 w-full h-full lg:hidden"
             viewBox="0 0 400 2000"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

@@ -81,13 +81,13 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
 
         // Wlatuje od dołu z fade in (bez setTimeout - animacja uruchamia się gdy sekcja jest widoczna)
         gsap.to(rocketRef.current, {
-          y: 20, // Obniżona pozycja (niżej - dodatnia wartość = niżej)
+          y: 20,
           x: 0,
           xPercent: -50,
           opacity: 1,
-          scale: 0.85, // Zmniejszone o 15% (było 0.95, teraz 0.85)
+          scale: 0.85,
           visibility: "visible",
-          duration: 2.5, // Wolniejszy wjazd
+          duration: 1.2, // Szybszy wjazd
           ease: "power2.out",
           force3D: true,
           onComplete: () => {
@@ -118,35 +118,29 @@ export default function RocketSVG({ sectionId = "services" }: RocketSVGProps) {
         });
         if (glowRef.current) {
           gsap.to(glowRef.current, {
-            y: 20, // Obniżona pozycja (zgodna z rakietą)
+            y: 20,
             x: 0,
             xPercent: -50,
             opacity: 1,
-            scale: 0.85, // Zgodne z rakietą
+            scale: 0.85,
             visibility: "visible",
-            duration: 2.5, // Wolniejszy wjazd (zgodny z rakietą)
+            duration: 1.2, // Szybszy wjazd (zgodny z rakieta)
             ease: "power2.out",
             force3D: true,
           });
         }
       };
 
-      // Sekcja 2 (Services) - element wlatuje od dołu później
+      // Sekcja 2 (Services) - element wlatuje od dolu
       ScrollTrigger.create({
         trigger: servicesSection,
-        start: "top 60%", // Późniejsze pojawienie się
+        start: "top 85%", // Wczesniejsze pojawienie sie
         end: "bottom 20%",
         onEnter: () => {
-          // Wjazd z góry - uruchom animację z opóźnieniem
-          setTimeout(() => {
-            animateRocketIn();
-          }, 300); // 300ms opóźnienia
+          animateRocketIn();
         },
         onEnterBack: () => {
-          // Wjazd od dołu (powrót) - również uruchom animację z opóźnieniem
-          setTimeout(() => {
-            animateRocketIn();
-          }, 300); // 300ms opóźnienia
+          animateRocketIn();
         },
         onLeave: () => {
           // Po wyjściu z sekcji 2 do sekcji 3 - wylatuje do góry

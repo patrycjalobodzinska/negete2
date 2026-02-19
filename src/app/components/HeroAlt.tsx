@@ -131,8 +131,8 @@ export default function NeonSideFlyInSafari() {
   const baseTextStyle =
     "absolute left-0 top-0 w-full h-full flex justify-center items-center font-sans font-light text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-widest pointer-events-none select-none";
 
-  // Styl pojedynczej litery (odstępy)
-  const letterStyle = "inline-block mx-1 sm:mx-2";
+  // Styl pojedynczej litery (odstępy) – invisible by default to prevent FOUC
+  const letterStyle = "inline-block mx-1 sm:mx-2 invisible opacity-0";
 
   // POTĘŻNY FILTR NEONOWY (Tylko dla warstwy statycznej)
   // Używamy CSS drop-shadow, bo Safari radzi sobie z nim lepiej niż z filtrami SVG
@@ -159,7 +159,7 @@ export default function NeonSideFlyInSafari() {
       <svg
         ref={svgRef}
         viewBox="0 0 1000 600"
-        className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none opacity-0 m-auto"
+        className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none invisible opacity-0 m-auto"
         preserveAspectRatio="xMidYMid slice"
         style={{
           willChange: "transform", // Optymalizacja dla Safari

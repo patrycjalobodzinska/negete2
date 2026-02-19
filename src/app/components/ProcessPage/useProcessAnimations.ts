@@ -105,16 +105,9 @@ export function useProcessAnimations(
         scrub: 4,
         onUpdate: (self) => {
           const progress = self.progress;
-          // Wolniejszy start, przyspieszenie pod koniec (easeInOut)
-          const easedProgress = gsap.utils.clamp(
-            0,
-            1,
-            progress < 0.5
-              ? 2 * progress * progress
-              : 1 - Math.pow(-2 * progress + 2, 2) / 2
-          );
+          // Rownomierny postep - liniowy, scrub:4 zapewnia lagodnosc
           gsap.set(path, {
-            strokeDashoffset: pathLength * (1 - easedProgress),
+            strokeDashoffset: pathLength * (1 - progress),
             force3D: true,
           });
         },

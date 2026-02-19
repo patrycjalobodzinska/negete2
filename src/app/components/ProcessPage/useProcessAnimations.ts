@@ -65,20 +65,7 @@ export function useProcessAnimations(
           }
         );
       }
-      if (heroLineRef.current) {
-        gsap.fromTo(
-          heroLineRef.current,
-          { opacity: 0, scaleX: 0 },
-          {
-            opacity: 1,
-            scaleX: 1,
-            duration: 0.8,
-            delay: 0.6,
-            ease: "power2.out",
-            force3D: true,
-          }
-        );
-      }
+      // Hero line jest teraz czescia SVG path - brak osobnej animacji
     });
 
     return () => ctx.revert();

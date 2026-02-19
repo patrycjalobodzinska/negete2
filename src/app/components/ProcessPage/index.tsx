@@ -107,6 +107,17 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
+            <defs>
+              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur2" />
+                <feMerge>
+                  <feMergeNode in="blur2" />
+                  <feMergeNode in="blur1" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <path
               ref={pathRef}
               d={PATH_D}
@@ -115,6 +126,7 @@ export default function ProcessPage({
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
+              filter="url(#neonGlow)"
             />
           </svg>
           <svg

@@ -121,9 +121,11 @@ export default function NeonSideFlyInSafari() {
           "<+=0.3",
         ) // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
 
-        // c) Pulsowanie neonu - subtelna animacja po zakonczeniu wlotu
-        .to(
-          containerRef.current!.querySelector(".neon-glow-layer"),
+      // c) Pulsowanie neonu - subtelna animacja po zakonczeniu wlotu
+      const glowLayer = containerRef.current?.querySelector(".neon-glow-layer");
+      if (glowLayer) {
+        tl.to(
+          glowLayer,
           {
             keyframes: [
               {
@@ -154,6 +156,7 @@ export default function NeonSideFlyInSafari() {
           },
           "+=0.5",
         );
+      }
     }, containerRef);
 
     return () => ctx.revert();

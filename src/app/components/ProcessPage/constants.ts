@@ -14,7 +14,8 @@ export const ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 export const PATH_D =
-  "M 400 280" +
+  "M 200 160 L 600 160" +  // Linia pozioma (dawny border hero)
+  " C 600 160, 500 200, 400 280" + // Lagodne przejscie w dol
   " C 400 340, 120 420, 60 580" +
   " C 0 740, 120 800, 350 840" +
   " C 580 880, 780 940, 760 1100" +

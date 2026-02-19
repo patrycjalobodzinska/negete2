@@ -2,8 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ChevronDown } from "lucide-react";
+import type { Language } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 
-export default function NeonSideFlyInSafari() {
+interface HeroAltProps {
+  lang?: Language;
+}
+
+export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
+  const subtitleRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -119,7 +127,38 @@ export default function NeonSideFlyInSafari() {
             ease: "power2.inOut", // Miękkie pojawienie się światła
           },
           "<+=0.3",
-        ); // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
+        ) // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
+
+      // c) Pulsowanie neonu - uzywamy opacity zamiast animacji filtra (GPU-accelerated)
+      const glowLayer = containerRef.current?.querySelector(".neon-glow-layer");
+      if (glowLayer) {
+        tl.to(
+          glowLayer,
+          {
+            opacity: 0.6,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          },
+          "+=0.5",
+        );
+      }
+
+      // d) Subtitle + scroll indicator fade in
+      if (subtitleRef.current) {
+        gsap.set(subtitleRef.current, { autoAlpha: 0, y: 20 });
+        tl.to(
+          subtitleRef.current,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1.2,
+            ease: "power2.out",
+          },
+          "-=2",
+        );
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -131,41 +170,54 @@ export default function NeonSideFlyInSafari() {
   const baseTextStyle =
     "absolute left-0 top-0 w-full h-full flex justify-center items-center font-sans font-light text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-widest pointer-events-none select-none";
 
-  // Styl pojedynczej litery (odstępy)
-  const letterStyle = "inline-block mx-1 sm:mx-2";
+  // Styl pojedynczej litery (odstępy) – invisible by default to prevent FOUC
+  const letterStyle = "inline-block mx-3 sm:mx-5 md:mx-7 invisible opacity-0";
 
-  // POTĘŻNY FILTR NEONOWY (Tylko dla warstwy statycznej)
-  // Używamy CSS drop-shadow, bo Safari radzi sobie z nim lepiej niż z filtrami SVG
-  const neonFilterStyle = {
+  // Neonowy text-shadow (znacznie wydajniejszy niz drop-shadow filter)
+  const neonTextShadow = `
+    0 0 4px #fff,
+    0 0 8px #fff,
+    0 0 20px #4fc3f7,
+    0 0 40px #0288d1,
+    0 0 80px #01579b,
+    0 0 120px rgba(1, 87, 155, 0.7)
+  `;
+
+  // Lzejszy neon dla rdzenia
+  const coreTextShadow = `
+    0 0 3px #fff,
+    0 0 10px #4fc3f7,
+    0 0 25px #0288d1,
+    0 0 50px rgba(2, 136, 209, 0.4)
+  `;
+
+  // SVG nadal potrzebuje drop-shadow (bo text-shadow nie dziala na SVG)
+  const svgNeonFilter = {
     filter: `
-      drop-shadow(0 0 2px #fff)
-      drop-shadow(0 0 10px #3949ab)
-      drop-shadow(0 0 30px #1a237e)
-      drop-shadow(0 0 70px rgba(26, 35, 126, 0.6))
+      drop-shadow(0 0 4px #fff)
+      drop-shadow(0 0 15px #4fc3f7)
+      drop-shadow(0 0 40px #0288d1)
     `,
-    WebkitFilter: `
-      drop-shadow(0 0 2px #fff)
-      drop-shadow(0 0 10px #3949ab)
-      drop-shadow(0 0 30px #1a237e)
-      drop-shadow(0 0 70px rgba(26, 35, 126, 0.6))
-    `,
+  };
+
+  const handleScrollDown = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   };
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center bg-[#020202] overflow-hidden">
-      {/* SVG TŁA (Linie) */}
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-12">
+      {/* SVG TLA (Linie) */}
       <svg
         ref={svgRef}
         viewBox="0 0 1000 600"
-        className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none opacity-0 m-auto"
+        className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none invisible opacity-0 m-auto"
         preserveAspectRatio="xMidYMid slice"
         style={{
-          willChange: "transform", // Optymalizacja dla Safari
+          willChange: "transform",
           transform: "translateZ(0)",
-          // Ten sam filtr co na literach dla spójności
-          ...neonFilterStyle,
+          ...svgNeonFilter,
         }}>
         <g fill="none" stroke="white" strokeWidth="4" strokeLinecap="round">
           <path d="M 502 309 A 520 450 0 0 1 -25 -146" />
@@ -173,41 +225,59 @@ export default function NeonSideFlyInSafari() {
         </g>
       </svg>
 
-      {/* KONTENER NA TEKST (Dwie nałożone warstwy) */}
+      {/* KONTENER NA TEKST (Dwie nalozone warstwy) */}
       <div className="relative z-10 w-full h-[200px]">
-        {/* WARSTWA 1: POŚWIATA (Glow Layer - Static) */}
-        {/* Tekst jest przezroczysty, widać tylko ciężki cień CSS. STOI W MIEJSCU. */}
+        {/* WARSTWA 1: POSWIATA (Glow Layer - Static) */}
         <div
-          className={`${baseTextStyle} text-transparent`}
-          style={neonFilterStyle}>
+          className={`${baseTextStyle} text-[#4fc3f7] neon-glow-layer`}
+          style={{ textShadow: neonTextShadow }}>
           {text.split("").map((letter, i) => (
             <span
               key={`glow-${i}`}
               ref={(el) => {
                 glowLettersRef.current[i] = el;
               }}
-              className={`${letterStyle} will-change-[opacity]`} // Tylko opacity się zmienia
-            >
+              className={`${letterStyle} will-change-[opacity]`}>
               {letter}
             </span>
           ))}
         </div>
 
-        {/* WARSTWA 2: RDZEŃ (Core Layer - Moving) */}
-        {/* Czysty biały tekst bez ciężkiego cienia. TO ON SIĘ RUSZA. */}
-        <div className={`${baseTextStyle} text-white`}>
+        {/* WARSTWA 2: RDZEN (Core Layer - Moving) */}
+        <div className={`${baseTextStyle} text-white`} style={{ textShadow: coreTextShadow }}>
           {text.split("").map((letter, i) => (
             <span
               key={`core-${i}`}
               ref={(el) => {
                 coreLettersRef.current[i] = el;
               }}
-              // Dodajemy tylko leciutki cień dla ostrości krawędzi
-              className={`${letterStyle} will-change-transform drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
+              className={`${letterStyle} will-change-transform`}>
               {letter}
             </span>
           ))}
         </div>
+      </div>
+
+      {/* PODTYTUL + STRZALKA SCROLL (widoczne glownie na mobile) */}
+      <div
+        ref={subtitleRef}
+        className="relative z-10 mt-10 flex flex-col items-center gap-6 invisible opacity-0">
+        <p
+          className="text-sm sm:text-base tracking-[0.25em] uppercase text-white/70 font-light text-center"
+          style={{
+            textShadow: "0 0 8px rgba(79, 195, 247, 0.3)",
+          }}>
+          {t(lang, "hero.subtitle")}
+        </p>
+        <button
+          onClick={handleScrollDown}
+          aria-label={t(lang, "hero.scroll")}
+          className="group flex flex-col items-center gap-2 text-white/50 hover:text-white/80 transition-colors cursor-pointer">
+          <span className="text-xs tracking-widest uppercase hidden sm:block">
+            {t(lang, "hero.scroll")}
+          </span>
+          <ChevronDown className="w-6 h-6 animate-bounce" />
+        </button>
       </div>
     </section>
   );

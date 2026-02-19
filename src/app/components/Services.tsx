@@ -177,10 +177,10 @@ export default function Services({
         <div className="flex flex-col max-w-6xl gap-4 items-start">
           {/* Lewa strona - tytuł i tekst */}
           <div className=" relative z-10">
-            <div ref={leftTextRef} className="space-y-6">
+            <div ref={leftTextRef} className="space-y-6 opacity-0">
               <h2
                 ref={titleRef}
-                className="text-3xl sm:text-4xl font-medium text-white leading-tight">
+                className="text-3xl sm:text-4xl font-medium text-white leading-tight opacity-0">
                 {servicesData?.heading ??
                   "Twój Zewnętrzny Dział R&D – od pomysłu do wdrożenia"}
               </h2>
@@ -235,7 +235,7 @@ export default function Services({
                   ref={(el) => {
                     if (el) featuresRef.current[index] = el;
                   }}
-                  className="flex items-start gap-4 group">
+                  className="flex items-start gap-4 group opacity-0">
                   {content}
                 </Link>
               );
@@ -278,7 +278,7 @@ export default function Services({
                   ref={(el) => {
                     if (el) featuresRef.current[index + 3] = el;
                   }}
-                  className="flex items-start gap-4 group">
+                  className="flex items-start gap-4 group opacity-0">
                   {content}
                 </Link>
               );

@@ -97,7 +97,7 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-140"
+        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-[40vh]"
       >
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
@@ -107,6 +107,17 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
+            <defs>
+              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur2" />
+                <feMerge>
+                  <feMergeNode in="blur2" />
+                  <feMergeNode in="blur1" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <path
               ref={pathRef}
               d={PATH_D}
@@ -115,6 +126,7 @@ export default function ProcessPage({
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
+              filter="url(#neonGlow)"
             />
           </svg>
           <svg

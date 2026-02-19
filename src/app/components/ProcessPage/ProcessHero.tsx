@@ -37,9 +37,9 @@ export function ProcessHero({
           data-hero-line
           className="h-1 w-48 sm:w-96 mx-auto md:mt-36 mt-12 rounded-full origin-center z-10 opacity-0"
           style={{
-            background: "linear-gradient(90deg, transparent, #1e3a8a, transparent)",
+            background: "linear-gradient(90deg, transparent, #00f0ff, transparent)",
             boxShadow:
-              "0 8px 50px 12px rgba(30,58,138,0.6), 0 20px 80px 24px rgba(30,58,138,0.4)",
+              "0 0 20px 4px rgba(0,240,255,0.4), 0 0 60px 12px rgba(0,240,255,0.2)",
           }}
         />
       </div>

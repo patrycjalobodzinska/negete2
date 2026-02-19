@@ -121,37 +121,16 @@ export default function NeonSideFlyInSafari() {
           "<+=0.3",
         ) // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
 
-      // c) Pulsowanie neonu - subtelna animacja po zakonczeniu wlotu
+      // c) Pulsowanie neonu - uzywamy opacity zamiast animacji filtra (GPU-accelerated)
       const glowLayer = containerRef.current?.querySelector(".neon-glow-layer");
       if (glowLayer) {
         tl.to(
           glowLayer,
           {
-            keyframes: [
-              {
-                filter: `
-                  drop-shadow(0 0 6px #fff)
-                  drop-shadow(0 0 12px #fff)
-                  drop-shadow(0 0 30px #4fc3f7)
-                  drop-shadow(0 0 60px #0288d1)
-                  drop-shadow(0 0 100px #01579b)
-                  drop-shadow(0 0 150px rgba(1, 87, 155, 0.8))
-                `,
-                duration: 2,
-              },
-              {
-                filter: `
-                  drop-shadow(0 0 4px #fff)
-                  drop-shadow(0 0 8px #fff)
-                  drop-shadow(0 0 20px #4fc3f7)
-                  drop-shadow(0 0 40px #0288d1)
-                  drop-shadow(0 0 80px #01579b)
-                  drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
-                `,
-                duration: 2,
-              },
-            ],
+            opacity: 0.6,
+            duration: 2,
             repeat: -1,
+            yoyo: true,
             ease: "sine.inOut",
           },
           "+=0.5",
@@ -171,40 +150,30 @@ export default function NeonSideFlyInSafari() {
   // Styl pojedynczej litery (odstępy) – invisible by default to prevent FOUC
   const letterStyle = "inline-block mx-3 sm:mx-5 md:mx-7 invisible opacity-0";
 
-  // POTĘŻNY FILTR NEONOWY (Tylko dla warstwy statycznej)
-  // Używamy CSS drop-shadow, bo Safari radzi sobie z nim lepiej niż z filtrami SVG
-  const neonFilterStyle = {
-    filter: `
-      drop-shadow(0 0 4px #fff)
-      drop-shadow(0 0 8px #fff)
-      drop-shadow(0 0 20px #4fc3f7)
-      drop-shadow(0 0 40px #0288d1)
-      drop-shadow(0 0 80px #01579b)
-      drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
-    `,
-    WebkitFilter: `
-      drop-shadow(0 0 4px #fff)
-      drop-shadow(0 0 8px #fff)
-      drop-shadow(0 0 20px #4fc3f7)
-      drop-shadow(0 0 40px #0288d1)
-      drop-shadow(0 0 80px #01579b)
-      drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
-    `,
-  };
+  // Neonowy text-shadow (znacznie wydajniejszy niz drop-shadow filter)
+  const neonTextShadow = `
+    0 0 4px #fff,
+    0 0 8px #fff,
+    0 0 20px #4fc3f7,
+    0 0 40px #0288d1,
+    0 0 80px #01579b,
+    0 0 120px rgba(1, 87, 155, 0.7)
+  `;
 
-  // Filtr neonowy dla rdzenia (lżejszy, ale widoczny)
-  const coreNeonStyle = {
+  // Lzejszy neon dla rdzenia
+  const coreTextShadow = `
+    0 0 3px #fff,
+    0 0 10px #4fc3f7,
+    0 0 25px #0288d1,
+    0 0 50px rgba(2, 136, 209, 0.4)
+  `;
+
+  // SVG nadal potrzebuje drop-shadow (bo text-shadow nie dziala na SVG)
+  const svgNeonFilter = {
     filter: `
-      drop-shadow(0 0 3px #fff)
-      drop-shadow(0 0 10px #4fc3f7)
-      drop-shadow(0 0 25px #0288d1)
-      drop-shadow(0 0 50px rgba(2, 136, 209, 0.5))
-    `,
-    WebkitFilter: `
-      drop-shadow(0 0 3px #fff)
-      drop-shadow(0 0 10px #4fc3f7)
-      drop-shadow(0 0 25px #0288d1)
-      drop-shadow(0 0 50px rgba(2, 136, 209, 0.5))
+      drop-shadow(0 0 4px #fff)
+      drop-shadow(0 0 15px #4fc3f7)
+      drop-shadow(0 0 40px #0288d1)
     `,
   };
 
@@ -219,10 +188,9 @@ export default function NeonSideFlyInSafari() {
         className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none invisible opacity-0 m-auto"
         preserveAspectRatio="xMidYMid slice"
         style={{
-          willChange: "transform", // Optymalizacja dla Safari
+          willChange: "transform",
           transform: "translateZ(0)",
-          // Ten sam filtr co na literach dla spójności
-          ...neonFilterStyle,
+          ...svgNeonFilter,
         }}>
         <g fill="none" stroke="white" strokeWidth="4" strokeLinecap="round">
           <path d="M 502 309 A 520 450 0 0 1 -25 -146" />
@@ -235,8 +203,8 @@ export default function NeonSideFlyInSafari() {
         {/* WARSTWA 1: POŚWIATA (Glow Layer - Static) */}
         {/* Tekst jest przezroczysty, widać tylko ciężki cień CSS. STOI W MIEJSCU. */}
         <div
-          className={`${baseTextStyle} text-transparent neon-glow-layer`}
-          style={neonFilterStyle}>
+          className={`${baseTextStyle} text-[#4fc3f7] neon-glow-layer`}
+          style={{ textShadow: neonTextShadow }}>
           {text.split("").map((letter, i) => (
             <span
               key={`glow-${i}`}
@@ -252,7 +220,7 @@ export default function NeonSideFlyInSafari() {
 
         {/* WARSTWA 2: RDZEŃ (Core Layer - Moving) */}
         {/* Bialy tekst z neonowym cieniem. TO ON SIE RUSZA. */}
-        <div className={`${baseTextStyle} text-white`} style={coreNeonStyle}>
+        <div className={`${baseTextStyle} text-white`} style={{ textShadow: coreTextShadow }}>
           {text.split("").map((letter, i) => (
             <span
               key={`core-${i}`}

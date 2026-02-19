@@ -97,7 +97,7 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-140"
+        className="relative md:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 md:-mt-[40vh]"
       >
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg

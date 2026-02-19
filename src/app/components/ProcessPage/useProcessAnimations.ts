@@ -102,11 +102,17 @@ export function useProcessAnimations(
         trigger: svgSectionRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: 3,
+        scrub: 4,
         onUpdate: (self) => {
           const progress = self.progress;
-          // Wolniejsze, rownomierne rysowanie
-          const easedProgress = gsap.utils.clamp(0, 1, progress);
+          // Wolniejszy start, przyspieszenie pod koniec (easeInOut)
+          const easedProgress = gsap.utils.clamp(
+            0,
+            1,
+            progress < 0.5
+              ? 2 * progress * progress
+              : 1 - Math.pow(-2 * progress + 2, 2) / 2
+          );
           gsap.set(path, {
             strokeDashoffset: pathLength * (1 - easedProgress),
             force3D: true,

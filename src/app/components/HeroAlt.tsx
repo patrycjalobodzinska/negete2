@@ -154,7 +154,7 @@ export default function NeonSideFlyInSafari() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center bg-[#020202] overflow-hidden">
+      className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* SVG TŁA (Linie) */}
       <svg
         ref={svgRef}

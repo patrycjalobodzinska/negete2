@@ -119,7 +119,41 @@ export default function NeonSideFlyInSafari() {
             ease: "power2.inOut", // Miękkie pojawienie się światła
           },
           "<+=0.3",
-        ); // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
+        ) // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
+
+        // c) Pulsowanie neonu - subtelna animacja po zakonczeniu wlotu
+        .to(
+          containerRef.current!.querySelector(".neon-glow-layer"),
+          {
+            keyframes: [
+              {
+                filter: `
+                  drop-shadow(0 0 6px #fff)
+                  drop-shadow(0 0 12px #fff)
+                  drop-shadow(0 0 30px #4fc3f7)
+                  drop-shadow(0 0 60px #0288d1)
+                  drop-shadow(0 0 100px #01579b)
+                  drop-shadow(0 0 150px rgba(1, 87, 155, 0.8))
+                `,
+                duration: 2,
+              },
+              {
+                filter: `
+                  drop-shadow(0 0 4px #fff)
+                  drop-shadow(0 0 8px #fff)
+                  drop-shadow(0 0 20px #4fc3f7)
+                  drop-shadow(0 0 40px #0288d1)
+                  drop-shadow(0 0 80px #01579b)
+                  drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
+                `,
+                duration: 2,
+              },
+            ],
+            repeat: -1,
+            ease: "sine.inOut",
+          },
+          "+=0.5",
+        );
     }, containerRef);
 
     return () => ctx.revert();
@@ -138,16 +172,36 @@ export default function NeonSideFlyInSafari() {
   // Używamy CSS drop-shadow, bo Safari radzi sobie z nim lepiej niż z filtrami SVG
   const neonFilterStyle = {
     filter: `
-      drop-shadow(0 0 2px #fff)
-      drop-shadow(0 0 10px #3949ab)
-      drop-shadow(0 0 30px #1a237e)
-      drop-shadow(0 0 70px rgba(26, 35, 126, 0.6))
+      drop-shadow(0 0 4px #fff)
+      drop-shadow(0 0 8px #fff)
+      drop-shadow(0 0 20px #4fc3f7)
+      drop-shadow(0 0 40px #0288d1)
+      drop-shadow(0 0 80px #01579b)
+      drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
     `,
     WebkitFilter: `
-      drop-shadow(0 0 2px #fff)
-      drop-shadow(0 0 10px #3949ab)
-      drop-shadow(0 0 30px #1a237e)
-      drop-shadow(0 0 70px rgba(26, 35, 126, 0.6))
+      drop-shadow(0 0 4px #fff)
+      drop-shadow(0 0 8px #fff)
+      drop-shadow(0 0 20px #4fc3f7)
+      drop-shadow(0 0 40px #0288d1)
+      drop-shadow(0 0 80px #01579b)
+      drop-shadow(0 0 120px rgba(1, 87, 155, 0.7))
+    `,
+  };
+
+  // Filtr neonowy dla rdzenia (lżejszy, ale widoczny)
+  const coreNeonStyle = {
+    filter: `
+      drop-shadow(0 0 3px #fff)
+      drop-shadow(0 0 10px #4fc3f7)
+      drop-shadow(0 0 25px #0288d1)
+      drop-shadow(0 0 50px rgba(2, 136, 209, 0.5))
+    `,
+    WebkitFilter: `
+      drop-shadow(0 0 3px #fff)
+      drop-shadow(0 0 10px #4fc3f7)
+      drop-shadow(0 0 25px #0288d1)
+      drop-shadow(0 0 50px rgba(2, 136, 209, 0.5))
     `,
   };
 
@@ -178,7 +232,7 @@ export default function NeonSideFlyInSafari() {
         {/* WARSTWA 1: POŚWIATA (Glow Layer - Static) */}
         {/* Tekst jest przezroczysty, widać tylko ciężki cień CSS. STOI W MIEJSCU. */}
         <div
-          className={`${baseTextStyle} text-transparent`}
+          className={`${baseTextStyle} text-transparent neon-glow-layer`}
           style={neonFilterStyle}>
           {text.split("").map((letter, i) => (
             <span
@@ -194,16 +248,15 @@ export default function NeonSideFlyInSafari() {
         </div>
 
         {/* WARSTWA 2: RDZEŃ (Core Layer - Moving) */}
-        {/* Czysty biały tekst bez ciężkiego cienia. TO ON SIĘ RUSZA. */}
-        <div className={`${baseTextStyle} text-white`}>
+        {/* Bialy tekst z neonowym cieniem. TO ON SIE RUSZA. */}
+        <div className={`${baseTextStyle} text-white`} style={coreNeonStyle}>
           {text.split("").map((letter, i) => (
             <span
               key={`core-${i}`}
               ref={(el) => {
                 coreLettersRef.current[i] = el;
               }}
-              // Dodajemy tylko leciutki cień dla ostrości krawędzi
-              className={`${letterStyle} will-change-transform drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]`}>
+              className={`${letterStyle} will-change-transform`}>
               {letter}
             </span>
           ))}

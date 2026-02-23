@@ -16,6 +16,7 @@ export interface SiteSettings {
   contactPageSeo?: SeoData;
   blogListPageSeo?: SeoData;
   realizacjeListPageSeo?: SeoData;
+  servicesListPageSeo?: SeoData;
   processPageSeo?: SeoData;
 }
 
@@ -54,6 +55,7 @@ export async function fetchSiteSettings(
       contactPageSeo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } },
       blogListPageSeo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } },
       realizacjeListPageSeo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } },
+      servicesListPageSeo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } },
       processPageSeo{ metaTitlePl, metaTitleEn, metaDescriptionPl, metaDescriptionEn, ogImage{ ... } }
     }
   `;
@@ -72,6 +74,7 @@ export async function fetchSiteSettings(
     contactPageSeo: mapSeo(data.contactPageSeo, lang),
     blogListPageSeo: mapSeo(data.blogListPageSeo, lang),
     realizacjeListPageSeo: mapSeo(data.realizacjeListPageSeo, lang),
+    servicesListPageSeo: mapSeo(data.servicesListPageSeo, lang),
     processPageSeo: mapSeo(data.processPageSeo, lang),
   };
 }

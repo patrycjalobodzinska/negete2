@@ -51,14 +51,16 @@ export default async function BlogPage({ params }: Props) {
 
   if (count === 0) {
     return (
-      <main className="relative min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 py-32 text-center">
-          <h1 className="text-3xl sm:text-4xl font-medium text-white mb-4">
-            {t(lang as Language, "blog.title")}
-          </h1>
-          <p className="text-gray-400 text-xl">
-            {t(lang as Language, "blog.comingSoon")}
-          </p>
+      <main id="main-content" className="relative min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="mb-12 lg:mb-16 text-center">
+            <h1 className="text-3xl sm:text-4xl font-medium text-white mb-4">
+              {t(lang as Language, "blog.title")}
+            </h1>
+            <p className="text-gray-400 text-xl">
+              {t(lang as Language, "blog.comingSoon")}
+            </p>
+          </div>
         </div>
         <Footer />
       </main>
@@ -66,7 +68,7 @@ export default async function BlogPage({ params }: Props) {
   }
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="mb-12 lg:mb-16">
           <h1 className="text-3xl sm:text-4xl font-medium text-white mb-6 leading-tight">
@@ -128,9 +130,7 @@ export default async function BlogPage({ params }: Props) {
         ) : (
           <div className="text-center py-20">
             <p className="text-gray-400 text-xl">
-              {lang === "pl"
-                ? "Brak opublikowanych artykułów"
-                : "No published articles yet"}
+              {t(lang as Language, "blog.comingSoon")}
             </p>
           </div>
         )}

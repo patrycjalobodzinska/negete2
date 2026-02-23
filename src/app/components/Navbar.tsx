@@ -11,57 +11,58 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [blogCount, setBlogCount] = useState<number | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { lang, getPath } = useLocalizedPath();
 
-  const [blogCount, setBlogCount] = useState<number | null>(null);
-
   useEffect(() => {
     fetch("/api/blog/count")
       .then((res) => res.json())
-      .then((data: { count: number }) => setBlogCount(data.count))
+      .then((data: { count?: number }) => setBlogCount(data.count ?? 0))
       .catch(() => setBlogCount(0));
   }, []);
 
-  const baseNavLinks = [
+  const baseLinks = [
     { name: t(lang, "nav.home"), href: "/", key: "home" },
     { name: t(lang, "nav.projects"), href: "/realizacje", key: "projects" },
     { name: t(lang, "nav.process"), href: "/proces", key: "process" },
     { name: t(lang, "nav.services"), href: "/uslugi", key: "services" },
-    { name: t(lang, "nav.blog"), href: "/blog", key: "blog" },
-    { name: t(lang, "nav.faq"), href: "/faq", key: "faq" },
-    { name: t(lang, "nav.contact"), href: "/kontakt", key: "contact" },
   ];
-
-  const navLinks = baseNavLinks.filter(
-    (link) => link.key !== "blog" || (blogCount !== null && blogCount > 0)
-  );
+  const blogLink = { name: t(lang, "nav.blog"), href: "/blog", key: "blog" };
+  const contactLink = {
+    name: t(lang, "nav.contact"),
+    href: "/kontakt",
+    key: "contact",
+  };
+  const navLinks = [
+    ...baseLinks,
+    ...(blogCount === null || blogCount > 0 ? [blogLink] : []),
+    contactLink,
+  ];
 
   const isActive = (href: string, key: string) => {
     if (key === "home") {
-      // Strona główna jest aktywna gdy pathname to "/" (PL) lub "/en" (EN)
       return pathname === "/" || pathname === `/${lang}`;
     }
     const fullPath = getPath(href);
     return pathname === fullPath || pathname.startsWith(fullPath + "/");
   };
 
-  // Animacja wejścia navbara z góry
   useEffect(() => {
-    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+    const isMobile =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 767px)").matches;
     const nav = navRef.current;
     if (!nav) return;
 
     if (isMobile) {
-      // Na mobile: wyłącz animację dla lepszej wydajności
       nav.style.opacity = "1";
       nav.style.transform = "translateY(0)";
       return;
     }
 
-    // Desktop: pełna animacja z hardware acceleration
     gsap.set(nav, { y: -100, opacity: 0, force3D: true });
     setTimeout(() => {
       if (nav) {
@@ -75,15 +76,11 @@ export default function Navbar() {
       }
     }, 300);
   }, []);
-
-  // Początkowy stan menu (ukryte)
   useLayoutEffect(() => {
     if (mobileMenuRef.current) {
       gsap.set(mobileMenuRef.current, { opacity: 0, y: -12 });
     }
   }, []);
-
-  // Płynna animacja menu mobilnego (otwarcie/zamknięcie)
   useEffect(() => {
     const menu = mobileMenuRef.current;
     if (!menu) return;
@@ -111,6 +108,9 @@ export default function Navbar() {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        {t(lang, "common.skipToContent")}
+      </a>
       <nav
         ref={navRef}
         className="fixed top-4 max-w-7xl mx-auto left-4 right-4 z-[99999999999] rounded-full md:rounded-full"
@@ -124,7 +124,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Link href={getPath("/")} className="flex items-center">
-                <img src="/negete_logo.png" alt="NEGETE Logo" className="h-12" />
+                <img
+                  src="/negete_logo.png"
+                  alt="NEGETE Logo"
+                  className="h-12"
+                />
               </Link>
             </div>
 
@@ -151,14 +155,16 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-white"
               aria-expanded={isMobileMenuOpen}
-              aria-label={t(lang, isMobileMenuOpen ? "nav.closeMenu" : "nav.openMenu")}>
+              aria-label={t(
+                lang,
+                isMobileMenuOpen ? "nav.closeMenu" : "nav.openMenu",
+              )}>
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Menu mobilne — poza nav, absolute pod paskiem, nie rozciąga navbara */}
       <div
         className="fixed top-[calc(1rem+3.5rem)] left-4 right-4 z-[99999999998] md:hidden"
         style={{ pointerEvents: isMobileMenuOpen ? "auto" : "none" }}>

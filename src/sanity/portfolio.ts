@@ -6,18 +6,24 @@ import { urlFor } from "./image";
 const CATEGORY_LABELS: Record<string, { pl: string; en: string }> = {
   "elektronika-pcb": { pl: "Elektronika & PCB", en: "Electronics & PCB" },
   "firmware-embedded": { pl: "Firmware & Embedded", en: "Firmware & Embedded" },
-  "mechanika-wzornictwo": { pl: "Mechanika & Wzornictwo", en: "Mechanics & Design" },
+  "mechanika-wzornictwo": {
+    pl: "Mechanika & Wzornictwo",
+    en: "Mechanics & Design",
+  },
   "iot-automatyka": { pl: "IoT & Automatyka", en: "IoT & Automation" },
-  "medycyna": { pl: "Medycyna & Sprzęt Medyczny", en: "Medical & Medical Equipment" },
-  "motoryzacja": { pl: "Motoryzacja", en: "Automotive" },
-  "wearables": { pl: "Wearables", en: "Wearables" },
-  "inne": { pl: "Inne", en: "Other" },
+  medycyna: {
+    pl: "Medycyna & Sprzęt Medyczny",
+    en: "Medical & Medical Equipment",
+  },
+  motoryzacja: { pl: "Motoryzacja", en: "Automotive" },
+  wearables: { pl: "Wearables", en: "Wearables" },
+  inne: { pl: "Inne", en: "Other" },
 };
 
 function getCategoryLabel(
   category?: string,
   customCategory?: string,
-  lang: Language = "pl"
+  lang: Language = "pl",
 ): string | undefined {
   if (customCategory) return customCategory;
   if (category && CATEGORY_LABELS[category]) {
@@ -62,10 +68,12 @@ interface ProjectRaw {
   category?: string;
   customCategory?: string;
   sections?: any[];
-  gallery?: Array<SanityImageSource & {
-    altPl?: string;
-    altEn?: string;
-  }>;
+  gallery?: Array<
+    SanityImageSource & {
+      altPl?: string;
+      altEn?: string;
+    }
+  >;
   publishedAt?: string;
   seo?: {
     metaTitlePl?: string;
@@ -91,7 +99,7 @@ interface PortfolioSectionRaw {
  * @param lang - Język, w którym mają być zwrócone dane ('pl' lub 'en')
  */
 export async function fetchPortfolioSection(
-  lang: Language = "pl"
+  lang: Language = "pl",
 ): Promise<PortfolioSection | null> {
   const query = `
     *[_type == "portfolioSection"][0]{
@@ -124,18 +132,21 @@ export async function fetchPortfolioSection(
   if (!data) {
     return null;
   }
-
-  // Mapuj dane wielojęzyczne na dane dla wybranego języka
   const headingKey = lang === "pl" ? "headingPl" : "headingEn";
   const descriptionKey = lang === "pl" ? "descriptionPl" : "descriptionEn";
   const titleKey = lang === "pl" ? "titlePl" : "titleEn";
-  const projectDescriptionKey = lang === "pl" ? "descriptionPl" : "descriptionEn";
+  const projectDescriptionKey =
+    lang === "pl" ? "descriptionPl" : "descriptionEn";
 
   const altKey = lang === "pl" ? "altPl" : "altEn";
 
   const projects: Project[] =
     data.projects?.map((project) => {
-      const categoryLabel = getCategoryLabel(project.category, project.customCategory, lang);
+      const categoryLabel = getCategoryLabel(
+        project.category,
+        project.customCategory,
+        lang,
+      );
       return {
         _id: project._id,
         title: project[titleKey] || project.titlePl || "",
@@ -184,7 +195,7 @@ export interface ProjectDetail extends Project {
  */
 export async function fetchProjectBySlug(
   slug: string,
-  lang: Language = "pl"
+  lang: Language = "pl",
 ): Promise<ProjectDetail | null> {
   const query = `
     *[_type == "project" && slug.current == $slug][0]{
@@ -278,27 +289,41 @@ export async function fetchProjectBySlug(
   const descriptionKey = lang === "pl" ? "descriptionPl" : "descriptionEn";
   const altKey = lang === "pl" ? "altPl" : "altEn";
 
-  const categoryLabel = getCategoryLabel(data.category, data.customCategory, lang);
+  const categoryLabel = getCategoryLabel(
+    data.category,
+    data.customCategory,
+    lang,
+  );
 
-  // Mapuj sekcje na odpowiedni język
   const mappedSections = data.sections?.map((section: any) => {
     const mapped: any = { _type: section._type };
 
     if (section._type === "heroSection") {
       mapped.title = section[titleKey] || section.titlePl;
-      mapped.subtitle = section[lang === "pl" ? "subtitlePl" : "subtitleEn"] || section.subtitlePl;
+      mapped.subtitle =
+        section[lang === "pl" ? "subtitlePl" : "subtitleEn"] ||
+        section.subtitlePl;
       if (section.backgroundImage) {
         mapped.backgroundImage = {
-          url: urlFor(section.backgroundImage).width(1920).height(1080).fit('clip').url(),
-          alt: section.backgroundImage[altKey] || section.backgroundImage.altPl || "",
+          url: urlFor(section.backgroundImage)
+            .width(1920)
+            .height(1080)
+            .fit("clip")
+            .url(),
+          alt:
+            section.backgroundImage[altKey] ||
+            section.backgroundImage.altPl ||
+            "",
         };
       }
     } else if (section._type === "descriptionSection") {
-      mapped.content = section[lang === "pl" ? "contentPl" : "contentEn"] || section.contentPl;
+      mapped.content =
+        section[lang === "pl" ? "contentPl" : "contentEn"] || section.contentPl;
     } else if (section._type === "gallerySection") {
       mapped.title = section[titleKey] || section.titlePl;
       mapped.description =
-        section[lang === "pl" ? "descriptionPl" : "descriptionEn"] || section.descriptionPl;
+        section[lang === "pl" ? "descriptionPl" : "descriptionEn"] ||
+        section.descriptionPl;
     } else if (section._type === "specsSection") {
       mapped.title = section[titleKey] || section.titlePl;
       mapped.specs = section.specs?.map((spec: any) => ({
@@ -309,7 +334,9 @@ export async function fetchProjectBySlug(
       mapped.title = section[titleKey] || section.titlePl;
       mapped.features = section.features?.map((feature: any) => ({
         title: feature[titleKey] || feature.titlePl,
-        description: feature[lang === "pl" ? "descriptionPl" : "descriptionEn"] || feature.descriptionPl,
+        description:
+          feature[lang === "pl" ? "descriptionPl" : "descriptionEn"] ||
+          feature.descriptionPl,
         icon: feature.icon,
       }));
     } else if (section._type === "imageGridSection") {
@@ -322,7 +349,9 @@ export async function fetchProjectBySlug(
             }
           : null,
         title: item[titleKey] || item.titlePl,
-        description: item[lang === "pl" ? "descriptionPl" : "descriptionEn"] || item.descriptionPl,
+        description:
+          item[lang === "pl" ? "descriptionPl" : "descriptionEn"] ||
+          item.descriptionPl,
       }));
     }
 
@@ -336,8 +365,9 @@ export async function fetchProjectBySlug(
           (lang === "pl" ? seoRaw.metaTitlePl : seoRaw.metaTitleEn) ||
           seoRaw.metaTitlePl,
         metaDescription:
-          (lang === "pl" ? seoRaw.metaDescriptionPl : seoRaw.metaDescriptionEn) ||
-          seoRaw.metaDescriptionPl,
+          (lang === "pl"
+            ? seoRaw.metaDescriptionPl
+            : seoRaw.metaDescriptionEn) || seoRaw.metaDescriptionPl,
         ogImage: seoRaw.ogImage
           ? urlFor(seoRaw.ogImage).width(1200).height(630).fit("clip").url()
           : undefined,
@@ -354,7 +384,7 @@ export async function fetchProjectBySlug(
     title: data[titleKey] || data.titlePl || "",
     slug: data.slug?.current || "",
     image: data.mainImage
-      ? urlFor(data.mainImage).width(1200).height(800).fit('clip').url()
+      ? urlFor(data.mainImage).width(1200).height(800).fit("clip").url()
       : "",
     imageAlt: data.mainImage?.[altKey] || data.mainImage?.altPl || "",
     gridSpan: data.gridSpan || "md:col-span-1 md:row-span-1",
@@ -373,7 +403,7 @@ export async function fetchProjectBySlug(
  * @param lang - Język, w którym mają być zwrócone dane ('pl' lub 'en')
  */
 export async function fetchAllProjects(
-  lang: Language = "pl"
+  lang: Language = "pl",
 ): Promise<Project[]> {
   const query = `
     *[_type == "project"] | order(publishedAt desc){
@@ -402,7 +432,11 @@ export async function fetchAllProjects(
   const altKey = lang === "pl" ? "altPl" : "altEn";
 
   return data.map((project) => {
-    const categoryLabel = getCategoryLabel(project.category, project.customCategory, lang);
+    const categoryLabel = getCategoryLabel(
+      project.category,
+      project.customCategory,
+      lang,
+    );
     return {
       _id: project._id,
       title: project[titleKey] || project.titlePl || "",

@@ -21,7 +21,7 @@ interface ProcessAnimationRefs {
 export function useProcessAnimations(
   refs: ProcessAnimationRefs,
   processData: unknown,
-  isMobile: boolean
+  isMobile: boolean,
 ) {
   const {
     pathRef,
@@ -34,7 +34,6 @@ export function useProcessAnimations(
     heroLineRef,
   } = refs;
 
-  // Hero: animacja fade-in
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       if (heroTitleRef.current) {
@@ -48,7 +47,7 @@ export function useProcessAnimations(
             delay: 0.2,
             ease: "power2.out",
             force3D: true,
-          }
+          },
         );
       }
       if (heroIntroRef.current) {
@@ -62,7 +61,7 @@ export function useProcessAnimations(
             delay: 0.4,
             ease: "power2.out",
             force3D: true,
-          }
+          },
         );
       }
       if (heroLineRef.current) {
@@ -76,7 +75,7 @@ export function useProcessAnimations(
             delay: 0.6,
             ease: "power2.out",
             force3D: true,
-          }
+          },
         );
       }
     });
@@ -84,7 +83,6 @@ export function useProcessAnimations(
     return () => ctx.revert();
   }, [heroTitleRef, heroIntroRef, heroLineRef]);
 
-  // SVG Path: animacja rysowania podczas scrollowania + dynamiczne dostosowanie pozycji startowej
   useEffect(() => {
     if (!svgSectionRef.current) return;
 
@@ -92,35 +90,31 @@ export function useProcessAnimations(
     const svg = path?.closest("svg");
     if (!path || !svg) return;
 
-    // Funkcja do obliczenia pozycji bordera względem SVG viewBox
     const updatePathStartPosition = () => {
       if (!heroLineRef.current || !svgSectionRef.current || isMobile) return;
 
       const borderRect = heroLineRef.current.getBoundingClientRect();
       const sectionRect = svgSectionRef.current.getBoundingClientRect();
 
-      // Oblicz pozycję bordera względem sekcji SVG
       const borderTopRelativeToSection = borderRect.top - sectionRect.top;
       const sectionHeight = sectionRect.height;
 
-      // ViewBox: "-50 100 900 2700" -> y start: 100, height: 2700
       const viewBoxY = 100;
       const viewBoxHeight = 2700;
-      
-      // Oblicz pozycję Y w viewBox (uwzględniając, że sekcja może być przesunięta przez -mt-[40vh])
-      const borderYInViewBox = viewBoxY + (borderTopRelativeToSection / sectionHeight) * viewBoxHeight;
 
-      // Aktualizuj ścieżkę - zmień startową pozycję Y
+      const borderYInViewBox =
+        viewBoxY + (borderTopRelativeToSection / sectionHeight) * viewBoxHeight;
+
       const currentPath = path.getAttribute("d") || "";
-      // Znajdź i zamień pierwszą pozycję Y w ścieżce (po M 400)
-      const updatedPath = currentPath.replace(/M 400 \d+/, `M 400 ${Math.round(borderYInViewBox)}`);
+      const updatedPath = currentPath.replace(
+        /M 400 \d+/,
+        `M 400 ${Math.round(borderYInViewBox)}`,
+      );
       path.setAttribute("d", updatedPath);
     };
 
-    // Funkcja do inicjalizacji i setupu animacji
     const initAndSetup = () => {
       updatePathStartPosition();
-      // Po aktualizacji ścieżki, oblicz nową długość
       const pathLength = path.getTotalLength();
       gsap.set(path, {
         strokeDasharray: pathLength,
@@ -137,12 +131,11 @@ export function useProcessAnimations(
         trigger: svgSectionRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: true, // Smooth scrollowanie
+        scrub: true,
         onUpdate: (self) => {
           const progress = self.progress;
           const currentPathLength = path.getTotalLength();
           const slowedProgress = progress * 0.52;
-          // Wolniejszy początek, szybsze dokończenie pod koniec (żeby nie ciągnęło się za długo)
           let easedProgress;
           if (slowedProgress < 0.4) {
             easedProgress = 1 - Math.pow(1 - slowedProgress, 2);
@@ -167,12 +160,13 @@ export function useProcessAnimations(
     };
   }, [pathRef, pathMobileRef, svgSectionRef, heroLineRef, isMobile]);
 
-  // Tylko karty z tekstem: przy dojechaniu SVG – border i shadow w kolorze sekcji (zdjęcia bez podświetlenia)
   useEffect(() => {
     if (!svgSectionRef.current) return;
 
     function hexToRgba(hex: string, a: number): string {
-      const m = hex.replace(/^#/, "").match(/([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
+      const m = hex
+        .replace(/^#/, "")
+        .match(/([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
       if (!m) return `rgba(0,240,255,${a})`;
       return `rgba(${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)},${a})`;
     }
@@ -182,7 +176,8 @@ export function useProcessAnimations(
 
       cards.forEach((card) => {
         if (!card) return;
-        const sectionColor = card.getAttribute("data-section-color") || "#00f0ff";
+        const sectionColor =
+          card.getAttribute("data-section-color") || "#00f0ff";
 
         ScrollTrigger.create({
           trigger: card,
@@ -194,7 +189,10 @@ export function useProcessAnimations(
             const glowIntensity = Math.sin(progress * Math.PI);
             if (glowIntensity > 0.08) {
               card.style.boxShadow = `0 0 ${20 * glowIntensity}px ${hexToRgba(sectionColor, 0.2 * glowIntensity)}, 0 0 ${60 * glowIntensity}px ${hexToRgba(sectionColor, 0.1 * glowIntensity)}`;
-              card.style.borderColor = hexToRgba(sectionColor, 0.15 + 0.35 * glowIntensity);
+              card.style.borderColor = hexToRgba(
+                sectionColor,
+                0.15 + 0.35 * glowIntensity,
+              );
             } else {
               card.style.boxShadow = "";
               card.style.borderColor = "";

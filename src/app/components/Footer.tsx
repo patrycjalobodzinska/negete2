@@ -16,14 +16,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
-import { fetchFaqSection } from "@/sanity/faq";
 import { fetchFooterData } from "@/sanity/footer";
 import { fetchServicesSection } from "@/sanity/services";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { t } from "@/i18n/dictionary";
-import type { FaqSection } from "@/sanity/faq";
-
-const FOOTER_FAQ_PREVIEW_COUNT = 3;
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Mail,
@@ -41,12 +37,12 @@ export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const { lang, getPath } = useLocalizedPath();
-  const [faqData, setFaqData] = useState<FaqSection | null>(null);
-  const [footerData, setFooterData] = useState<Awaited<ReturnType<typeof fetchFooterData>>>(null);
-  const [servicesData, setServicesData] = useState<Awaited<ReturnType<typeof fetchServicesSection>>>(null);
+  const [footerData, setFooterData] =
+    useState<Awaited<ReturnType<typeof fetchFooterData>>>(null);
+  const [servicesData, setServicesData] =
+    useState<Awaited<ReturnType<typeof fetchServicesSection>>>(null);
 
   useEffect(() => {
-    fetchFaqSection(lang).then((data) => setFaqData(data));
     fetchFooterData(lang).then((data) => setFooterData(data));
     fetchServicesSection(lang).then((data) => setServicesData(data));
   }, [lang]);
@@ -66,7 +62,7 @@ export default function Footer() {
               trigger: footerRef.current,
               start: "top 90%",
             },
-          }
+          },
         );
       }
 
@@ -85,7 +81,7 @@ export default function Footer() {
                 trigger: footerRef.current,
                 start: "top 90%",
               },
-            }
+            },
           );
         }
       });
@@ -97,9 +93,21 @@ export default function Footer() {
   const footerLinks = {
     company: [
       { name: t(lang, "nav.home"), href: getPath("/"), key: "home" },
-      { name: t(lang, "nav.projects"), href: getPath("/realizacje"), key: "projects" },
-      { name: t(lang, "nav.process"), href: getPath("/proces"), key: "process" },
-      { name: t(lang, "nav.services"), href: getPath("/uslugi"), key: "services" },
+      {
+        name: t(lang, "nav.projects"),
+        href: getPath("/realizacje"),
+        key: "projects",
+      },
+      {
+        name: t(lang, "nav.process"),
+        href: getPath("/proces"),
+        key: "process",
+      },
+      {
+        name: t(lang, "nav.services"),
+        href: getPath("/uslugi"),
+        key: "services",
+      },
       { name: t(lang, "nav.blog"), href: getPath("/blog"), key: "blog" },
       { name: t(lang, "nav.faq"), href: getPath("/faq"), key: "faq" },
     ],
@@ -117,9 +125,21 @@ export default function Footer() {
             { name: "Prototypowanie", href: getPath("/uslugi"), key: "proto" },
           ],
     legal: [
-      { name: t(lang, "footer.legal.privacy"), href: getPath("/polityka-prywatnosci"), key: "privacy" },
-      { name: t(lang, "footer.legal.terms"), href: getPath("/regulamin"), key: "terms" },
-      { name: t(lang, "footer.legal.cookies"), href: getPath("/cookies"), key: "cookies" },
+      {
+        name: t(lang, "footer.legal.privacy"),
+        href: getPath("/polityka-prywatnosci"),
+        key: "privacy",
+      },
+      {
+        name: t(lang, "footer.legal.terms"),
+        href: getPath("/regulamin"),
+        key: "terms",
+      },
+      {
+        name: t(lang, "footer.legal.cookies"),
+        href: getPath("/cookies"),
+        key: "cookies",
+      },
     ],
   };
 
@@ -144,7 +164,11 @@ export default function Footer() {
           href: c.url,
         }))
       : [
-          { icon: Mail, text: "kontakt@negete.pl", href: "mailto:kontakt@negete.pl" },
+          {
+            icon: Mail,
+            text: "kontakt@negete.pl",
+            href: "mailto:kontakt@negete.pl",
+          },
           { icon: Phone, text: "+48 123 456 789", href: "tel:+48123456789" },
           { icon: MapPin, text: "Warszawa, Polska", href: "#" },
         ];
@@ -157,19 +181,18 @@ export default function Footer() {
     <footer
       ref={footerRef}
       className="relative border-t border-white/10 bg-gradient-to-b from-transparent to-black/20 backdrop-blur-sm">
-      {/* Krótka linia nad kontaktem — z cieniem */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-32 sm:w-48 rounded-full"
         style={{
-          background: "linear-gradient(90deg, transparent, #1e3a8a, transparent)",
+          background:
+            "linear-gradient(90deg, transparent, #1e3a8a, transparent)",
           boxShadow:
             "0 8px 50px 12px rgba(30,58,138,0.6), 0 20px 80px 24px rgba(30,58,138,0.4)",
         }}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          {/* Logo, opis i kontakt */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
           <div
             ref={(el) => {
               sectionsRef.current[0] = el;
@@ -185,7 +208,6 @@ export default function Footer() {
             <p className="text-gray-400 text-sm leading-relaxed">
               {footerDescription}
             </p>
-            {/* Kontakt pod opisem */}
             <ul className="space-y-2 pt-2">
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
@@ -201,7 +223,6 @@ export default function Footer() {
                 );
               })}
             </ul>
-            {/* Social media */}
             <div className="flex items-center gap-4 pt-4">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
@@ -220,7 +241,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Firma */}
           <div
             ref={(el) => {
               sectionsRef.current[1] = el;
@@ -239,8 +259,6 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-
-          {/* Usługi */}
           <div
             ref={(el) => {
               sectionsRef.current[2] = el;
@@ -259,42 +277,14 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-
-          {/* FAQ */}
-          <div
-            ref={(el) => {
-              sectionsRef.current[3] = el;
-            }}
-            className="space-y-4">
-            <h3 className="text-white font-bold text-lg mb-4">FAQ</h3>
-            {faqData?.items && faqData.items.length > 0 ? (
-              <ul className="space-y-3">
-                {faqData.items.slice(0, FOOTER_FAQ_PREVIEW_COUNT).map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={getPath("/faq")}
-                      className="text-gray-400 hover:text-cyan-400 transition-colors text-sm line-clamp-1">
-                      {item.question}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <Link
-                href={getPath("/faq")}
-                className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
-                {t(lang, "footer.faqDefault")}
-              </Link>
-            )}
-          </div>
         </div>
 
-        {/* Dolna sekcja - Copyright, język, linki prawne, made by */}
         <div className="border-t border-white/10 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-1 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © {new Date().getFullYear()} NEGETE. {t(lang, "footer.copyright")}.
+                © {new Date().getFullYear()} NEGETE.{" "}
+                {t(lang, "footer.copyright")}.
               </p>
               <p className="text-gray-500 text-sm">
                 {t(lang, "footer.madeBy")}{" "}
@@ -322,7 +312,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Neonowy efekt na dole */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
     </footer>
   );

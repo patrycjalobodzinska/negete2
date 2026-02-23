@@ -14,7 +14,7 @@ type BuildMetadataParams = {
   image?: string;
   siteName?: string;
   lang: string;
-  path: string; // np. "/", "/faq", "/blog/post-slug"
+  path: string;
   canonical?: string;
   seo?: SeoLike | null;
 };

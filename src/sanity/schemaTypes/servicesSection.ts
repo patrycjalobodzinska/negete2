@@ -95,6 +95,80 @@ export const servicesSection = defineType({
               rows: 3,
               validation: (Rule) => Rule.required(),
             }),
+            defineField({
+              name: "seo",
+              title: "SEO podstrony usługi",
+              type: "seoFields",
+              description:
+                "Opcjonalnie. Meta tytuł, opis i obraz OG dla tej podstrony (np. /uslugi/projektowanie-pcb). Puste = użycie tytułu i opisu usługi.",
+            }),
+            defineField({
+              name: "longDescriptionPl",
+              title: "Długi opis – podstrona (Polski)",
+              type: "text",
+              rows: 5,
+              description: "Rozwinięty opis wyświetlany na podstronie usługi.",
+            }),
+            defineField({
+              name: "longDescriptionEn",
+              title: "Długi opis – podstrona (English)",
+              type: "text",
+              rows: 5,
+            }),
+            defineField({
+              name: "features",
+              title: "Co oferujemy (lista)",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "serviceFeature",
+                  fields: [
+                    defineField({ name: "titlePl", title: "Tytuł (PL)", type: "string" }),
+                    defineField({ name: "titleEn", title: "Tytuł (EN)", type: "string" }),
+                    defineField({ name: "descriptionPl", title: "Opis (PL)", type: "text", rows: 2 }),
+                    defineField({ name: "descriptionEn", title: "Opis (EN)", type: "text", rows: 2 }),
+                  ],
+                  preview: { select: { title: "titlePl" } },
+                }),
+              ],
+            }),
+            defineField({
+              name: "process",
+              title: "Jak pracujemy (kroki)",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "processStep",
+                  fields: [
+                    defineField({ name: "stepPl", title: "Krok (PL)", type: "string" }),
+                    defineField({ name: "stepEn", title: "Krok (EN)", type: "string" }),
+                    defineField({ name: "descriptionPl", title: "Opis (PL)", type: "text", rows: 2 }),
+                    defineField({ name: "descriptionEn", title: "Opis (EN)", type: "text", rows: 2 }),
+                  ],
+                  preview: { select: { title: "stepPl" } },
+                }),
+              ],
+            }),
+            defineField({
+              name: "specs",
+              title: "Specyfikacja techniczna",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "specItem",
+                  fields: [
+                    defineField({ name: "labelPl", title: "Etykieta (PL)", type: "string" }),
+                    defineField({ name: "labelEn", title: "Etykieta (EN)", type: "string" }),
+                    defineField({ name: "valuePl", title: "Wartość (PL)", type: "string" }),
+                    defineField({ name: "valueEn", title: "Wartość (EN)", type: "string" }),
+                  ],
+                  preview: { select: { title: "labelPl" } },
+                }),
+              ],
+            }),
           ],
         }),
       ],

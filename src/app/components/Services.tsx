@@ -97,7 +97,6 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Animacja tytułu
       if (titleRef.current) {
         gsap.fromTo(
           titleRef.current,
@@ -115,7 +114,6 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
         );
       }
 
-      // Animacja lewego tekstu
       if (leftTextRef.current) {
         gsap.fromTo(
           leftTextRef.current,
@@ -133,8 +131,6 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
           },
         );
       }
-
-      // Animacja prawego tekstu i przycisku
       if (rightTextRef.current) {
         gsap.fromTo(
           rightTextRef.current,
@@ -171,7 +167,6 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
         );
       }
 
-      // Animacja feature blocks
       featuresRef.current.forEach((feature, index) => {
         if (feature) {
           gsap.fromTo(
@@ -208,7 +203,6 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
       className="relative min-h-screen max-w-7xl mx-auto md:py-32 pb-12 px-6 ">
       <div className="">
         <div className="flex flex-col max-w-6xl gap-4 items-start">
-          {/* Lewa strona - tytuł i tekst */}
           <div className=" relative z-10">
             <div ref={leftTextRef} className="space-y-6 opacity-0">
               <h2
@@ -227,17 +221,12 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
           </div>
         </div>
       </div>
-      {/* Rakieta SVG na środku - tylko na desktop, przyklejona do sekcji */}
       <div className="hidden    lg:block absolute  inset-x-0 pointer-events-none z-0">
         <RocketSVG sectionId="services" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Layout - tekst po lewej i prawej, rakieta na środku */}
-
-        {/* Elementy usług po bokach rakiety - 3 po lewej, 3 po prawej */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
-          {/* Lewa strona - 3 elementy */}
           <div className="space-y-8">
             {services.slice(0, 3).map((service, index) => {
               const Icon =
@@ -277,12 +266,8 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
             })}
           </div>
 
-          {/* Środek - rakieta (zajmuje środkową kolumnę) */}
-          <div className="hidden lg:block relative h-full">
-            {/* Rakieta renderowana w RocketSVG - pozycjonowana absolutnie */}
-          </div>
+          <div className="hidden lg:block relative h-full"></div>
 
-          {/* Prawa strona - 3 elementy */}
           <div className="space-y-8">
             {services.slice(3, 6).map((service, index) => {
               const Icon =

@@ -12,6 +12,7 @@ export const siteSettings = defineType({
     { name: "contact", title: "Kontakt" },
     { name: "blog", title: "Lista bloga" },
     { name: "realizacje", title: "Lista realizacji" },
+    { name: "uslugi", title: "Usługi" },
     { name: "proces", title: "Strona procesu" },
   ],
   fields: [
@@ -32,7 +33,6 @@ export const siteSettings = defineType({
       options: { hotspot: true },
     }),
 
-    // Stopka
     defineField({
       name: "footerDescriptionPl",
       title: "Opis w stopce (Polski)",
@@ -77,7 +77,11 @@ export const siteSettings = defineType({
             },
             { name: "textPl", title: "Tekst (Polski)", type: "string" },
             { name: "textEn", title: "Tekst (English)", type: "string" },
-            { name: "url", title: "URL (mailto:, tel: lub link)", type: "string" },
+            {
+              name: "url",
+              title: "URL (mailto:, tel: lub link)",
+              type: "string",
+            },
           ],
           preview: {
             select: { title: "textPl" },
@@ -100,7 +104,8 @@ export const siteSettings = defineType({
               name: "icon",
               title: "Ikona (Lucide)",
               type: "string",
-              description: "Nazwa ikony z lucide-react, np. Linkedin, Github, Twitter, Facebook, Instagram",
+              description:
+                "Nazwa ikony z lucide-react, np. Linkedin, Github, Twitter, Facebook, Instagram",
               options: {
                 list: [
                   { title: "LinkedIn", value: "Linkedin" },
@@ -112,7 +117,12 @@ export const siteSettings = defineType({
                 ],
               },
             },
-            { name: "url", title: "URL", type: "url", validation: (Rule) => Rule.required() },
+            {
+              name: "url",
+              title: "URL",
+              type: "url",
+              validation: (Rule) => Rule.required(),
+            },
           ],
           preview: {
             select: { title: "icon" },
@@ -159,6 +169,15 @@ export const siteSettings = defineType({
       title: "Meta strony Realizacje (lista)",
       type: "seoFields",
       group: "realizacje",
+    }),
+
+    // Lista usług (/uslugi)
+    defineField({
+      name: "servicesListPageSeo",
+      title: "Meta strony Usługi (lista)",
+      type: "seoFields",
+      group: "uslugi",
+      description: "SEO dla strony z listą wszystkich usług.",
     }),
 
     // Strona procesu – tu używamy danych z processPage, ale można dodać domyślne

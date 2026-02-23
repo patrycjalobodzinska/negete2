@@ -124,7 +124,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
       <ArticleJsonLd
         title={post.title}
         description={post.excerpt}

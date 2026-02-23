@@ -88,11 +88,14 @@ export function ArticleJsonLd({
 export function FaqPageJsonLd({
   items,
   lang,
+  url,
 }: {
   items: { question: string; answer: string }[];
   lang: string;
+  url?: string;
 }) {
   const baseUrl = getBaseUrl();
+  const pageUrl = url ?? `${baseUrl}/${lang}/faq`;
   const mainEntity = items.map((item) => ({
     "@type": "Question",
     name: item.question,
@@ -107,7 +110,36 @@ export function FaqPageJsonLd({
     "@type": "FAQPage",
     mainEntity,
     inLanguage: lang === "pl" ? "pl-PL" : "en-US",
-    url: `${baseUrl}/${lang}/faq`,
+    url: pageUrl.startsWith("http") ? pageUrl : `${baseUrl}${pageUrl.startsWith("/") ? "" : "/"}${pageUrl}`,
+  };
+  return <JsonLd data={data} />;
+}
+
+/** SEO: schema.org Service – dla pojedynczej podstrony usługi */
+export function ServiceJsonLd({
+  name,
+  description,
+  url,
+  lang,
+}: {
+  name: string;
+  description: string;
+  url: string;
+  lang: string;
+}) {
+  const baseUrl = getBaseUrl();
+  const fullUrl = url.startsWith("http") ? url : `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name,
+    description,
+    url: fullUrl,
+    inLanguage: lang === "pl" ? "pl-PL" : "en-US",
+    provider: {
+      "@type": "Organization",
+      name: "NeGeTe",
+    },
   };
   return <JsonLd data={data} />;
 }

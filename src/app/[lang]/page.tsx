@@ -61,7 +61,7 @@ export default async function Home({ params }: Props) {
     ]);
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
       <HeroAlt lang={lang as Language} />
       <Services lang={lang as Language} initialData={servicesData} />
       <Portfolio lang={lang as Language} initialData={portfolioData} />

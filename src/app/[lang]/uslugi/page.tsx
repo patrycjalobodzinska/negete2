@@ -83,6 +83,8 @@ export async function generateMetadata({ params }: Props) {
     siteName: settings?.siteName,
     lang,
     path: `/${lang}/uslugi`,
+    seo: settings?.servicesListPageSeo,
+    image: settings?.defaultOgImage,
   });
 }
 
@@ -117,7 +119,7 @@ export default async function UslugiPage({ params }: Props) {
     servicesData?.intro || t(lang as Language, "uslugi.defaultIntro");
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <Link
           href={lang === "pl" ? "/" : `/${lang}`}

@@ -53,8 +53,6 @@ export default function ProcessPage({
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
-
-  // Gdy brak danych z Sanity – nic nie pokazuj (bez migania placeholderów przy odświeżeniu)
   const sections = !processData
     ? []
     : processData.sections?.length
@@ -100,7 +98,6 @@ export default function ProcessPage({
       <section
         ref={svgSectionRef}
         className="relative lg:h-[500vh] lg:min-h-[3200px] min-h-[350vh] h-full overflow-hidden lg:-mt-[40vh] isolate">
-        {/* SVG w tle – z-index 0, żeby był pod kartami i obrazami */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
             className="absolute inset-0 w-full h-full hidden lg:block"
@@ -248,7 +245,6 @@ export default function ProcessPage({
                 ? "88%"
                 : (IMG_TOPS[index] ?? "18%");
               const cardTop = CARD_TOPS[index] ?? "4%";
-              // Pierwsza sekcja: tekst po lewej, zdjęcie po prawej; druga na odwrót, potem naprzemiennie
               const imgPositionClasses = isLastAndCentered
                 ? "left-1/2 -translate-x-1/2"
                 : isEven
@@ -271,7 +267,7 @@ export default function ProcessPage({
                         imgRefs.current[index] = el;
                       }}
                       data-section-color={section.color}
-                      data-with-border={!!(section.image?.withBorder)}
+                      data-with-border={!!section.image?.withBorder}
                       className={`relative w-full aspect-square rounded-2xl overflow-hidden ${
                         !section.image || section.image.withBorder
                           ? "border-2"
@@ -368,7 +364,7 @@ export default function ProcessPage({
                       imgRefs.current[index] = el;
                     }}
                     data-section-color={section.color}
-                    data-with-border={!!(section.image?.withBorder)}
+                    data-with-border={!!section.image?.withBorder}
                     className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 ${
                       !section.image || section.image.withBorder
                         ? "border-2"

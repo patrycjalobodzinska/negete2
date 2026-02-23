@@ -117,7 +117,6 @@ export default function Contact({
       data-section="contact"
       className="relative py-24 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
       <div className="max-w-7xl mx-auto">
-        {/* Nagłówek Kontakt */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -139,7 +138,6 @@ export default function Contact({
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-stretch lg:items-start justify-center">
-          {/* Lewa kolumna – karty zespołu (jedna pod drugą, bez zdjęć) */}
           {data.people.length > 0 && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -182,7 +180,6 @@ export default function Contact({
             </motion.div>
           )}
 
-          {/* Prawa kolumna – formularz kontaktowy + mail/tel */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -237,6 +234,12 @@ export default function Contact({
                     setFormData((p) => ({ ...p, firstName: e.target.value }));
                     clearFieldError("firstName");
                   }}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!fieldErrors.firstName}
+                  aria-describedby={
+                    fieldErrors.firstName ? "firstName-error" : undefined
+                  }
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 ${
                     fieldErrors.firstName
                       ? "border-red-400/50"
@@ -245,7 +248,10 @@ export default function Contact({
                   placeholder="Jan"
                 />
                 {fieldErrors.firstName && (
-                  <p className="mt-2 text-sm text-red-400">
+                  <p
+                    id="firstName-error"
+                    className="mt-2 text-sm text-red-400"
+                    role="alert">
                     {fieldErrors.firstName}
                   </p>
                 )}
@@ -287,6 +293,12 @@ export default function Contact({
                     setFormData((p) => ({ ...p, email: e.target.value }));
                     clearFieldError("email");
                   }}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!fieldErrors.email}
+                  aria-describedby={
+                    fieldErrors.email ? "email-error" : undefined
+                  }
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 ${
                     fieldErrors.email
                       ? "border-red-400/50"
@@ -295,7 +307,10 @@ export default function Contact({
                   placeholder="jan@example.com"
                 />
                 {fieldErrors.email && (
-                  <p className="mt-2 text-sm text-red-400">
+                  <p
+                    id="email-error"
+                    className="mt-2 text-sm text-red-400"
+                    role="alert">
                     {fieldErrors.email}
                   </p>
                 )}
@@ -319,6 +334,14 @@ export default function Contact({
                     }));
                     clearFieldError("productDescription");
                   }}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!fieldErrors.productDescription}
+                  aria-describedby={
+                    fieldErrors.productDescription
+                      ? "productDescription-error"
+                      : undefined
+                  }
                   rows={6}
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 resize-none ${
                     fieldErrors.productDescription
@@ -328,7 +351,10 @@ export default function Contact({
                   placeholder="Opisz swoją wizję produktu..."
                 />
                 {fieldErrors.productDescription && (
-                  <p className="mt-2 text-sm text-red-400">
+                  <p
+                    id="productDescription-error"
+                    className="mt-2 text-sm text-red-400"
+                    role="alert">
                     {fieldErrors.productDescription}
                   </p>
                 )}
@@ -369,7 +395,6 @@ export default function Contact({
               </Button>
             </form>
 
-            {/* Mail i tel pod formularzem */}
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               {mailItem && (
                 <a

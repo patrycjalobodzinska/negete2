@@ -19,7 +19,7 @@ export interface FooterData {
 }
 
 export async function fetchFooterData(
-  lang: Language = "pl"
+  lang: Language = "pl",
 ): Promise<FooterData | null> {
   try {
     const query = `
@@ -38,37 +38,42 @@ export async function fetchFooterData(
         }
       }
     `;
-    const data = await sanityClient.fetch<any | null>(query, {}, { useCdn: false });
+    const data = await sanityClient.fetch<any | null>(
+      query,
+      {},
+      { useCdn: false },
+    );
     if (!data) return null;
 
-  const descKey = lang === "pl" ? "footerDescriptionPl" : "footerDescriptionEn";
-  const description =
-    data[descKey] ||
-    data.footerDescriptionPl ||
-    "Twój zewnętrzny dział R&D. Od pomysłu do seryjnej produkcji.";
+    const descKey =
+      lang === "pl" ? "footerDescriptionPl" : "footerDescriptionEn";
+    const description =
+      data[descKey] ||
+      data.footerDescriptionPl ||
+      "Twój zewnętrzny dział R&D. Od pomysłu do seryjnej produkcji.";
 
-  const textKey = lang === "pl" ? "textPl" : "textEn";
-  const contactItems: FooterContactItem[] = (data.footerContactItems || []).map(
-    (item: any) => ({
+    const textKey = lang === "pl" ? "textPl" : "textEn";
+    const contactItems: FooterContactItem[] = (
+      data.footerContactItems || []
+    ).map((item: any) => ({
       icon: item.icon || "Mail",
       text: item[textKey] || item.textPl || "",
       url: item.url || "#",
-    })
-  );
+    }));
 
-  const socialLinks: FooterSocialItem[] = (data.footerSocialLinks || []).map(
-    (item: any) => ({
-      icon: item.icon || "Linkedin",
-      url: item.url || "#",
-    })
-  );
+    const socialLinks: FooterSocialItem[] = (data.footerSocialLinks || []).map(
+      (item: any) => ({
+        icon: item.icon || "Linkedin",
+        url: item.url || "#",
+      }),
+    );
 
     return { description, contactItems, socialLinks };
   } catch (error) {
     console.error("Error fetching footer data:", error);
-    // Zwróć domyślne wartości w przypadku błędu
     return {
-      description: "Twój zewnętrzny dział R&D. Od pomysłu do seryjnej produkcji.",
+      description:
+        "Twój zewnętrzny dział R&D. Od pomysłu do seryjnej produkcji.",
       contactItems: [],
       socialLinks: [],
     };

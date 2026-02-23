@@ -20,6 +20,7 @@ import {
   getCachedSiteSettings,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { ServiceJsonLd } from "../../../components/JsonLd";
 import { t } from "@/i18n/dictionary";
 
 const SERVICE_ICONS: Record<
@@ -663,6 +664,8 @@ export async function generateMetadata({ params }: Props) {
     siteName: settings?.siteName,
     lang,
     path: `/${lang}/uslugi/${slug}`,
+    seo: service?.seo,
+    image: settings?.defaultOgImage,
   });
 }
 
@@ -679,7 +682,6 @@ export default async function UslugaDetailPage({ params }: Props) {
     getCachedServiceCtaSection(lang as Language),
   ]);
 
-  // Try matching Sanity service by slug, or by index if Sanity services have no slug
   const sanityService =
     servicesData?.services?.find((s) => s.slug === slug) ||
     servicesData?.services?.find(
@@ -692,8 +694,6 @@ export default async function UslugaDetailPage({ params }: Props) {
   }
 
   const isEn = lang === "en";
-
-  // Use Sanity data if available, otherwise use mock
   const title =
     sanityService?.title ||
     (isEn ? mockService?.titleEn : mockService?.title) ||
@@ -705,15 +705,28 @@ export default async function UslugaDetailPage({ params }: Props) {
   const iconKey = sanityService?.iconKey || mockService?.iconKey || "Cpu";
   const IconComponent = SERVICE_ICONS[iconKey] || Cpu;
 
-  // Mock-specific rich content
-  const longDescription = isEn
-    ? mockService?.longDescriptionEn
-    : mockService?.longDescription;
-  const features = mockService?.features;
-  const processSteps = mockService?.process;
-  const specs = mockService?.specs;
+  const longDescription =
+    sanityService?.longDescription ??
+    (isEn ? mockService?.longDescriptionEn : mockService?.longDescription);
+  const features = sanityService?.features?.length
+    ? sanityService.features
+    : (mockService?.features ?? []).map((f) => ({
+        title: isEn ? f.titleEn : f.title,
+        description: isEn ? f.descriptionEn : f.description,
+      }));
+  const processSteps = sanityService?.process?.length
+    ? sanityService.process
+    : (mockService?.process ?? []).map((p) => ({
+        step: isEn ? p.stepEn : p.step,
+        description: isEn ? p.descriptionEn : p.description,
+      }));
+  const specs = sanityService?.specs?.length
+    ? sanityService.specs
+    : (mockService?.specs ?? []).map((s) => ({
+        label: isEn ? s.labelEn : s.label,
+        value: isEn ? s.valueEn : s.value,
+      }));
 
-  // Pozostałe usługi: z Sanity (jeśli są), inaczej z mocka; zawsze max 3
   const sanityOthers =
     servicesData?.services
       ?.filter((s) => s.slug && s.slug !== slug)
@@ -736,9 +749,14 @@ export default async function UslugaDetailPage({ params }: Props) {
         }));
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
+      <ServiceJsonLd
+        name={title}
+        description={description}
+        url={`/${lang}/uslugi/${slug}`}
+        lang={lang}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        {/* Back link */}
         <Link
           href={`/${lang}/uslugi`}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium group">
@@ -746,7 +764,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           {t(lang as Language, "common.allServices")}
         </Link>
 
-        {/* Hero */}
         <header className="mb-16">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-400/20">
@@ -761,7 +778,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           </p>
         </header>
 
-        {/* Long description */}
         {longDescription && (
           <section className="mb-16">
             <div className="border-l-4 border-cyan-400/40 pl-6">
@@ -772,7 +788,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Features */}
         {features && features.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
@@ -784,13 +799,13 @@ export default async function UslugaDetailPage({ params }: Props) {
                   key={idx}
                   className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />
                     <div>
                       <h3 className="text-white font-medium mb-1">
-                        {isEn ? feature.titleEn : feature.title}
+                        {feature.title}
                       </h3>
                       <p className="text-gray-400 text-sm leading-relaxed">
-                        {isEn ? feature.descriptionEn : feature.description}
+                        {feature.description}
                       </p>
                     </div>
                   </div>
@@ -800,7 +815,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Process */}
         {processSteps && processSteps.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
@@ -810,18 +824,16 @@ export default async function UslugaDetailPage({ params }: Props) {
               {processSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-5 p-5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
+                  className="flex items-start gap-5 p-5 rounded-xl bg-white/3 border border-white/5 hover:border-white/10 transition-colors">
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
                     <span className="text-cyan-400 text-sm font-bold">
                       {idx + 1}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">
-                      {isEn ? step.stepEn : step.step}
-                    </h3>
+                    <h3 className="text-white font-medium mb-1">{step.step}</h3>
                     <p className="text-gray-400 text-sm leading-relaxed">
-                      {isEn ? step.descriptionEn : step.description}
+                      {step.description}
                     </p>
                   </div>
                 </div>
@@ -830,7 +842,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Specs */}
         {specs && specs.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
@@ -843,11 +854,9 @@ export default async function UslugaDetailPage({ params }: Props) {
                   className={`flex justify-between items-center px-6 py-4 ${
                     idx !== specs.length - 1 ? "border-b border-white/5" : ""
                   }`}>
-                  <span className="text-gray-400 text-sm">
-                    {isEn ? spec.labelEn : spec.label}
-                  </span>
+                  <span className="text-gray-400 text-sm">{spec.label}</span>
                   <span className="text-white font-medium text-sm">
-                    {isEn ? spec.valueEn : spec.value}
+                    {spec.value}
                   </span>
                 </div>
               ))}
@@ -855,9 +864,6 @@ export default async function UslugaDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Pozostałe usługi – zawsze na górze */}
-
-        {/* CTA – treść z Sanity (sekcja „Zainteresowany tą usługą?”) */}
         <section className="mb-16">
           <div className="rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/20 p-8 text-center">
             <h2 className="text-2xl font-semibold text-white mb-3">
@@ -903,7 +909,6 @@ export default async function UslugaDetailPage({ params }: Props) {
             </div>
           </section>
         )}
-        {/* Bottom back link */}
         <div className="mt-20 pt-12 border-t border-white/5">
           <Link
             href={`/${lang}/uslugi`}

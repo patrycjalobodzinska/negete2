@@ -5,20 +5,24 @@ import { getBaseUrl } from "@/lib/site-url";
 
 const baseUrl = getBaseUrl();
 
-const staticPaths = ["", "faq", "kontakt", "proces", "uslugi", "blog", "realizacje"] as const;
+const staticPaths = [
+  "",
+  "kontakt",
+  "proces",
+  "uslugi",
+  "blog",
+  "realizacje",
+  "faq",
+] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
-
-  // Strona główna bez prefiksu (pl)
   entries.push({
     url: baseUrl,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 1,
   });
-
-  // Strony statyczne w obu językach
   for (const lang of languages) {
     const prefix = `/${lang}`;
     for (const path of staticPaths) {
@@ -31,10 +35,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
   }
-
-  // Artykuły bloga
   const blogSlugs = await sanityClient.fetch<{ slug: string }[]>(
-    `*[_type == "blogPost" && (!defined(publishedAt) || publishedAt <= now())]{ "slug": slug.current }`
+    `*[_type == "blogPost" && (!defined(publishedAt) || publishedAt <= now())]{ "slug": slug.current }`,
   );
   for (const lang of languages) {
     for (const post of blogSlugs ?? []) {
@@ -48,11 +50,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }
   }
-
-  // Usługi
   const servicesDoc = await sanityClient.fetch<{
     services?: { slug?: { current?: string } }[];
-  } | null>(`*[_type == "servicesSection"][0]{ services[] { slug { current } } }`);
+  } | null>(
+    `*[_type == "servicesSection"][0]{ services[] { slug { current } } }`,
+  );
   const serviceSlugs = servicesDoc?.services ?? [];
   for (const lang of languages) {
     for (const s of serviceSlugs) {
@@ -68,9 +70,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Projekty / realizacje
   const projectSlugs = await sanityClient.fetch<{ slug: string }[]>(
-    `*[_type == "project"]{ "slug": slug.current }`
+    `*[_type == "project"]{ "slug": slug.current }`,
   );
   for (const lang of languages) {
     for (const project of projectSlugs ?? []) {

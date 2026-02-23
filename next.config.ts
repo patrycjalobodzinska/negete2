@@ -1,14 +1,13 @@
 import type { NextConfig } from "next";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-const _restart = 3; // force dev server restart
+const _restart = 3;
 
 const nextConfig: NextConfig = {
-  // Cache na Vercel – szybsze ładowanie
   experimental: {
     staleTimes: {
-      static: 86400, // 24h dla stron statycznych
-      dynamic: 3600,  // 1h dla dynamicznych
+      static: 86400,
+      dynamic: 3600,
     },
   },
   images: {

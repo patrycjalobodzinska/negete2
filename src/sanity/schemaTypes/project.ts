@@ -45,7 +45,8 @@ export const project = defineType({
       name: "slug",
       title: "Slug (URL)",
       type: "slug",
-      description: "Używany do tworzenia URL podstrony projektu (np. smart-iot-device)",
+      description:
+        "Używany do tworzenia URL podstrony projektu (np. smart-iot-device)",
       options: {
         source: "titlePl",
         maxLength: 96,
@@ -99,7 +100,6 @@ export const project = defineType({
       type: "string",
       description: "Wpisz własną kategorię, jeśli nie ma jej na liście powyżej",
       hidden: ({ parent }) => {
-        // Pokaż pole tylko gdy wybrano "inne" lub gdy nie wybrano żadnej kategorii
         return parent?.category && parent.category !== "inne";
       },
     }),
@@ -107,7 +107,8 @@ export const project = defineType({
       name: "gridSpan",
       title: "Rozmiar w siatce portfolio",
       type: "string",
-      description: "Jak duży ma być element w siatce portfolio na stronie głównej",
+      description:
+        "Jak duży ma być element w siatce portfolio na stronie głównej",
       options: {
         list: [
           { title: "Mały (1x1)", value: "md:col-span-1 md:row-span-1" },
@@ -137,13 +138,15 @@ export const project = defineType({
       title: "Meta tytuł / opis / OG obraz",
       type: "seoFields",
       fieldset: "seo",
-      description: "Opcjonalne nadpisanie SEO. Puste = użycie tytułu i opisu projektu.",
+      description:
+        "Opcjonalne nadpisanie SEO. Puste = użycie tytułu i opisu projektu.",
     }),
     defineField({
       name: "sections",
       title: "Sekcje projektu",
       type: "array",
-      description: "Dodaj sekcje, które mają być wyświetlone na stronie projektu (wszystko opcjonalne)",
+      description:
+        "Dodaj sekcje, które mają być wyświetlone na stronie projektu (wszystko opcjonalne)",
       of: [
         {
           type: "object",

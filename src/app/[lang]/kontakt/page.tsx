@@ -46,7 +46,7 @@ export default async function ContactPage({ params }: Props) {
   ]);
 
   return (
-    <main className="relative min-h-screen">
+    <main id="main-content" className="relative min-h-screen">
       <Contact
         lang={lang as Language}
         initialData={contactData}

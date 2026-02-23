@@ -19,7 +19,6 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
     }
-    // Użyj tylko jednego scrollTo dla lepszej wydajności
     const raf = requestAnimationFrame(() => {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     });

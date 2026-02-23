@@ -15,7 +15,6 @@ import {
 } from "@/sanity/process";
 import type { Language } from "@/i18n/config";
 
-// Mapowanie ikon z lucide-react
 const ICONS: Record<string, React.ComponentType<any>> = {
   Search: LucideIcons.Search,
   Layers: LucideIcons.Layers,
@@ -25,10 +24,8 @@ const ICONS: Record<string, React.ComponentType<any>> = {
   Code: LucideIcons.Code,
   Zap: LucideIcons.Zap,
   Award: LucideIcons.Award,
-  // Dodaj więcej ikon według potrzeb
 } as any;
 
-// Fallback dane
 const FALLBACK_STEPS: ProcessGroup[] = [
   {
     id: 0,
@@ -152,13 +149,10 @@ interface ProcessProps {
   initialData?: HomepageProcess | null;
 }
 
-export default function Process({
-  lang = "pl",
-  initialData,
-}: ProcessProps) {
+export default function Process({ lang = "pl", initialData }: ProcessProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [processData, setProcessData] = useState<HomepageProcess | null>(
-    initialData ?? null
+    initialData ?? null,
   );
 
   useEffect(() => {
@@ -170,20 +164,17 @@ export default function Process({
   const heading = processData?.heading || "Nasz proces";
   const subtitle = processData?.subtitle || "Od pomysłu do produkcji";
 
-  // Użyj useScroll - Lenis działa z natywnym scroll, więc framer-motion powinien działać
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  // Animacja linii PCB - płynie w dół podczas scrollowania
   const lineProgress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
     <section
       ref={sectionRef}
       className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Tło PCB */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <svg className="absolute inset-0 w-full h-full opacity-10">
           <defs>
@@ -202,7 +193,6 @@ export default function Process({
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Nagłówek */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -215,12 +205,8 @@ export default function Process({
           <p className="text-xl text-gray-400">{subtitle}</p>
         </motion.div>
 
-        {/* Pionowa linia PCB */}
         <div className="relative max-w-4xl mx-auto">
-          {/* Linia tła */}
           <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-transparent via-gray-700 to-transparent z-0" />
-
-          {/* Animowana linia z sygnałem */}
           <motion.div
             className="absolute left-1/2 top-0 w-1 -translate-x-1/2 origin-top z-0"
             style={{
@@ -231,14 +217,12 @@ export default function Process({
               boxShadow: `0 0 20px ${steps[0].color}40`,
             }}
           />
-
-          {/* Kroki procesu */}
           <div className="relative space-y-16 sm:space-y-24 md:space-y-32">
             {steps.map((step, index) => {
-              const IconComponent = step.icon && ICONS[step.icon] ? ICONS[step.icon] : ICONS.Search;
+              const IconComponent =
+                step.icon && ICONS[step.icon] ? ICONS[step.icon] : ICONS.Search;
               const stepRef = useRef<HTMLDivElement>(null);
 
-              // Użyj useScroll - Lenis działa z natywnym scroll
               const { scrollYProgress: stepProgress } = useScroll({
                 target: stepRef,
                 offset: ["start 0.7", "end 0.3"],
@@ -247,16 +231,15 @@ export default function Process({
               const opacity = useTransform(
                 stepProgress,
                 [0, 0.5, 1],
-                [0.3, 1, 1]
+                [0.3, 1, 1],
               );
               const scale = useTransform(
                 stepProgress,
                 [0, 0.5, 1],
-                [0.9, 1, 1]
+                [0.9, 1, 1],
               );
               const y = useTransform(stepProgress, [0, 0.5, 1], [30, 0, 0]);
 
-              // Sprawdź czy krok jest aktywny (w centrum widoku)
               const [isActive, setIsActive] = useState(false);
 
               useMotionValueEvent(stepProgress, "change", (latest) => {
@@ -270,7 +253,6 @@ export default function Process({
                   className={`relative flex flex-col md:flex-row items-center gap-8 md:gap-12 ${
                     index % 2 === 1 ? "md:flex-row-reverse" : ""
                   }`}>
-                  {/* Węzeł na linii – na mobile nad kartą (solid bg zasłania linię) */}
                   <div className="flex-shrink-0 md:bg-transparent bg-black/95 rounded-2xl  relative z-10">
                     <motion.div
                       className="relative w-24 h-24 rounded-2xl flex items-center justify-center border-2"
@@ -337,7 +319,6 @@ export default function Process({
                     </motion.div>
                   </div>
 
-                  {/* Karta z detalami */}
                   <motion.div
                     className="flex-1 w-full min-w-0 relative z-20"
                     style={{
@@ -347,14 +328,12 @@ export default function Process({
                     <motion.div
                       className="relative rounded-3xl p-8 sm:p-12 border-2 overflow-hidden"
                       style={{
-                        backgroundColor: "#050A14", // Tło strony jako podstawa - całkowicie nieprzezroczyste
+                        backgroundColor: "#050A14",
                         borderColor: `${step.color}40`,
                         boxShadow: `0 8px 32px ${step.color}20`,
                         opacity: 1,
                       }}>
-                      {/* Warstwa z blur - tylko efekt wizualny, nie wpływa na nieprzezroczystość */}
                       <div className="absolute inset-0 rounded-3xl backdrop-blur-2xl pointer-events-none" />
-                      {/* Warstwa z kolorem kroku z opacity */}
                       <div
                         className="absolute inset-0 rounded-3xl pointer-events-none"
                         style={{

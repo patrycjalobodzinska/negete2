@@ -5,7 +5,6 @@ import { defaultLanguage, languages } from "@/i18n/config";
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Pomiń middleware dla statycznych plików i API routes
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -17,7 +16,7 @@ export function middleware(request: NextRequest) {
   }
 
   const pathnameHasLang = languages.some(
-    (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
+    (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`,
   );
 
   const response = NextResponse.next();

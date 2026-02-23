@@ -42,7 +42,7 @@ export default async function ProcessPageRoute({ params }: Props) {
   const processData = await getCachedProcessPage(lang as Language);
 
   return (
-    <main className="relative min-h-screen w-full">
+    <main id="main-content" className="relative min-h-screen w-full">
       <ProcessPage lang={lang as Language} initialData={processData} />
       <Footer />
     </main>

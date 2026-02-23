@@ -13,7 +13,6 @@ import type { Language } from "@/i18n/config";
 import { t } from "@/i18n/dictionary";
 import { ThreeDMarquee } from "./ui/3d-marquee";
 
-// Fallback projekty (używane gdy brak danych z Sanity)
 const FALLBACK_PROJECTS: Array<{
   _id: string;
   title: string;
@@ -83,7 +82,7 @@ export default function Portfolio({
 }: PortfolioProps) {
   const { lang, getPath } = useLocalizedPath(langProp);
   const [portfolioData, setPortfolioData] = useState<PortfolioSection | null>(
-    initialData ?? null
+    initialData ?? null,
   );
 
   useEffect(() => {
@@ -91,7 +90,7 @@ export default function Portfolio({
     fetchPortfolioSection(lang)
       .then((data) => data && setPortfolioData(data))
       .catch((err) =>
-        console.error("Błąd pobierania sekcji portfolio z Sanity:", err)
+        console.error("Błąd pobierania sekcji portfolio z Sanity:", err),
       );
   }, [lang, initialData]);
 
@@ -100,9 +99,8 @@ export default function Portfolio({
       ? portfolioData.projects
       : FALLBACK_PROJECTS;
 
-  // Dla marquee ZAWSZE używaj projektów z obrazami – jeśli brak, FALLBACK (żeby nie znikały po załadowaniu Sanity)
   const projectsWithImages = (portfolioData?.projects ?? []).filter(
-    (p) => p.image && String(p.image).trim()
+    (p) => p.image && String(p.image).trim(),
   );
   const sourceForMarquee =
     projectsWithImages.length > 0 ? projectsWithImages : FALLBACK_PROJECTS;
@@ -113,15 +111,12 @@ export default function Portfolio({
     title: p.title,
   }));
 
-  // Powiel aż min. 28 elementów (jak w przykładzie Aceternity – ~7–8 na kolumnę)
   while (items.length < 28) {
     items = [...items, ...items];
   }
 
   return (
-    <section
-      data-section="portfolio"
-      className="relative md:py-32 py-12 px-6">
+    <section data-section="portfolio" className="relative md:py-32 py-12 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center flex justify-between ">
           <h2 className="text-3xl sm:text-4xl font-medium text-white tracking-tight mb-4">
@@ -132,8 +127,7 @@ export default function Portfolio({
             <motion.span
               className="inline-flex items-center gap-2 rounded-full border border-cyan-500/50 bg-cyan-500/10 px-6 py-3 text-cyan-400 font-medium transition-colors hover:border-cyan-400/70 hover:bg-cyan-500/20"
               whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
+              whileTap={{ scale: 0.98 }}>
               {t(lang, "portfolio.seeMore")}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
             </motion.span>
@@ -142,24 +136,12 @@ export default function Portfolio({
         <div className="text-gray-300">{portfolioData?.description}</div>
 
         <div className="mx-auto my-10 max-w-7xl rounded-3xl shadow-[0_0_25px_rgba(59,130,246,0.25),0_0_50px_rgba(59,130,246,0.1)]">
-          <ThreeDMarquee items={items} getHref={(slug) => getPath(`/realizacje/${slug}`)} />
+          <ThreeDMarquee
+            items={items}
+            getHref={(slug) => getPath(`/realizacje/${slug}`)}
+          />
         </div>
       </div>
     </section>
   );
 }
-
-/* ========== ZAKOMENTOWANA KARUZELA (Embla) ==========
-import { useEffect, useRef, useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  Carousel,
-  CarouselApi,
-  CarouselContent,
-  CarouselItem,
-} from "./ui/carousel";
-
-// ... reszta kodu karuzeli ...
-*/

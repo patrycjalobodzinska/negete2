@@ -42,62 +42,63 @@ export default async function ProjectsPage({ params, searchParams }: Props) {
 
   const selectedCategory = searchParamsResolved.category;
   const projects = await getCachedAllProjects(lang as Language);
-
-  // Pobierz unikalne kategorie
   const categories = Array.from(
-    new Set(projects.map((p) => p.category).filter(Boolean))
+    new Set(projects.map((p) => p.category).filter(Boolean)),
   ).sort();
 
-  // Filtruj projekty po kategorii
   const filteredProjects = selectedCategory
     ? projects.filter((p) => p.category === selectedCategory)
     : projects;
 
   return (
     <>
-      <div className="min-h-screen ">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-26 md:py-36">
-            <div className="mb-12 lg:mb-16">
-              <h1 className="text-3xl sm:text-4xl font-medium text-white mb-6 leading-tight">
-                {t(lang as Language, "realizacje.title")}
-              </h1>
-              <p className="text-lg sm:text-xl text-gray-400 max-w-2xl">
-                {t(lang as Language, "realizacje.browse")}
-              </p>
+      <main id="main-content" className="min-h-screen ">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-26 md:py-36">
+          <div className="mb-12 lg:mb-16">
+            <h1 className="text-3xl sm:text-4xl font-medium text-white mb-6 leading-tight">
+              {t(lang as Language, "realizacje.title")}
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl">
+              {t(lang as Language, "realizacje.browse")}
+            </p>
+          </div>
+
+          {categories.length > 0 && (
+            <div className="mb-10 lg:mb-12 flex flex-wrap gap-3">
+              <Link
+                href={`/${lang}/realizacje`}
+                className={`px-5 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 ${
+                  !selectedCategory
+                    ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 text-cyan-400 shadow-lg shadow-cyan-500/20"
+                    : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
+                }`}>
+                {t(lang as Language, "common.all")}
+              </Link>
+              {categories.map((category) => {
+                const categoryLabel =
+                  projects.find((p) => p.category === category)
+                    ?.categoryLabel || category;
+                return (
+                  <Link
+                    key={category}
+                    href={`/${lang}/realizacje?category=${encodeURIComponent(category || "")}`}
+                    className={`px-5 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 ${
+                      selectedCategory === category
+                        ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 text-cyan-400 shadow-lg shadow-cyan-500/20"
+                        : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
+                    }`}>
+                    {categoryLabel}
+                  </Link>
+                );
+              })}
             </div>
+          )}
 
-            {/* Filtry kategorii */}
-            {categories.length > 0 && (
-              <div className="mb-10 lg:mb-12 flex flex-wrap gap-3">
-                <Link
-                  href={`/${lang}/realizacje`}
-                  className={`px-5 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 ${
-                    !selectedCategory
-                      ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 text-cyan-400 shadow-lg shadow-cyan-500/20"
-                      : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
-                  }`}>
-                  {t(lang as Language, "common.all")}
-                </Link>
-                {categories.map((category) => {
-                  const categoryLabel = projects.find((p) => p.category === category)?.categoryLabel || category;
-                  return (
-                    <Link
-                      key={category}
-                      href={`/${lang}/realizacje?category=${encodeURIComponent(category || "")}`}
-                      className={`px-5 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 ${
-                        selectedCategory === category
-                          ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/60 text-cyan-400 shadow-lg shadow-cyan-500/20"
-                          : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20"
-                      }`}>
-                      {categoryLabel}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Lista projektów */}
-            {filteredProjects.length > 0 ? (
+          {filteredProjects.length > 0 ? (
+            <section aria-labelledby="realizacje-list-heading">
+              <h2 id="realizacje-list-heading" className="sr-only">
+                {t(lang as Language, "realizacje.browse")}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {filteredProjects.map((project) => (
                   <Link
@@ -135,17 +136,18 @@ export default async function ProjectsPage({ params, searchParams }: Props) {
                   </Link>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-20 lg:py-32">
-                <p className="text-gray-400 text-xl lg:text-2xl">
-                  {lang === "pl"
-                    ? "Brak projektów w tej kategorii"
-                    : "No projects in this category"}
-                </p>
-              </div>
-            )}
-          </div>
+            </section>
+          ) : (
+            <div className="text-center py-20 lg:py-32">
+              <p className="text-gray-400 text-xl lg:text-2xl">
+                {lang === "pl"
+                  ? "Brak projektów w tej kategorii"
+                  : "No projects in this category"}
+              </p>
+            </div>
+          )}
         </div>
+      </main>
       <Footer />
     </>
   );

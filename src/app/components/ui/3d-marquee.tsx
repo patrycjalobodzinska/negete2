@@ -15,9 +15,8 @@ export const ThreeDMarquee = ({
 }) => {
   if (items.length === 0) return null;
 
-  // Rozdział round-robin: każda kolumna dostaje co 4. element – unika powtórzeń w rzędzie
   const chunks = Array.from({ length: 4 }, (_, colIndex) =>
-    items.filter((_, i) => i % 4 === colIndex)
+    items.filter((_, i) => i % 4 === colIndex),
   );
 
   return (
@@ -25,8 +24,7 @@ export const ThreeDMarquee = ({
       className={cn(
         "mx-auto block h-[600px] overflow-hidden rounded-2xl max-sm:h-100",
         className,
-      )}
-    >
+      )}>
       <div className="flex size-full items-center justify-center">
         <div className="size-[1720px] shrink-0 scale-50 sm:scale-75 lg:scale-100">
           <div
@@ -34,8 +32,7 @@ export const ThreeDMarquee = ({
               transform: "rotateX(55deg) rotateY(0deg) rotateZ(-45deg)",
               transformStyle: "preserve-3d",
             }}
-            className="relative top-96 right-[50%] grid size-full origin-top-left grid-cols-4 gap-8"
-          >
+            className="relative top-96 right-[50%] grid size-full origin-top-left grid-cols-4 gap-8">
             {chunks.map((subarray, colIndex) => (
               <motion.div
                 animate={{ y: colIndex % 2 === 0 ? 100 : -100 }}
@@ -45,15 +42,13 @@ export const ThreeDMarquee = ({
                   repeatType: "reverse",
                 }}
                 key={colIndex + "marquee"}
-                className="flex flex-col items-start gap-8"
-              >
+                className="flex flex-col items-start gap-8">
                 <GridLineVertical className="-left-4" offset="80px" />
                 {subarray.map((item, imageIndex) => (
                   <Link
                     href={getHref(item.slug)}
                     key={imageIndex + item.image}
-                    className="relative block"
-                  >
+                    className="relative block">
                     <GridLineHorizontal className="-top-4" offset="20px" />
                     <motion.img
                       whileHover={{ y: -10 }}

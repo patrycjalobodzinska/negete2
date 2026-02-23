@@ -14,9 +14,10 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const lang = (searchParams.get("lang") || "pl") as Language;
   const faq = await getCachedFaqSection(lang);
+  const faqItems = faq?.items;
   const items =
-    faq?.items?.length > 0
-      ? faq.items.slice(0, MAX_FAQ_IN_FOOTER).map((item) => ({ id: item.id, question: item.question }))
+    faqItems && faqItems.length > 0
+      ? faqItems.slice(0, MAX_FAQ_IN_FOOTER).map((item) => ({ id: item.id, question: item.question }))
       : MOCK_QUESTIONS.slice(0, MAX_FAQ_IN_FOOTER).map((item, id) => ({
           id,
           question: lang === "pl" ? item.questionPl : item.questionEn,

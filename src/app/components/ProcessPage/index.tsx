@@ -97,9 +97,9 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative lg:h-[500vh] min-h-[350vh] h-full overflow-hidden z-0 lg:-mt-[40vh]"
+        className="relative lg:h-[500vh] lg:min-h-[3200px] min-h-[350vh] h-full overflow-hidden z-0 lg:-mt-[40vh]"
       >
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 -z-10 pointer-events-none" style={{ isolation: "isolate" }}>
           <svg
             className="absolute inset-0 w-full h-full hidden lg:block"
             viewBox="-50 100 900 2700"
@@ -117,16 +117,30 @@ export default function ProcessPage({
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
+              <linearGradient id="fadeStart" gradientUnits="userSpaceOnUse" x1="400" y1="100" x2="400" y2="500">
+                <stop offset="0%" stopColor="#00f0ff" stopOpacity="0" />
+                <stop offset="40%" stopColor="#00f0ff" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#00f0ff" stopOpacity="1" />
+              </linearGradient>
+              <mask id="fadeMask">
+                <rect x="-50" y="100" width="900" height="2700" fill="white" />
+                <rect x="-50" y="100" width="900" height="350" fill="url(#fadeStartMask)" />
+              </mask>
+              <linearGradient id="fadeStartMask" gradientUnits="userSpaceOnUse" x1="400" y1="100" x2="400" y2="450">
+                <stop offset="0%" stopColor="black" />
+                <stop offset="100%" stopColor="white" />
+              </linearGradient>
             </defs>
             <path
               ref={pathRef}
               d={PATH_D}
               stroke="#00f0ff"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeWidth="2"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
               fill="none"
               filter="url(#neonGlow)"
+              mask="url(#fadeMask)"
             />
           </svg>
           <svg
@@ -136,20 +150,41 @@ export default function ProcessPage({
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
           >
+            <defs>
+              <filter id="neonGlowMobile" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2" />
+                <feMerge>
+                  <feMergeNode in="blur2" />
+                  <feMergeNode in="blur1" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <linearGradient id="fadeStartMaskMobile" gradientUnits="userSpaceOnUse" x1="200" y1="0" x2="200" y2="400">
+                <stop offset="0%" stopColor="black" />
+                <stop offset="100%" stopColor="white" />
+              </linearGradient>
+              <mask id="fadeMaskMobile">
+                <rect x="0" y="0" width="400" height="2000" fill="white" />
+                <rect x="0" y="0" width="400" height="400" fill="url(#fadeStartMaskMobile)" />
+              </mask>
+            </defs>
             <path
               ref={pathMobileRef}
               d={PATH_D_MOBILE}
               stroke="#00f0ff"
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeWidth="2"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
               fill="none"
+              filter="url(#neonGlowMobile)"
+              mask="url(#fadeMaskMobile)"
             />
           </svg>
         </div>
 
         {!isMobile && (
-          <div className="relative w-full mx-auto max-w-[1500px] z-10 h-full">
+          <div className="relative w-full mx-auto max-w-[1500px] z-[2] h-full">
             {sectionsToRender.map((section, index) => {
               const isLastAndCentered = hasFiveSections && index === 4;
               const isEven = index % 2 === 0;
@@ -170,7 +205,7 @@ export default function ProcessPage({
               return (
                 <div key={section.id}>
                   <div
-                    className={`absolute z-[15] aspect-square w-[min(580px,42vw)] ${imgPositionClasses}`}
+                    className={`absolute z-[15] aspect-square w-[min(480px,38vw)] ${imgPositionClasses}`}
                     style={{ top: imgTop }}
                   >
                     <div
@@ -208,7 +243,7 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className={`absolute z-20 w-[min(580px,52vw)] ${cardPositionClasses}`}
+                    className={`absolute z-20 w-[min(520px,48vw)] ${cardPositionClasses}`}
                     style={{ top: cardTop }}
                   >
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
@@ -262,7 +297,7 @@ export default function ProcessPage({
         )}
 
         {isMobile && (
-          <div className="relative w-full z-10 px-4 flex flex-col gap-2 pt-24 pb-12">
+          <div className="relative w-full z-[2] px-4 flex flex-col gap-2 pt-24 pb-12">
             {sectionsToRender.map((section, index) => {
               const IconCmp = ICONS[section.icon ?? ""] ?? ICONS.Search;
               return (

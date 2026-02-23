@@ -122,9 +122,9 @@ export default function ProcessPage({
               ref={pathRef}
               d={PATH_D}
               stroke="#00f0ff"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeWidth="2"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
               fill="none"
               filter="url(#neonGlow)"
             />
@@ -140,9 +140,9 @@ export default function ProcessPage({
               ref={pathMobileRef}
               d={PATH_D_MOBILE}
               stroke="#00f0ff"
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeWidth="2"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
               fill="none"
             />
           </svg>

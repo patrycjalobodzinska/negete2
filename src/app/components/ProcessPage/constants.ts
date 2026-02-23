@@ -17,26 +17,40 @@ export const ICONS: Record<
 };
 
 export const PATH_D =
-  "M 400 160" +  // Start od środka bordera (x=400 to środek viewBox, y=160 to wysokość bordera)
-  " C 400 200, 400 240, 400 280" + // Płynne zejście w dół od środka bordera
-  " C 400 340, 120 420, 60 580" +
-  " C 0 740, 120 800, 350 840" +
-  " C 580 880, 780 940, 760 1100" +
-  " C 740 1260, 480 1300, 280 1340" +
-  " C 80 1380, 20 1460, 80 1600" +
-  " C 140 1740, 400 1780, 500 1840" +
-  " C 600 1900, 620 2000, 540 2120" +
-  " C 460 2240, 300 2360, 300 2480" +
-  " C 300 2600, 400 2720, 350 2900" +
-  " C 300 3080, 200 3200, 400 3350";
+  "M 400 160" +
+  " L 400 400" +      // prosto w dół
+  " L 60 400" +        // w lewo (kąt prosty)
+  " L 60 700" +        // w dół
+  " L 750 700" +       // w prawo (kąt prosty)
+  " L 750 1100" +      // w dół
+  " L 100 1100" +      // w lewo (kąt prosty)
+  " L 100 1500" +      // w dół
+  " L 650 1500" +      // w prawo (kąt prosty)
+  " L 650 1900" +      // w dół
+  " L 150 1900" +      // w lewo (kąt prosty)
+  " L 150 2300" +      // w dół
+  " L 600 2300" +      // w prawo (kąt prosty)
+  " L 600 2700" +      // w dół
+  " L 400 2700" +      // do środka
+  " L 400 3350";       // prosto w dół do końca
 
 export const PATH_D_MOBILE =
   "M 200 220" +
-  " C 50 450, 350 700, 200 950" +
-  " C 50 1200, 350 1450, 200 1700" +
-  " C 50 1950, 350 2200, 200 2400" +
-  " C 200 2600, 50 2800, 200 3000" +
-  " C 350 3200, 200 3400, 200 3600";
+  " L 200 400" +       // prosto w dół
+  " L 60 400" +        // w lewo
+  " L 60 750" +        // w dół
+  " L 340 750" +       // w prawo
+  " L 340 1100" +      // w dół
+  " L 60 1100" +       // w lewo
+  " L 60 1450" +       // w dół
+  " L 340 1450" +      // w prawo
+  " L 340 1800" +      // w dół
+  " L 60 1800" +       // w lewo
+  " L 60 2150" +       // w dół
+  " L 340 2150" +      // w prawo
+  " L 340 2500" +      // w dół
+  " L 200 2500" +      // do środka
+  " L 200 3600";       // prosto w dół
 
 export const FALLBACK_STEPS: ProcessSection[] = [
   {

@@ -140,23 +140,17 @@ export function useProcessAnimations(
         scrub: true, // Smooth scrollowanie
         onUpdate: (self) => {
           const progress = self.progress;
-          // Oblicz długość dynamicznie, bo ścieżka może się zmieniać
           const currentPathLength = path.getTotalLength();
-          // Spowolnienie animacji - zmniejszamy progress, żeby animacja była wolniejsza
-          const slowedProgress = progress * 0.65; // Trochę szybciej niż 0.6
-          // Custom easing - wolniejszy na początku (power2), ale przyspiesza pod koniec (power1)
-          // Dla pierwszych 60% użyj power2.out, dla reszty bardziej liniowy
+          const slowedProgress = progress * 0.52;
+          // Wolniejszy początek, szybsze dokończenie pod koniec (żeby nie ciągnęło się za długo)
           let easedProgress;
-          if (slowedProgress < 0.6) {
-            easedProgress = 1 - Math.pow(1 - slowedProgress, 2); // Wolniej na początku
+          if (slowedProgress < 0.4) {
+            easedProgress = 1 - Math.pow(1 - slowedProgress, 2);
           } else {
-            // Mapuj z zakresu [0.6, 0.65] na [0.64, 1.0]
-            const startValue = 1 - Math.pow(1 - 0.6, 2); // Wartość w punkcie 0.6
-            const range = 1.0 - startValue;
-            const t = (slowedProgress - 0.6) / (0.65 - 0.6); // Normalizuj do [0, 1]
-            easedProgress = startValue + t * range; // Mapuj liniowo do [startValue, 1.0]
+            const startValue = 1 - Math.pow(1 - 0.4, 2);
+            const t = (slowedProgress - 0.4) / (0.52 - 0.4);
+            easedProgress = startValue + (1 - startValue) * Math.pow(t, 0.7);
           }
-          // Upewnij się, że easedProgress nie przekracza 1
           easedProgress = Math.min(1, easedProgress);
           gsap.set(path, {
             strokeDashoffset: currentPathLength * (1 - easedProgress),
@@ -173,80 +167,37 @@ export function useProcessAnimations(
     };
   }, [pathRef, pathMobileRef, svgSectionRef, heroLineRef, isMobile]);
 
-  // Karty i obrazy: animacja podczas scrollowania z efektem rozjasnienia (glow)
+  // Tylko karty z tekstem: przy dojechaniu SVG – border i shadow w kolorze sekcji (zdjęcia bez podświetlenia)
   useEffect(() => {
     if (!svgSectionRef.current) return;
 
+    function hexToRgba(hex: string, a: number): string {
+      const m = hex.replace(/^#/, "").match(/([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
+      if (!m) return `rgba(0,240,255,${a})`;
+      return `rgba(${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)},${a})`;
+    }
+
     const ctx = gsap.context(() => {
       const cards = cardRefs.current.filter(Boolean);
-      const images = imgRefs.current.filter(Boolean);
 
       cards.forEach((card) => {
         if (!card) return;
-        gsap.set(card, {
-          opacity: 0.15,
-          y: 50,
-          force3D: true,
-        });
+        const sectionColor = card.getAttribute("data-section-color") || "#00f0ff";
 
-        // Animacja wejscia - fade in + glow
         ScrollTrigger.create({
           trigger: card,
-          start: "top 85%",
-          end: "top 35%",
-          scrub: 0.5,
+          start: "top 58%",
+          end: "top 10%",
+          scrub: 0.8,
           onUpdate: (self) => {
             const progress = self.progress;
-            gsap.set(card, {
-              opacity: 0.15 + progress * 0.85,
-              y: 50 * (1 - progress),
-              force3D: true,
-            });
-            // Neonowy glow na kartach - rozjasnienie jak w homepage
-            const glowIntensity = Math.sin(progress * Math.PI); // peak w srodku
-            const inner = card.querySelector("div");
-            if (inner) {
-              inner.style.boxShadow =
-                glowIntensity > 0.1
-                  ? `0 0 ${20 * glowIntensity}px rgba(0, 240, 255, ${0.15 * glowIntensity}), 0 0 ${60 * glowIntensity}px rgba(0, 240, 255, ${0.08 * glowIntensity})`
-                  : "";
-              inner.style.borderColor =
-                glowIntensity > 0.1
-                  ? `rgba(0, 240, 255, ${0.1 + 0.2 * glowIntensity})`
-                  : "";
-            }
-          },
-        });
-      });
-
-      images.forEach((img) => {
-        if (!img) return;
-        gsap.set(img, {
-          opacity: 0.15,
-          scale: 0.95,
-          force3D: true,
-        });
-
-        ScrollTrigger.create({
-          trigger: img,
-          start: "top 85%",
-          end: "top 35%",
-          scrub: 0.5,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            gsap.set(img, {
-              opacity: 0.15 + progress * 0.85,
-              scale: 0.95 + 0.05 * progress,
-              force3D: true,
-            });
-            // Neonowy glow na obrazach
             const glowIntensity = Math.sin(progress * Math.PI);
-            if (glowIntensity > 0.1) {
-              img.style.boxShadow = `0 0 ${30 * glowIntensity}px rgba(0, 240, 255, ${0.2 * glowIntensity}), 0 0 ${80 * glowIntensity}px rgba(0, 240, 255, ${0.1 * glowIntensity})`;
-              img.style.borderColor = `rgba(0, 240, 255, ${0.3 + 0.4 * glowIntensity})`;
+            if (glowIntensity > 0.08) {
+              card.style.boxShadow = `0 0 ${20 * glowIntensity}px ${hexToRgba(sectionColor, 0.2 * glowIntensity)}, 0 0 ${60 * glowIntensity}px ${hexToRgba(sectionColor, 0.1 * glowIntensity)}`;
+              card.style.borderColor = hexToRgba(sectionColor, 0.15 + 0.35 * glowIntensity);
             } else {
-              img.style.boxShadow = "";
-              img.style.borderColor = "";
+              card.style.boxShadow = "";
+              card.style.borderColor = "";
             }
           },
         });
@@ -254,5 +205,5 @@ export function useProcessAnimations(
     }, svgSectionRef.current);
 
     return () => ctx.revert();
-  }, [cardRefs, imgRefs, svgSectionRef, processData, isMobile]);
+  }, [cardRefs, svgSectionRef, processData, isMobile]);
 }

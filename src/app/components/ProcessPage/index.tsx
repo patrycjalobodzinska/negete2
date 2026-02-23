@@ -27,7 +27,9 @@ export default function ProcessPage({
   lang?: Language;
   initialData?: ProcessPageData | null;
 }) {
-  const [processData, setProcessData] = useState<ProcessPageData | null>(initialData ?? null);
+  const [processData, setProcessData] = useState<ProcessPageData | null>(
+    initialData ?? null,
+  );
   const [isMobile, setIsMobile] = useState(true);
 
   const pathRef = useRef<SVGPathElement>(null);
@@ -82,7 +84,7 @@ export default function ProcessPage({
       heroLineRef,
     },
     processData,
-    isMobile
+    isMobile,
   );
 
   return (
@@ -97,36 +99,66 @@ export default function ProcessPage({
 
       <section
         ref={svgSectionRef}
-        className="relative lg:h-[500vh] lg:min-h-[3200px] min-h-[350vh] h-full overflow-hidden z-0 lg:-mt-[40vh]"
-      >
-        <div className="absolute inset-0 -z-10 pointer-events-none" style={{ isolation: "isolate" }}>
+        className="relative lg:h-[500vh] lg:min-h-[3200px] min-h-[350vh] h-full overflow-hidden lg:-mt-[40vh] isolate">
+        {/* SVG w tle – z-index 0, żeby był pod kartami i obrazami */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
             className="absolute inset-0 w-full h-full hidden lg:block"
             viewBox="-50 100 900 2700"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
+            preserveAspectRatio="none">
             <defs>
-              <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1" />
-                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur2" />
+              <filter
+                id="neonGlow"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%">
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="6"
+                  result="blur1"
+                />
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="16"
+                  result="blur2"
+                />
                 <feMerge>
                   <feMergeNode in="blur2" />
                   <feMergeNode in="blur1" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <linearGradient id="fadeStart" gradientUnits="userSpaceOnUse" x1="400" y1="100" x2="400" y2="500">
+              <linearGradient
+                id="fadeStart"
+                gradientUnits="userSpaceOnUse"
+                x1="400"
+                y1="100"
+                x2="400"
+                y2="500">
                 <stop offset="0%" stopColor="#00f0ff" stopOpacity="0" />
                 <stop offset="40%" stopColor="#00f0ff" stopOpacity="0.3" />
                 <stop offset="100%" stopColor="#00f0ff" stopOpacity="1" />
               </linearGradient>
               <mask id="fadeMask">
                 <rect x="-50" y="100" width="900" height="2700" fill="white" />
-                <rect x="-50" y="100" width="900" height="350" fill="url(#fadeStartMask)" />
+                <rect
+                  x="-50"
+                  y="100"
+                  width="900"
+                  height="350"
+                  fill="url(#fadeStartMask)"
+                />
               </mask>
-              <linearGradient id="fadeStartMask" gradientUnits="userSpaceOnUse" x1="400" y1="100" x2="400" y2="450">
+              <linearGradient
+                id="fadeStartMask"
+                gradientUnits="userSpaceOnUse"
+                x1="400"
+                y1="100"
+                x2="400"
+                y2="450">
                 <stop offset="0%" stopColor="black" />
                 <stop offset="100%" stopColor="white" />
               </linearGradient>
@@ -148,25 +180,49 @@ export default function ProcessPage({
             viewBox="0 0 400 2000"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
+            preserveAspectRatio="none">
             <defs>
-              <filter id="neonGlowMobile" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1" />
-                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2" />
+              <filter
+                id="neonGlowMobile"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%">
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="4"
+                  result="blur1"
+                />
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="10"
+                  result="blur2"
+                />
                 <feMerge>
                   <feMergeNode in="blur2" />
                   <feMergeNode in="blur1" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
-              <linearGradient id="fadeStartMaskMobile" gradientUnits="userSpaceOnUse" x1="200" y1="0" x2="200" y2="400">
+              <linearGradient
+                id="fadeStartMaskMobile"
+                gradientUnits="userSpaceOnUse"
+                x1="200"
+                y1="0"
+                x2="200"
+                y2="400">
                 <stop offset="0%" stopColor="black" />
                 <stop offset="100%" stopColor="white" />
               </linearGradient>
               <mask id="fadeMaskMobile">
                 <rect x="0" y="0" width="400" height="2000" fill="white" />
-                <rect x="0" y="0" width="400" height="400" fill="url(#fadeStartMaskMobile)" />
+                <rect
+                  x="0"
+                  y="0"
+                  width="400"
+                  height="400"
+                  fill="url(#fadeStartMaskMobile)"
+                />
               </mask>
             </defs>
             <path
@@ -184,44 +240,49 @@ export default function ProcessPage({
         </div>
 
         {!isMobile && (
-          <div className="relative w-full mx-auto max-w-[1500px] z-[2] h-full">
+          <div className="relative w-full mx-auto max-w-[1500px] z-10 h-full">
             {sectionsToRender.map((section, index) => {
               const isLastAndCentered = hasFiveSections && index === 4;
               const isEven = index % 2 === 0;
-              const imgTop = isLastAndCentered ? "88%" : (IMG_TOPS[index] ?? "18%");
+              const imgTop = isLastAndCentered
+                ? "88%"
+                : (IMG_TOPS[index] ?? "18%");
               const cardTop = CARD_TOPS[index] ?? "4%";
+              // Pierwsza sekcja: tekst po lewej, zdjęcie po prawej; druga na odwrót, potem naprzemiennie
               const imgPositionClasses = isLastAndCentered
                 ? "left-1/2 -translate-x-1/2"
                 : isEven
-                  ? "left-[3%] right-auto"
-                  : "left-auto right-[3%]";
+                  ? "left-auto right-[3%]"
+                  : "left-[3%] right-auto";
               const cardPositionClasses = isLastAndCentered
                 ? "left-1/2 -translate-x-1/2"
                 : isEven
-                  ? "left-auto right-[4%]"
-                  : "left-[4%] right-auto";
+                  ? "left-[4%] right-auto"
+                  : "left-auto right-[4%]";
               const IconCmp = ICONS[section.icon ?? ""] ?? ICONS.Search;
 
               return (
                 <div key={section.id}>
                   <div
-                    className={`absolute z-[15] aspect-square w-[min(480px,38vw)] ${imgPositionClasses}`}
-                    style={{ top: imgTop }}
-                  >
+                    className={`absolute z-[35]  aspect-square w-[min(480px,38vw)] ${imgPositionClasses}`}
+                    style={{ top: imgTop }}>
                     <div
                       ref={(el) => {
                         imgRefs.current[index] = el;
                       }}
+                      data-section-color={section.color}
+                      data-with-border={!!(section.image?.withBorder)}
                       className={`relative w-full aspect-square rounded-2xl overflow-hidden ${
-                        !section.image || section.image.withBorder ? "border-2" : ""
+                        !section.image || section.image.withBorder
+                          ? "border-2"
+                          : ""
                       }`}
                       style={{
                         ...((!section.image || section.image.withBorder) && {
                           borderColor: `${section.color}80`,
                           boxShadow: `0 16px 48px ${section.color}30`,
                         }),
-                      }}
-                    >
+                      }}>
                       {section.image ? (
                         <Image
                           src={section.image.url}
@@ -232,25 +293,24 @@ export default function ProcessPage({
                       ) : (
                         <div
                           className="w-full h-full flex items-center justify-center bg-white/5"
-                          style={{ color: section.color }}
-                        >
+                          style={{ color: section.color }}>
                           <IconCmp className="w-16 h-16" />
                         </div>
                       )}
                     </div>
                   </div>
                   <div
-                    ref={(el) => {
-                      cardRefs.current[index] = el;
-                    }}
-                    className={`absolute z-20 w-[min(520px,48vw)] ${cardPositionClasses}`}
-                    style={{ top: cardTop }}
-                  >
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
+                    className={`absolute backdrop-blur-lg z-20 w-[min(520px,48vw)] ${cardPositionClasses}`}
+                    style={{ top: cardTop }}>
+                    <div
+                      ref={(el) => {
+                        cardRefs.current[index] = el;
+                      }}
+                      data-section-color={section.color}
+                      className="bg-white/3 relative backdrop-blur-lg rounded-2xl p-8 sm:p-10 border border-white/10 shadow-xl">
                       <span
                         className="inline-block text-xs font-semibold tracking-wider uppercase mb-3"
-                        style={{ color: section.color }}
-                      >
+                        style={{ color: section.color }}>
                         Krok {index + 1}
                       </span>
                       <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
@@ -264,8 +324,7 @@ export default function ProcessPage({
                           {section.details.map((detail, i) => (
                             <div
                               key={i}
-                              className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10"
-                            >
+                              className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
                               <div
                                 className="w-2 h-2 rounded-full mt-2 shrink-0"
                                 style={{
@@ -273,7 +332,9 @@ export default function ProcessPage({
                                   boxShadow: `0 0 8px ${section.color}`,
                                 }}
                               />
-                              <p className="text-gray-300 text-sm leading-relaxed">{detail}</p>
+                              <p className="text-gray-300 text-sm leading-relaxed">
+                                {detail}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -306,16 +367,19 @@ export default function ProcessPage({
                     ref={(el) => {
                       imgRefs.current[index] = el;
                     }}
+                    data-section-color={section.color}
+                    data-with-border={!!(section.image?.withBorder)}
                     className={`relative -mb-20 z-20 w-44 aspect-square rounded-2xl overflow-hidden shrink-0 mt-3 ml-auto mr-4 ${
-                      !section.image || section.image.withBorder ? "border-2" : ""
+                      !section.image || section.image.withBorder
+                        ? "border-2"
+                        : ""
                     }`}
                     style={{
                       ...((!section.image || section.image.withBorder) && {
                         borderColor: `${section.color}80`,
                         boxShadow: `0 16px 48px ${section.color}30`,
                       }),
-                    }}
-                  >
+                    }}>
                     {section.image ? (
                       <Image
                         src={section.image.url}
@@ -326,8 +390,7 @@ export default function ProcessPage({
                     ) : (
                       <div
                         className="w-full h-full flex items-center justify-center bg-white/5"
-                        style={{ color: section.color }}
-                      >
+                        style={{ color: section.color }}>
                         <IconCmp className="w-12 h-12" />
                       </div>
                     )}
@@ -336,15 +399,16 @@ export default function ProcessPage({
                     ref={(el) => {
                       cardRefs.current[index] = el;
                     }}
-                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl"
-                  >
+                    data-section-color={section.color}
+                    className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl">
                     <span
                       className="inline-block text-xs font-semibold tracking-wider uppercase mb-2"
-                      style={{ color: section.color }}
-                    >
+                      style={{ color: section.color }}>
                       Krok {index + 1}
                     </span>
-                    <h3 className="text-xl font-bold text-white mb-3">{section.title}</h3>
+                    <h3 className="text-xl font-bold text-white mb-3">
+                      {section.title}
+                    </h3>
                     <p className="text-gray-400 leading-relaxed text-base mb-4">
                       {section.description}
                     </p>
@@ -353,8 +417,7 @@ export default function ProcessPage({
                         {section.details.map((detail, i) => (
                           <div
                             key={i}
-                            className="flex items-start gap-2 p-3 rounded-xl bg-white/5 border border-white/10"
-                          >
+                            className="flex items-start gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
                             <div
                               className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
                               style={{
@@ -362,7 +425,9 @@ export default function ProcessPage({
                                 boxShadow: `0 0 6px ${section.color}`,
                               }}
                             />
-                            <p className="text-gray-300 text-xs leading-relaxed">{detail}</p>
+                            <p className="text-gray-300 text-xs leading-relaxed">
+                              {detail}
+                            </p>
                           </div>
                         ))}
                       </div>

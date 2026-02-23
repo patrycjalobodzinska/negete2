@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { languages, languageNames, type Language } from "@/i18n/config";
+import { t } from "@/i18n/dictionary";
 import { Globe } from "lucide-react";
 
 export function LanguageSwitcher({ variant = "navbar" }: { variant?: "navbar" | "footer" }) {
@@ -34,7 +35,7 @@ export function LanguageSwitcher({ variant = "navbar" }: { variant?: "navbar" | 
 
   return (
     <nav
-      aria-label={currentLang === "pl" ? "Wybierz język" : "Choose language"}
+      aria-label={t(currentLang, "common.chooseLanguage")}
       className="flex items-center gap-2"
     >
 

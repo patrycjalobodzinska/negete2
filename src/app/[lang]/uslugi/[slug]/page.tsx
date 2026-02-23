@@ -13,11 +13,19 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Footer from "../../../components/Footer";
-import { getCachedServicesSection, getCachedSiteSettings } from "@/sanity/cache";
+import { Button } from "../../../components/ui/button";
+import {
+  getCachedServicesSection,
+  getCachedServiceCtaSection,
+  getCachedSiteSettings,
+} from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
 import { t } from "@/i18n/dictionary";
 
-const SERVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const SERVICE_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   Cpu,
   Code,
   Box,
@@ -35,8 +43,18 @@ interface MockServiceDetail {
   descriptionEn: string;
   longDescription: string;
   longDescriptionEn: string;
-  features: { title: string; titleEn: string; description: string; descriptionEn: string }[];
-  process: { step: string; stepEn: string; description: string; descriptionEn: string }[];
+  features: {
+    title: string;
+    titleEn: string;
+    description: string;
+    descriptionEn: string;
+  }[];
+  process: {
+    step: string;
+    stepEn: string;
+    description: string;
+    descriptionEn: string;
+  }[];
   specs: { label: string; labelEn: string; value: string; valueEn: string }[];
 }
 
@@ -58,26 +76,34 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         title: "Schematy ideowe",
         titleEn: "Schematics",
-        description: "Kompletna dokumentacja schematowa zgodna ze standardami IPC.",
-        descriptionEn: "Complete schematic documentation compliant with IPC standards.",
+        description:
+          "Kompletna dokumentacja schematowa zgodna ze standardami IPC.",
+        descriptionEn:
+          "Complete schematic documentation compliant with IPC standards.",
       },
       {
         title: "PCB wielowarstwowe",
         titleEn: "Multi-layer PCB",
-        description: "Projektowanie obwodów do 16 warstw z kontrolowaną impedancją.",
-        descriptionEn: "Circuit design up to 16 layers with controlled impedance.",
+        description:
+          "Projektowanie obwodów do 16 warstw z kontrolowaną impedancją.",
+        descriptionEn:
+          "Circuit design up to 16 layers with controlled impedance.",
       },
       {
         title: "Symulacje EMC/EMI",
         titleEn: "EMC/EMI Simulations",
-        description: "Analiza i optymalizacja kompatybilności elektromagnetycznej.",
-        descriptionEn: "Analysis and optimization of electromagnetic compatibility.",
+        description:
+          "Analiza i optymalizacja kompatybilności elektromagnetycznej.",
+        descriptionEn:
+          "Analysis and optimization of electromagnetic compatibility.",
       },
       {
         title: "Weryfikacja DFM/DFA",
         titleEn: "DFM/DFA Verification",
-        description: "Sprawdzenie projektu pod kątem możliwości produkcyjnych i montażowych.",
-        descriptionEn: "Design verification for manufacturing and assembly feasibility.",
+        description:
+          "Sprawdzenie projektu pod kątem możliwości produkcyjnych i montażowych.",
+        descriptionEn:
+          "Design verification for manufacturing and assembly feasibility.",
       },
     ],
     process: [
@@ -107,10 +133,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Technologia", labelEn: "Technology", value: "SMD / THT", valueEn: "SMD / THT" },
-      { label: "Warstwy PCB", labelEn: "PCB Layers", value: "do 16", valueEn: "up to 16" },
-      { label: "Narzędzia EDA", labelEn: "EDA Tools", value: "Altium / KiCad", valueEn: "Altium / KiCad" },
-      { label: "Standardy", labelEn: "Standards", value: "IPC-2221 / IPC-7351", valueEn: "IPC-2221 / IPC-7351" },
+      {
+        label: "Technologia",
+        labelEn: "Technology",
+        value: "SMD / THT",
+        valueEn: "SMD / THT",
+      },
+      {
+        label: "Warstwy PCB",
+        labelEn: "PCB Layers",
+        value: "do 16",
+        valueEn: "up to 16",
+      },
+      {
+        label: "Narzędzia EDA",
+        labelEn: "EDA Tools",
+        value: "Altium / KiCad",
+        valueEn: "Altium / KiCad",
+      },
+      {
+        label: "Standardy",
+        labelEn: "Standards",
+        value: "IPC-2221 / IPC-7351",
+        valueEn: "IPC-2221 / IPC-7351",
+      },
     ],
   },
   {
@@ -130,8 +176,10 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         title: "Bare-metal & RTOS",
         titleEn: "Bare-metal & RTOS",
-        description: "Programowanie niskopoziomowe oraz systemy czasu rzeczywistego (FreeRTOS, Zephyr).",
-        descriptionEn: "Low-level programming and real-time systems (FreeRTOS, Zephyr).",
+        description:
+          "Programowanie niskopoziomowe oraz systemy czasu rzeczywistego (FreeRTOS, Zephyr).",
+        descriptionEn:
+          "Low-level programming and real-time systems (FreeRTOS, Zephyr).",
       },
       {
         title: "Komunikacja bezprzewodowa",
@@ -142,8 +190,10 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         title: "Bootloadery & OTA",
         titleEn: "Bootloaders & OTA",
-        description: "Bezpieczna aktualizacja firmware over-the-air z podpisem cyfrowym.",
-        descriptionEn: "Secure over-the-air firmware updates with digital signatures.",
+        description:
+          "Bezpieczna aktualizacja firmware over-the-air z podpisem cyfrowym.",
+        descriptionEn:
+          "Secure over-the-air firmware updates with digital signatures.",
       },
       {
         title: "Integracja z chmurą",
@@ -156,7 +206,8 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         step: "Architektura systemu",
         stepEn: "System Architecture",
-        description: "Projektowanie architektury oprogramowania i wybór platformy.",
+        description:
+          "Projektowanie architektury oprogramowania i wybór platformy.",
         descriptionEn: "Software architecture design and platform selection.",
       },
       {
@@ -179,10 +230,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Platformy", labelEn: "Platforms", value: "STM32 / ESP32 / nRF", valueEn: "STM32 / ESP32 / nRF" },
-      { label: "Języki", labelEn: "Languages", value: "C / C++ / Rust", valueEn: "C / C++ / Rust" },
-      { label: "RTOS", labelEn: "RTOS", value: "FreeRTOS / Zephyr", valueEn: "FreeRTOS / Zephyr" },
-      { label: "Protokoły", labelEn: "Protocols", value: "BLE / Wi-Fi / LoRa", valueEn: "BLE / Wi-Fi / LoRa" },
+      {
+        label: "Platformy",
+        labelEn: "Platforms",
+        value: "STM32 / ESP32 / nRF",
+        valueEn: "STM32 / ESP32 / nRF",
+      },
+      {
+        label: "Języki",
+        labelEn: "Languages",
+        value: "C / C++ / Rust",
+        valueEn: "C / C++ / Rust",
+      },
+      {
+        label: "RTOS",
+        labelEn: "RTOS",
+        value: "FreeRTOS / Zephyr",
+        valueEn: "FreeRTOS / Zephyr",
+      },
+      {
+        label: "Protokoły",
+        labelEn: "Protocols",
+        value: "BLE / Wi-Fi / LoRa",
+        valueEn: "BLE / Wi-Fi / LoRa",
+      },
     ],
   },
   {
@@ -221,7 +292,8 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
         title: "Dokumentacja 2D",
         titleEn: "2D Documentation",
         description: "Rysunki wykonawcze zgodne z ISO i normami branżowymi.",
-        descriptionEn: "Technical drawings compliant with ISO and industry standards.",
+        descriptionEn:
+          "Technical drawings compliant with ISO and industry standards.",
       },
     ],
     process: [
@@ -251,10 +323,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Narzędzia CAD", labelEn: "CAD Tools", value: "SolidWorks / Fusion 360", valueEn: "SolidWorks / Fusion 360" },
-      { label: "Materiały", labelEn: "Materials", value: "ABS / PC / PA / Aluminium", valueEn: "ABS / PC / PA / Aluminum" },
-      { label: "Klasa IP", labelEn: "IP Rating", value: "do IP67", valueEn: "up to IP67" },
-      { label: "Tolerancje", labelEn: "Tolerances", value: "od ±0.05 mm", valueEn: "from ±0.05 mm" },
+      {
+        label: "Narzędzia CAD",
+        labelEn: "CAD Tools",
+        value: "SolidWorks / Fusion 360",
+        valueEn: "SolidWorks / Fusion 360",
+      },
+      {
+        label: "Materiały",
+        labelEn: "Materials",
+        value: "ABS / PC / PA / Aluminium",
+        valueEn: "ABS / PC / PA / Aluminum",
+      },
+      {
+        label: "Klasa IP",
+        labelEn: "IP Rating",
+        value: "do IP67",
+        valueEn: "up to IP67",
+      },
+      {
+        label: "Tolerancje",
+        labelEn: "Tolerances",
+        value: "od ±0.05 mm",
+        valueEn: "from ±0.05 mm",
+      },
     ],
   },
   {
@@ -300,8 +392,10 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         step: "Przygotowanie plików",
         stepEn: "File Preparation",
-        description: "Konwersja modeli CAD i gerberów do formatu produkcyjnego.",
-        descriptionEn: "Converting CAD models and Gerbers to production format.",
+        description:
+          "Konwersja modeli CAD i gerberów do formatu produkcyjnego.",
+        descriptionEn:
+          "Converting CAD models and Gerbers to production format.",
       },
       {
         step: "Produkcja",
@@ -323,10 +417,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Druk 3D", labelEn: "3D Printing", value: "FDM / SLA / SLS", valueEn: "FDM / SLA / SLS" },
-      { label: "CNC", labelEn: "CNC", value: "3-osiowe / 5-osiowe", valueEn: "3-axis / 5-axis" },
-      { label: "Czas realizacji", labelEn: "Lead Time", value: "od 3 dni roboczych", valueEn: "from 3 business days" },
-      { label: "Materiały", labelEn: "Materials", value: "PLA / ABS / Nylon / Aluminium", valueEn: "PLA / ABS / Nylon / Aluminum" },
+      {
+        label: "Druk 3D",
+        labelEn: "3D Printing",
+        value: "FDM / SLA / SLS",
+        valueEn: "FDM / SLA / SLS",
+      },
+      {
+        label: "CNC",
+        labelEn: "CNC",
+        value: "3-osiowe / 5-osiowe",
+        valueEn: "3-axis / 5-axis",
+      },
+      {
+        label: "Czas realizacji",
+        labelEn: "Lead Time",
+        value: "od 3 dni roboczych",
+        valueEn: "from 3 business days",
+      },
+      {
+        label: "Materiały",
+        labelEn: "Materials",
+        value: "PLA / ABS / Nylon / Aluminium",
+        valueEn: "PLA / ABS / Nylon / Aluminum",
+      },
     ],
   },
   {
@@ -346,8 +460,10 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         title: "Badania wstępne EMC",
         titleEn: "Pre-compliance EMC Testing",
-        description: "Wczesna identyfikacja problemów z kompatybilnością elektromagnetyczną.",
-        descriptionEn: "Early identification of electromagnetic compatibility issues.",
+        description:
+          "Wczesna identyfikacja problemów z kompatybilnością elektromagnetyczną.",
+        descriptionEn:
+          "Early identification of electromagnetic compatibility issues.",
       },
       {
         title: "Dokumentacja techniczna",
@@ -395,10 +511,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Certyfikaty", labelEn: "Certifications", value: "CE / FCC / UL", valueEn: "CE / FCC / UL" },
-      { label: "Normy EMC", labelEn: "EMC Standards", value: "EN 55032 / EN 55035", valueEn: "EN 55032 / EN 55035" },
-      { label: "Bezpieczeństwo", labelEn: "Safety", value: "EN 62368-1", valueEn: "EN 62368-1" },
-      { label: "Dyrektywy", labelEn: "Directives", value: "LVD / RED / RoHS", valueEn: "LVD / RED / RoHS" },
+      {
+        label: "Certyfikaty",
+        labelEn: "Certifications",
+        value: "CE / FCC / UL",
+        valueEn: "CE / FCC / UL",
+      },
+      {
+        label: "Normy EMC",
+        labelEn: "EMC Standards",
+        value: "EN 55032 / EN 55035",
+        valueEn: "EN 55032 / EN 55035",
+      },
+      {
+        label: "Bezpieczeństwo",
+        labelEn: "Safety",
+        value: "EN 62368-1",
+        valueEn: "EN 62368-1",
+      },
+      {
+        label: "Dyrektywy",
+        labelEn: "Directives",
+        value: "LVD / RED / RoHS",
+        valueEn: "LVD / RED / RoHS",
+      },
     ],
   },
   {
@@ -418,8 +554,10 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       {
         title: "Zarządzanie BOM",
         titleEn: "BOM Management",
-        description: "Optymalizacja listy materiałowej i zarządzanie komponentami.",
-        descriptionEn: "Bill of materials optimization and component management.",
+        description:
+          "Optymalizacja listy materiałowej i zarządzanie komponentami.",
+        descriptionEn:
+          "Bill of materials optimization and component management.",
       },
       {
         title: "Montaż SMT/THT",
@@ -437,14 +575,16 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
         title: "Logistyka",
         titleEn: "Logistics",
         description: "Koordynacja dostaw od dostawców do klienta końcowego.",
-        descriptionEn: "Coordination of deliveries from suppliers to end customer.",
+        descriptionEn:
+          "Coordination of deliveries from suppliers to end customer.",
       },
     ],
     process: [
       {
         step: "Planowanie produkcji",
         stepEn: "Production Planning",
-        description: "Harmonogram, zamówienie komponentów, przygotowanie linii.",
+        description:
+          "Harmonogram, zamówienie komponentów, przygotowanie linii.",
         descriptionEn: "Schedule, component ordering, line preparation.",
       },
       {
@@ -467,10 +607,30 @@ const MOCK_SERVICE_DETAILS: MockServiceDetail[] = [
       },
     ],
     specs: [
-      { label: "Montaż", labelEn: "Assembly", value: "SMT / THT / mieszany", valueEn: "SMT / THT / mixed" },
-      { label: "Testy", labelEn: "Testing", value: "AOI / ICT / FCT", valueEn: "AOI / ICT / FCT" },
-      { label: "Skala", labelEn: "Scale", value: "od 100 do 100 000+ szt.", valueEn: "from 100 to 100,000+ pcs" },
-      { label: "Lokalizacja", labelEn: "Location", value: "Polska / Azja", valueEn: "Poland / Asia" },
+      {
+        label: "Montaż",
+        labelEn: "Assembly",
+        value: "SMT / THT / mieszany",
+        valueEn: "SMT / THT / mixed",
+      },
+      {
+        label: "Testy",
+        labelEn: "Testing",
+        value: "AOI / ICT / FCT",
+        valueEn: "AOI / ICT / FCT",
+      },
+      {
+        label: "Skala",
+        labelEn: "Scale",
+        value: "od 100 do 100 000+ szt.",
+        valueEn: "from 100 to 100,000+ pcs",
+      },
+      {
+        label: "Lokalizacja",
+        labelEn: "Location",
+        value: "Polska / Azja",
+        valueEn: "Poland / Asia",
+      },
     ],
   },
 ];
@@ -514,15 +674,16 @@ export default async function UslugaDetailPage({ params }: Props) {
     notFound();
   }
 
-  const servicesData = await getCachedServicesSection(lang as Language);
+  const [servicesData, serviceCtaData] = await Promise.all([
+    getCachedServicesSection(lang as Language),
+    getCachedServiceCtaSection(lang as Language),
+  ]);
 
   // Try matching Sanity service by slug, or by index if Sanity services have no slug
   const sanityService =
     servicesData?.services?.find((s) => s.slug === slug) ||
     servicesData?.services?.find(
-      (_s, i) =>
-        !_s.slug &&
-        MOCK_SERVICE_DETAILS[i]?.slug === slug
+      (_s, i) => !_s.slug && MOCK_SERVICE_DETAILS[i]?.slug === slug,
     );
   const mockService = MOCK_SERVICE_DETAILS.find((s) => s.slug === slug);
 
@@ -533,29 +694,54 @@ export default async function UslugaDetailPage({ params }: Props) {
   const isEn = lang === "en";
 
   // Use Sanity data if available, otherwise use mock
-  const title = sanityService?.title || (isEn ? mockService?.titleEn : mockService?.title) || slug;
+  const title =
+    sanityService?.title ||
+    (isEn ? mockService?.titleEn : mockService?.title) ||
+    slug;
   const description =
-    sanityService?.description || (isEn ? mockService?.descriptionEn : mockService?.description) || "";
+    sanityService?.description ||
+    (isEn ? mockService?.descriptionEn : mockService?.description) ||
+    "";
   const iconKey = sanityService?.iconKey || mockService?.iconKey || "Cpu";
   const IconComponent = SERVICE_ICONS[iconKey] || Cpu;
 
   // Mock-specific rich content
-  const longDescription = isEn ? mockService?.longDescriptionEn : mockService?.longDescription;
+  const longDescription = isEn
+    ? mockService?.longDescriptionEn
+    : mockService?.longDescription;
   const features = mockService?.features;
   const processSteps = mockService?.process;
   const specs = mockService?.specs;
 
-  // Find related services (exclude current)
-  const allServices = MOCK_SERVICE_DETAILS.filter((s) => s.slug !== slug).slice(0, 3);
+  // Pozostałe usługi: z Sanity (jeśli są), inaczej z mocka; zawsze max 3
+  const sanityOthers =
+    servicesData?.services
+      ?.filter((s) => s.slug && s.slug !== slug)
+      .slice(0, 3) ?? [];
+  const mockOthers = MOCK_SERVICE_DETAILS.filter((s) => s.slug !== slug).slice(
+    0,
+    3,
+  );
+  const allServices =
+    sanityOthers.length > 0
+      ? sanityOthers.map((s) => ({
+          iconKey: s.iconKey || "Cpu",
+          title: s.title,
+          slug: s.slug!,
+        }))
+      : mockOthers.map((s) => ({
+          iconKey: s.iconKey,
+          title: isEn ? s.titleEn : s.title,
+          slug: s.slug,
+        }));
 
   return (
     <main className="relative min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         {/* Back link */}
         <Link
           href={`/${lang}/uslugi`}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium group"
-        >
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           {t(lang as Language, "common.allServices")}
         </Link>
@@ -579,7 +765,9 @@ export default async function UslugaDetailPage({ params }: Props) {
         {longDescription && (
           <section className="mb-16">
             <div className="border-l-4 border-cyan-400/40 pl-6">
-              <p className="text-gray-300 text-lg leading-relaxed">{longDescription}</p>
+              <p className="text-gray-300 text-lg leading-relaxed">
+                {longDescription}
+              </p>
             </div>
           </section>
         )}
@@ -588,14 +776,13 @@ export default async function UslugaDetailPage({ params }: Props) {
         {features && features.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
-              {isEn ? "What we offer" : "Co oferujemy"}
+              {t(lang as Language, "uslugiDetail.whatWeOffer")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {features.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
-                >
+                  className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" />
                     <div>
@@ -617,16 +804,17 @@ export default async function UslugaDetailPage({ params }: Props) {
         {processSteps && processSteps.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
-              {isEn ? "How we work" : "Jak pracujemy"}
+              {t(lang as Language, "uslugiDetail.howWeWork")}
             </h2>
             <div className="space-y-4">
               {processSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-5 p-5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors"
-                >
+                  className="flex items-start gap-5 p-5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
-                    <span className="text-cyan-400 text-sm font-bold">{idx + 1}</span>
+                    <span className="text-cyan-400 text-sm font-bold">
+                      {idx + 1}
+                    </span>
                   </div>
                   <div>
                     <h3 className="text-white font-medium mb-1">
@@ -646,7 +834,7 @@ export default async function UslugaDetailPage({ params }: Props) {
         {specs && specs.length > 0 && (
           <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
-              {isEn ? "Technical specifications" : "Specyfikacja techniczna"}
+              {t(lang as Language, "uslugiDetail.technicalSpecs")}
             </h2>
             <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
               {specs.map((spec, idx) => (
@@ -654,8 +842,7 @@ export default async function UslugaDetailPage({ params }: Props) {
                   key={idx}
                   className={`flex justify-between items-center px-6 py-4 ${
                     idx !== specs.length - 1 ? "border-b border-white/5" : ""
-                  }`}
-                >
+                  }`}>
                   <span className="text-gray-400 text-sm">
                     {isEn ? spec.labelEn : spec.label}
                   </span>
@@ -668,32 +855,33 @@ export default async function UslugaDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* CTA */}
+        {/* Pozostałe usługi – zawsze na górze */}
+
+        {/* CTA – treść z Sanity (sekcja „Zainteresowany tą usługą?”) */}
         <section className="mb-16">
           <div className="rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/20 p-8 text-center">
             <h2 className="text-2xl font-semibold text-white mb-3">
-              {isEn ? "Interested in this service?" : "Zainteresowany tą usługą?"}
+              {serviceCtaData?.title ??
+                t(lang as Language, "uslugiDetail.ctaTitle")}
             </h2>
             <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-              {isEn
-                ? "Contact us to discuss how we can help bring your project to life."
-                : "Skontaktuj się z nami, aby omówić jak możemy pomóc w realizacji Twojego projektu."}
+              {serviceCtaData?.description ??
+                t(lang as Language, "uslugiDetail.ctaDescription")}
             </p>
-            <Link
-              href={`/${lang}/kontakt`}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-xl transition-colors"
-            >
-              {isEn ? "Contact us" : "Skontaktuj się"}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <Button variant="cta" size="lg" asChild>
+              <Link
+                href={`/${lang}/${(serviceCtaData?.link || "/kontakt").replace(/^\//, "")}`}>
+                {serviceCtaData?.buttonText ??
+                  t(lang as Language, "uslugiDetail.ctaButton")}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
         </section>
-
-        {/* Related services */}
         {allServices.length > 0 && (
-          <section>
+          <section className="mb-16">
             <h2 className="text-2xl font-semibold text-white mb-8">
-              {isEn ? "Other services" : "Pozostałe usługi"}
+              {t(lang as Language, "uslugiDetail.otherServices")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {allServices.map((related, idx) => {
@@ -702,13 +890,12 @@ export default async function UslugaDetailPage({ params }: Props) {
                   <Link
                     key={idx}
                     href={`/${lang}/uslugi/${related.slug}`}
-                    className="group p-5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
-                  >
+                    className="group p-5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
                     <div className="p-2.5 rounded-lg bg-white/10 w-fit mb-3 group-hover:bg-cyan-500/10 transition-colors">
                       <RelatedIcon className="w-5 h-5 text-white group-hover:text-cyan-400 transition-colors" />
                     </div>
                     <h3 className="text-white font-medium text-sm group-hover:text-cyan-400 transition-colors">
-                      {isEn ? related.titleEn : related.title}
+                      {related.title}
                     </h3>
                   </Link>
                 );
@@ -716,13 +903,11 @@ export default async function UslugaDetailPage({ params }: Props) {
             </div>
           </section>
         )}
-
         {/* Bottom back link */}
         <div className="mt-20 pt-12 border-t border-white/5">
           <Link
             href={`/${lang}/uslugi`}
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm font-medium"
-          >
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm font-medium">
             <ArrowLeft className="w-4 h-4" />
             {t(lang as Language, "common.allServices")}
           </Link>

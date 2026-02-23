@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ProcessPageCta } from "@/sanity/process";
+import { Button } from "@/app/components/ui/button";
 
 interface ProcessCtaProps {
   cta: ProcessPageCta;
@@ -34,16 +35,9 @@ export function ProcessCta({ cta, variant = "standalone", cardRef, className = "
       >
         {cta.description}
       </p>
-      <Link
-        href={cta.link}
-        className={
-          isMobile
-            ? "inline-flex items-center gap-2 px-6 py-3 rounded-full text-base font-semibold bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
-            : "inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-semibold bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
-        }
-      >
-        {cta.buttonText}
-      </Link>
+      <Button variant="cta" size="lg" asChild>
+        <Link href={cta.link}>{cta.buttonText}</Link>
+      </Button>
     </>
   );
 

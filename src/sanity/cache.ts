@@ -13,6 +13,7 @@ import {
   fetchBlogPostBySlug,
 } from "./blog";
 import { fetchFaqSection } from "./faq";
+import { fetchServiceCtaSection } from "./serviceCta";
 import { fetchSiteSettings } from "./siteSettings";
 import { fetchFooterData } from "./footer";
 
@@ -116,6 +117,14 @@ export async function getCachedFaqSection(lang: Language) {
   return unstable_cache(
     () => fetchFaqSection(lang),
     ["faq", lang],
+    { revalidate: REVALIDATE }
+  )();
+}
+
+export async function getCachedServiceCtaSection(lang: Language) {
+  return unstable_cache(
+    () => fetchServiceCtaSection(lang),
+    ["service-cta", lang],
     { revalidate: REVALIDATE }
   )();
 }

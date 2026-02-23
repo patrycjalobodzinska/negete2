@@ -4,7 +4,10 @@ import Link from "next/link";
 import { ArrowLeft, Cpu, Code, Box, Zap, Award, Factory } from "lucide-react";
 import Footer from "../../components/Footer";
 
-const SERVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const SERVICE_ICONS: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   Cpu,
   Code,
   Box,
@@ -12,7 +15,10 @@ const SERVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   Award,
   Factory,
 };
-import { getCachedServicesSection, getCachedSiteSettings } from "@/sanity/cache";
+import {
+  getCachedServicesSection,
+  getCachedSiteSettings,
+} from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
 import { t } from "@/i18n/dictionary";
 
@@ -106,19 +112,16 @@ export default async function UslugiPage({ params }: Props) {
       : MOCK_SERVICES;
 
   const heading =
-    servicesData?.heading ||
-    t(lang as Language, "uslugi.defaultHeading");
+    servicesData?.heading || t(lang as Language, "uslugi.defaultHeading");
   const intro =
-    servicesData?.intro ||
-    t(lang as Language, "uslugi.defaultIntro");
+    servicesData?.intro || t(lang as Language, "uslugi.defaultIntro");
 
   return (
     <main className="relative min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <Link
           href={lang === "pl" ? "/" : `/${lang}`}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium"
-        >
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors mb-12 text-sm font-medium">
           <ArrowLeft className="w-4 h-4" />
           {t(lang as Language, "common.backToHome")}
         </Link>
@@ -132,14 +135,12 @@ export default async function UslugiPage({ params }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {services.map((service, idx) => {
-            const IconComponent =
-              SERVICE_ICONS[service.iconKey] || Cpu;
+            const IconComponent = SERVICE_ICONS[service.iconKey] || Cpu;
             return (
               <Link
                 key={idx}
                 href={`/${lang}/uslugi/${service.slug}`}
-                className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300"
-              >
+                className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-400/20">
                     <IconComponent className="w-6 h-6 text-cyan-400" />

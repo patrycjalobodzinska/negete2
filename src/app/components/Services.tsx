@@ -24,12 +24,48 @@ const ICONS = {
 } as const;
 
 const FALLBACK_SERVICES: ServiceItem[] = [
-  { iconKey: "Cpu", title: "Projektowanie Elektroniki & PCB", description: "Schematy ideowe, obwody wielowarstwowe, symulacje oraz projektowanie pod kątem kompatybilności elektromagnetycznej (EMC/EMI).", slug: "projektowanie-pcb" },
-  { iconKey: "Code", title: "Firmware & Embedded", description: "Oprogramowanie wbudowane (C/C++), sterowniki mikrokontrolerów, systemy IoT oraz bezpieczna komunikacja bezprzewodowa.", slug: "firmware" },
-  { iconKey: "Box", title: "Mechanika & Wzornictwo", description: "Projekty obudów w CAD 3D, dobór materiałów, projektowanie form wtryskowych oraz pełna dokumentacja techniczna 2D/3D.", slug: "mechanika" },
-  { iconKey: "Zap", title: "Szybkie Prototypowanie", description: "Weryfikacja koncepcji poprzez druk 3D, frezowanie CNC oraz montaż próbny układów elektronicznych (PCBA).", slug: "prototypowanie" },
-  { iconKey: "Award", title: "Certyfikacja i Testy", description: "Przygotowanie produktu do oznaczenia znakiem CE, badania wstępne oraz tworzenie dokumentacji wymaganej prawem.", slug: "certyfikacja" },
-  { iconKey: "Factory", title: "Produkcja Seryjna", description: "Organizacja łańcucha dostaw, nadzór nad produkcją elektroniki, kontrola jakości i skalowanie produkcji.", slug: "produkcja" },
+  {
+    iconKey: "Cpu",
+    title: "Projektowanie Elektroniki & PCB",
+    description:
+      "Schematy ideowe, obwody wielowarstwowe, symulacje oraz projektowanie pod kątem kompatybilności elektromagnetycznej (EMC/EMI).",
+    slug: "projektowanie-pcb",
+  },
+  {
+    iconKey: "Code",
+    title: "Firmware & Embedded",
+    description:
+      "Oprogramowanie wbudowane (C/C++), sterowniki mikrokontrolerów, systemy IoT oraz bezpieczna komunikacja bezprzewodowa.",
+    slug: "firmware",
+  },
+  {
+    iconKey: "Box",
+    title: "Mechanika & Wzornictwo",
+    description:
+      "Projekty obudów w CAD 3D, dobór materiałów, projektowanie form wtryskowych oraz pełna dokumentacja techniczna 2D/3D.",
+    slug: "mechanika",
+  },
+  {
+    iconKey: "Zap",
+    title: "Szybkie Prototypowanie",
+    description:
+      "Weryfikacja koncepcji poprzez druk 3D, frezowanie CNC oraz montaż próbny układów elektronicznych (PCBA).",
+    slug: "prototypowanie",
+  },
+  {
+    iconKey: "Award",
+    title: "Certyfikacja i Testy",
+    description:
+      "Przygotowanie produktu do oznaczenia znakiem CE, badania wstępne oraz tworzenie dokumentacji wymaganej prawem.",
+    slug: "certyfikacja",
+  },
+  {
+    iconKey: "Factory",
+    title: "Produkcja Seryjna",
+    description:
+      "Organizacja łańcucha dostaw, nadzór nad produkcją elektroniki, kontrola jakości i skalowanie produkcji.",
+    slug: "produkcja",
+  },
 ];
 
 interface ServicesProps {
@@ -37,12 +73,9 @@ interface ServicesProps {
   initialData?: ServicesSection | null;
 }
 
-export default function Services({
-  lang = "pl",
-  initialData,
-}: ServicesProps) {
+export default function Services({ lang = "pl", initialData }: ServicesProps) {
   const [servicesData, setServicesData] = useState<ServicesSection | null>(
-    initialData ?? null
+    initialData ?? null,
   );
   const { getPath } = useLocalizedPath(lang);
 
@@ -58,7 +91,7 @@ export default function Services({
     fetchServicesSection(lang)
       .then((data) => data && setServicesData(data))
       .catch((err) =>
-        console.error("Błąd pobierania sekcji usług z Sanity:", err)
+        console.error("Błąd pobierania sekcji usług z Sanity:", err),
       );
   }, [lang, initialData]);
 
@@ -78,7 +111,7 @@ export default function Services({
               trigger: sectionRef.current,
               start: "top 80%",
             },
-          }
+          },
         );
       }
 
@@ -97,7 +130,7 @@ export default function Services({
               trigger: sectionRef.current,
               start: "top 80%",
             },
-          }
+          },
         );
       }
 
@@ -116,7 +149,7 @@ export default function Services({
               trigger: sectionRef.current,
               start: "top 80%",
             },
-          }
+          },
         );
       }
 
@@ -134,7 +167,7 @@ export default function Services({
               trigger: sectionRef.current,
               start: "top 80%",
             },
-          }
+          },
         );
       }
 
@@ -154,7 +187,7 @@ export default function Services({
                 trigger: sectionRef.current,
                 start: "top 80%",
               },
-            }
+            },
           );
         }
       });
@@ -212,7 +245,9 @@ export default function Services({
                   (service.iconKey as keyof typeof ICONS) ??
                     ("Cpu" as keyof typeof ICONS)
                 ] ?? Cpu;
-              const href = service.slug ? getPath(`/uslugi/${service.slug}`) : getPath("/uslugi");
+              const href = service.slug
+                ? getPath(`/uslugi/${service.slug}`)
+                : getPath("/uslugi");
               const content = (
                 <>
                   <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
@@ -255,7 +290,9 @@ export default function Services({
                   (service.iconKey as keyof typeof ICONS) ??
                     ("Cpu" as keyof typeof ICONS)
                 ] ?? Cpu;
-              const href = service.slug ? getPath(`/uslugi/${service.slug}`) : getPath("/uslugi");
+              const href = service.slug
+                ? getPath(`/uslugi/${service.slug}`)
+                : getPath("/uslugi");
               const content = (
                 <>
                   <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">

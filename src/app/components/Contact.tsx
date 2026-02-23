@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, User, Building, MessageSquare, Phone } from "lucide-react";
+import { Button } from "@/app/components/ui/button";
 import { fetchContactSection, type ContactSection } from "@/sanity/contact";
 import { fetchFooterData } from "@/sanity/footer";
 import { languages, type Language } from "@/i18n/config";
@@ -351,10 +352,12 @@ export default function Contact({
                 </motion.div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-8 py-4 rounded-lg font-medium text-cyan-400 border border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500/20 hover:border-cyan-400/70 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group">
+                variant="cta"
+                size="lg"
+                className="w-full disabled:opacity-50 disabled:cursor-not-allowed group">
                 {isSubmitting ? (
                   t(lang, "contact.sending")
                 ) : (
@@ -363,7 +366,7 @@ export default function Contact({
                     <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </>
                 )}
-              </button>
+              </Button>
             </form>
 
             {/* Mail i tel pod formularzem */}

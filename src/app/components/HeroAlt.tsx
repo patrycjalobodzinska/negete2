@@ -127,7 +127,7 @@ export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
             ease: "power2.inOut", // Miękkie pojawienie się światła
           },
           "<+=0.3",
-        ) // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
+        ); // "<+=0.3" Zaczynają się rozpalać 0.3s po starcie wlotu rdzeni
 
       // c) Pulsowanie neonu - uzywamy opacity zamiast animacji filtra (GPU-accelerated)
       const glowLayer = containerRef.current?.querySelector(".neon-glow-layer");
@@ -166,37 +166,32 @@ export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
 
   // --- STYLE CSS ---
 
-  // Bazowy styl kontenera na tekst
+  // Bazowy styl – czcionka Orbitron jak na SS (Google Fonts), biały tekst, wyraźna tracking
   const baseTextStyle =
-    "absolute left-0 top-0 w-full h-full flex justify-center items-center font-sans font-light text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-widest pointer-events-none select-none";
+    "absolute left-0 top-0 w-full  h-full flex justify-between -mt-12 md:mt-0 px-4 md:px-0 items-center font-light text-6xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[9rem] pointer-events-none select-none antialiased";
+  const heroFontStyle = { fontFamily: "var(--font-orbitron), sans-serif" };
+  const letterStyle = "inline-block mx-1 invisible opacity-0";
 
-  // Styl pojedynczej litery (odstępy) – invisible by default to prevent FOUC
-  const letterStyle = "inline-block mx-3 sm:mx-5 md:mx-7 invisible opacity-0";
-
-  // Neonowy text-shadow (znacznie wydajniejszy niz drop-shadow filter)
+  // Glow napisu – zmniejszony (delikatny)
   const neonTextShadow = `
     0 0 4px #fff,
-    0 0 8px #fff,
-    0 0 20px #4fc3f7,
-    0 0 40px #0288d1,
-    0 0 80px #01579b,
-    0 0 120px rgba(1, 87, 155, 0.7)
+    0 0 10px rgba(255,255,255,0.6),
+    0 0 20px rgba(173,216,230,0.5),
+    0 0 35px rgba(173,216,230,0.3)
   `;
 
-  // Lzejszy neon dla rdzenia
+  // Rdzeń – minimalny glow
   const coreTextShadow = `
-    0 0 3px #fff,
-    0 0 10px #4fc3f7,
-    0 0 25px #0288d1,
-    0 0 50px rgba(2, 136, 209, 0.4)
+    0 0 1px #fff,
+    0 0 4px rgba(173,216,230,0.35)
   `;
 
-  // SVG nadal potrzebuje drop-shadow (bo text-shadow nie dziala na SVG)
+  // SVG – większy glow (mocniejszy na liniach)
   const svgNeonFilter = {
     filter: `
       drop-shadow(0 0 4px #fff)
-      drop-shadow(0 0 15px #4fc3f7)
-      drop-shadow(0 0 40px #0288d1)
+      drop-shadow(0 0 20px rgba(173,216,230,0.8))
+      drop-shadow(0 0 45px rgba(173,216,230,0.5))
     `,
   };
 
@@ -212,7 +207,7 @@ export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
       <svg
         ref={svgRef}
         viewBox="0 0 1000 600"
-        className="absolute inset-0 w-full h-full max-w-[1400px] pointer-events-none invisible opacity-0 m-auto"
+        className="absolute inset-0 w-full h-full max-w-[1400px] mt-20 md:mt-0 pointer-events-none invisible opacity-0 m-auto"
         preserveAspectRatio="xMidYMid slice"
         style={{
           willChange: "transform",
@@ -226,38 +221,41 @@ export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
       </svg>
 
       {/* KONTENER NA TEKST (Dwie nalozone warstwy) */}
-      <div className="relative z-10 w-full h-[200px]">
-        {/* WARSTWA 1: POSWIATA (Glow Layer - Static) */}
-        <div
-          className={`${baseTextStyle} text-[#4fc3f7] neon-glow-layer`}
-          style={{ textShadow: neonTextShadow }}>
-          {text.split("").map((letter, i) => (
-            <span
-              key={`glow-${i}`}
-              ref={(el) => {
-                glowLettersRef.current[i] = el;
-              }}
-              className={`${letterStyle} will-change-[opacity]`}>
-              {letter}
-            </span>
-          ))}
-        </div>
+      <div className="w-full flex items-center   justify-center ">
+        <div className="relative z-10 w-full max-w-7xl  h-[200px]">
+          {/* WARSTWA 1: POSWIATA (Glow Layer - Static) */}
+          <div
+            className={`${baseTextStyle} text-[#E8F4FC] neon-glow-layer`}
+            style={{ ...heroFontStyle, textShadow: neonTextShadow }}>
+            {text.split("").map((letter, i) => (
+              <span
+                key={`glow-${i}`}
+                ref={(el) => {
+                  glowLettersRef.current[i] = el;
+                }}
+                className={`${letterStyle} will-change-[opacity]`}>
+                {letter}
+              </span>
+            ))}
+          </div>
 
-        {/* WARSTWA 2: RDZEN (Core Layer - Moving) */}
-        <div className={`${baseTextStyle} text-white`} style={{ textShadow: coreTextShadow }}>
-          {text.split("").map((letter, i) => (
-            <span
-              key={`core-${i}`}
-              ref={(el) => {
-                coreLettersRef.current[i] = el;
-              }}
-              className={`${letterStyle} will-change-transform`}>
-              {letter}
-            </span>
-          ))}
+          {/* WARSTWA 2: RDZEN (Core Layer - Moving) */}
+          <div
+            className={`${baseTextStyle} text-[#FFFFFF]`}
+            style={{ ...heroFontStyle, textShadow: coreTextShadow }}>
+            {text.split("").map((letter, i) => (
+              <span
+                key={`core-${i}`}
+                ref={(el) => {
+                  coreLettersRef.current[i] = el;
+                }}
+                className={`${letterStyle} will-change-transform`}>
+                {letter}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-
       {/* PODTYTUL + STRZALKA SCROLL (widoczne glownie na mobile) */}
       <div
         ref={subtitleRef}

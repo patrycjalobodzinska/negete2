@@ -49,7 +49,6 @@ export const contactSection = defineType({
           name: "contactPerson",
           title: "Osoba",
           fields: [
-            { name: "image", title: "Zdjęcie", type: "image", options: { hotspot: true } },
             { name: "namePl", title: "Imię i nazwisko (Polski)", type: "string" },
             { name: "nameEn", title: "Imię i nazwisko (English)", type: "string" },
             { name: "rolePl", title: "Stanowisko (Polski)", type: "string" },

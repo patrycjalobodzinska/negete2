@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, User, Building, MessageSquare, Phone } from "lucide-react";
-import Image from "next/image";
 import { fetchContactSection, type ContactSection } from "@/sanity/contact";
 import { fetchFooterData } from "@/sanity/footer";
 import { languages, type Language } from "@/i18n/config";
@@ -20,7 +19,6 @@ const FALLBACK: ContactSection = {
     {
       name: "Bartłomiej Zachara",
       role: "Founder & Lead Engineer",
-      image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=800",
       email: "b.zachara@negete.pl",
       bio: "Z pasją projektuję i tworzę zaawansowane urządzenia elektroniczne. Specjalizuję się w kompleksowym rozwoju produktów - od koncepcji, przez projekt PCB, oprogramowanie embedded, aż po druk 3D obudów.",
     },
@@ -29,8 +27,10 @@ const FALLBACK: ContactSection = {
   companyLabel: "Nazwa firmy",
   messageLabel: "Opisz krótko jaki produkt chcesz z nami zbudować?",
   submitButton: "Wyślij wiadomość",
-  successMessage: "Dziękujemy! Twoja wiadomość została wysłana. Skontaktujemy się z Tobą wkrótce.",
-  errorMessage: "Wystąpił błąd. Spróbuj ponownie lub skontaktuj się bezpośrednio przez email.",
+  successMessage:
+    "Dziękujemy! Twoja wiadomość została wysłana. Skontaktujemy się z Tobą wkrótce.",
+  errorMessage:
+    "Wystąpił błąd. Spróbuj ponownie lub skontaktuj się bezpośrednio przez email.",
   requiredError: "To pole jest wymagane",
   invalidEmail: "Podaj prawidłowy adres email",
 };
@@ -52,10 +52,10 @@ export default function Contact({
 }: ContactProps) {
   const pathname = usePathname();
   const [contactData, setContactData] = useState<ContactSection | null>(
-    initialDataProp ?? null
+    initialDataProp ?? null,
   );
   const [contactItems, setContactItems] = useState<FooterContactItem[] | null>(
-    contactItemsProp ?? null
+    contactItemsProp ?? null,
   );
   const [formData, setFormData] = useState({
     firstName: "",
@@ -69,7 +69,9 @@ export default function Contact({
     productDescription?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const clearFieldError = (field: keyof typeof fieldErrors) => {
     setFieldErrors((p) => {
@@ -114,68 +116,7 @@ export default function Contact({
       data-section="contact"
       className="relative py-24 px-6 bg-gradient-to-b from-transparent via-white/5 to-transparent">
       <div className="max-w-7xl mx-auto">
-        {/* Sekcja O nas – jedna karta na osobę: zdjęcie, imię nazwisko, stanowisko, mail, opis – flex wrap, neon border */}
-        {data.people.length > 0 && (
-          <div className="mb-20">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl sm:text-4xl font-medium text-white mb-12 text-center">
-              {t(lang, "about.title")}
-            </motion.h2>
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              {data.people.map((person, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="rounded-xl border-2 border-cyan-400/50 bg-white/5 shadow-lg shadow-cyan-500/10 overflow-hidden w-full max-w-sm">
-                  <div className="p-4">
-                    <div className="relative aspect-square w-28 sm:w-56 mx-auto rounded-lg overflow-hidden">
-                      {person.image ? (
-                        <Image
-                          src={person.image}
-                          alt={person.name}
-                          fill
-                          className="object-cover"
-                          sizes="128px"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-white/10 flex items-center justify-center text-cyan-400 text-2xl font-bold">
-                          {person.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-4 text-center">
-                      <h3 className="font-bold text-white text-base">{person.name}</h3>
-                      {person.role && (
-                        <p className="text-cyan-400 text-sm mt-1">{person.role}</p>
-                      )}
-                      {person.email && (
-                        <a
-                          href={`mailto:${person.email}`}
-                          className="text-gray-400 hover:text-cyan-400 text-sm mt-2 inline-flex items-center justify-center gap-1 transition-colors">
-                          <Mail className="w-4 h-4 shrink-0" />
-                          {person.email}
-                        </a>
-                      )}
-                    </div>
-                    {person.bio && (
-                      <p className="text-gray-400 text-sm leading-relaxed mt-4 text-left">
-                        {person.bio}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Sekcja Kontakt – formularz i dane kontaktowe */}
+        {/* Nagłówek Kontakt */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -196,14 +137,57 @@ export default function Contact({
           )}
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch lg:items-start justify-center">
-          {/* Formularz – węższy po lewej */}
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-stretch lg:items-start justify-center">
+          {/* Lewa kolumna – karty zespołu (jedna pod drugą, bez zdjęć) */}
+          {data.people.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="w-full lg:max-w-sm shrink-0 flex flex-col gap-4">
+              <h3 className="text-xl font-medium text-white mb-1">
+                {t(lang, "about.title")}
+              </h3>
+              {data.people.map((person, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="rounded-xl border-2 border-cyan-400/50 bg-white/5 shadow-lg shadow-cyan-500/10 p-5">
+                  <h4 className="font-bold text-white text-base">
+                    {person.name}
+                  </h4>
+                  {person.role && (
+                    <p className="text-cyan-400 text-sm mt-1">{person.role}</p>
+                  )}
+                  {person.email && (
+                    <a
+                      href={`mailto:${person.email}`}
+                      className="text-gray-400 hover:text-cyan-400 text-sm mt-2 inline-flex items-center gap-1.5 transition-colors">
+                      <Mail className="w-4 h-4 shrink-0" />
+                      {person.email}
+                    </a>
+                  )}
+                  {person.bio && (
+                    <p className="text-gray-400 text-sm leading-relaxed mt-4">
+                      {person.bio}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Prawa kolumna – formularz kontaktowy + mail/tel */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="w-full max-w-md shrink-0">
+            className="w-full max-w-md shrink-0 flex flex-col gap-6">
             <form
               className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-5"
               onSubmit={(e) => {
@@ -227,7 +211,12 @@ export default function Contact({
                 setTimeout(() => {
                   setIsSubmitting(false);
                   setSubmitStatus("success");
-                  setFormData({ firstName: "", companyName: "", email: "", productDescription: "" });
+                  setFormData({
+                    firstName: "",
+                    companyName: "",
+                    email: "",
+                    productDescription: "",
+                  });
                   setFieldErrors({});
                 }, 1000);
               }}>
@@ -248,12 +237,16 @@ export default function Contact({
                     clearFieldError("firstName");
                   }}
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 ${
-                    fieldErrors.firstName ? "border-red-400/50" : "border-white/10 focus:border-cyan-400/50"
+                    fieldErrors.firstName
+                      ? "border-red-400/50"
+                      : "border-white/10 focus:border-cyan-400/50"
                   }`}
                   placeholder="Jan"
                 />
                 {fieldErrors.firstName && (
-                  <p className="mt-2 text-sm text-red-400">{fieldErrors.firstName}</p>
+                  <p className="mt-2 text-sm text-red-400">
+                    {fieldErrors.firstName}
+                  </p>
                 )}
               </div>
 
@@ -269,7 +262,9 @@ export default function Contact({
                   id="companyName"
                   name="companyName"
                   value={formData.companyName}
-                  onChange={(e) => setFormData((p) => ({ ...p, companyName: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, companyName: e.target.value }))
+                  }
                   className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300"
                   placeholder="Twoja firma"
                 />
@@ -292,12 +287,16 @@ export default function Contact({
                     clearFieldError("email");
                   }}
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 ${
-                    fieldErrors.email ? "border-red-400/50" : "border-white/10 focus:border-cyan-400/50"
+                    fieldErrors.email
+                      ? "border-red-400/50"
+                      : "border-white/10 focus:border-cyan-400/50"
                   }`}
                   placeholder="jan@example.com"
                 />
                 {fieldErrors.email && (
-                  <p className="mt-2 text-sm text-red-400">{fieldErrors.email}</p>
+                  <p className="mt-2 text-sm text-red-400">
+                    {fieldErrors.email}
+                  </p>
                 )}
               </div>
 
@@ -313,17 +312,24 @@ export default function Contact({
                   name="productDescription"
                   value={formData.productDescription}
                   onChange={(e) => {
-                    setFormData((p) => ({ ...p, productDescription: e.target.value }));
+                    setFormData((p) => ({
+                      ...p,
+                      productDescription: e.target.value,
+                    }));
                     clearFieldError("productDescription");
                   }}
                   rows={6}
                   className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 resize-none ${
-                    fieldErrors.productDescription ? "border-red-400/50" : "border-white/10 focus:border-cyan-400/50"
+                    fieldErrors.productDescription
+                      ? "border-red-400/50"
+                      : "border-white/10 focus:border-cyan-400/50"
                   }`}
                   placeholder="Opisz swoją wizję produktu..."
                 />
                 {fieldErrors.productDescription && (
-                  <p className="mt-2 text-sm text-red-400">{fieldErrors.productDescription}</p>
+                  <p className="mt-2 text-sm text-red-400">
+                    {fieldErrors.productDescription}
+                  </p>
                 )}
               </div>
 
@@ -359,44 +365,51 @@ export default function Contact({
                 )}
               </button>
             </form>
-          </motion.div>
 
-          {/* Mail i tel po prawej */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-sm shrink-0">
+            {/* Mail i tel pod formularzem */}
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
               {mailItem && (
                 <a
-                  href={mailItem.url?.startsWith("mailto:") ? mailItem.url : `mailto:${mailItem.url || mailItem.text}`}
+                  href={
+                    mailItem.url?.startsWith("mailto:")
+                      ? mailItem.url
+                      : `mailto:${mailItem.url || mailItem.text}`
+                  }
                   className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
                   <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
                     <Mail className="w-6 h-6 text-cyan-400" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 mb-0.5">{t(lang, "contact.email")}</p>
+                    <p className="text-sm text-gray-500 mb-0.5">
+                      {t(lang, "contact.email")}
+                    </p>
                     <p className="font-medium truncate">{mailItem.text}</p>
                   </div>
                 </a>
               )}
               {phoneItem && (
                 <a
-                  href={phoneItem.url?.startsWith("tel:") ? phoneItem.url : `tel:${phoneItem.url || phoneItem.text}`}
+                  href={
+                    phoneItem.url?.startsWith("tel:")
+                      ? phoneItem.url
+                      : `tel:${phoneItem.url || phoneItem.text}`
+                  }
                   className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
                   <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
                     <Phone className="w-6 h-6 text-cyan-400" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm text-gray-500 mb-0.5">{t(lang, "contact.phone")}</p>
+                    <p className="text-sm text-gray-500 mb-0.5">
+                      {t(lang, "contact.phone")}
+                    </p>
                     <p className="font-medium truncate">{phoneItem.text}</p>
                   </div>
                 </a>
               )}
-              {(!mailItem && !phoneItem) && (
-                <p className="text-gray-500 text-sm">{t(lang, "contact.noContactInfo")}</p>
+              {!mailItem && !phoneItem && (
+                <p className="text-gray-500 text-sm">
+                  {t(lang, "contact.noContactInfo")}
+                </p>
               )}
             </div>
           </motion.div>

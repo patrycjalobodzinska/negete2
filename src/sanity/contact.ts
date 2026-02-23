@@ -1,11 +1,9 @@
 import { sanityClient } from "./client";
 import { type Language } from "@/i18n/config";
-import { urlFor } from "./image";
 
 export interface ContactPerson {
   name: string;
   role?: string;
-  image?: string;
   email?: string;
   bio?: string;
 }
@@ -34,7 +32,6 @@ export async function fetchContactSection(
       subtitlePl,
       subtitleEn,
       people[]{
-        image,
         namePl,
         nameEn,
         rolePl,
@@ -85,7 +82,6 @@ export async function fetchContactSection(
     return {
       name: p[nameKey] || p.namePl || "",
       role: p[roleKey] || p.rolePl,
-      image: p.image ? urlFor(p.image).width(800).height(800).url() : undefined,
       email: p.email,
       bio: p[bioKey] || p.bioPl,
     };

@@ -16,6 +16,7 @@ import { fetchFaqSection } from "./faq";
 import { fetchServiceCtaSection } from "./serviceCta";
 import { fetchSiteSettings } from "./siteSettings";
 import { fetchFooterData } from "./footer";
+import { fetchStatsSection } from "./stats";
 
 /** Czas życia cache w sekundach (1h). Na Vercel używa edge cache. */
 const REVALIDATE = 3600;
@@ -141,6 +142,14 @@ export async function getCachedFooterData(lang: Language) {
   return unstable_cache(
     () => fetchFooterData(lang),
     ["footer", lang],
+    { revalidate: REVALIDATE }
+  )();
+}
+
+export async function getCachedStatsSection(lang: Language) {
+  return unstable_cache(
+    () => fetchStatsSection(lang),
+    ["stats", lang],
     { revalidate: REVALIDATE }
   )();
 }

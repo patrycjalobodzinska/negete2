@@ -172,7 +172,7 @@ export default function NeonSideFlyInSafari({ lang = "pl" }: HeroAltProps) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-12">
+      className="relative min-h-[min(100vh,900px)] flex flex-col items-center justify-center overflow-hidden pt-12">
       <svg
         ref={svgRef}
         viewBox="0 0 1000 600"

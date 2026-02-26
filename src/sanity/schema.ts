@@ -10,6 +10,7 @@ import { faqSection } from "./schemaTypes/faqSection";
 import { serviceCtaSection } from "./schemaTypes/serviceCtaSection";
 import { seoFields } from "./schemaTypes/seoFields";
 import { siteSettings } from "./schemaTypes/siteSettings";
+import { statsSection } from "./schemaTypes/statsSection";
 
 export const schemaTypes = [
   seoFields,
@@ -24,4 +25,5 @@ export const schemaTypes = [
   blogPost,
   faqSection,
   serviceCtaSection,
+  statsSection,
 ];

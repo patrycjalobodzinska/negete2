@@ -4,6 +4,7 @@ import HeroAlt from "../components/HeroAlt";
 import Services from "../components/Services";
 import Portfolio from "../components/Portfolio";
 import Process from "../components/Process";
+import Stats from "../components/Stats";
 import TrustedBy from "../components/TrustedBy";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
@@ -15,6 +16,7 @@ import {
   getCachedContactSection,
   getCachedFooterData,
   getCachedSiteSettings,
+  getCachedStatsSection,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
 import { t } from "@/i18n/dictionary";
@@ -50,11 +52,12 @@ export default async function Home({ params }: Props) {
     notFound();
   }
 
-  const [servicesData, portfolioData, processData, trustedByData, contactData, footerData] =
+  const [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
     await Promise.all([
       getCachedServicesSection(lang as Language),
       getCachedPortfolioSection(lang as Language),
       getCachedHomepageProcess(lang as Language),
+      getCachedStatsSection(lang as Language),
       getCachedTrustedBy(lang as Language),
       getCachedContactSection(lang as Language),
       getCachedFooterData(lang as Language),
@@ -63,6 +66,7 @@ export default async function Home({ params }: Props) {
   return (
     <main id="main-content" className="relative min-h-screen">
       <HeroAlt lang={lang as Language} />
+      <Stats lang={lang as Language} initialData={statsData} />
       <Services lang={lang as Language} initialData={servicesData} />
       <Portfolio lang={lang as Language} initialData={portfolioData} />
       <Process lang={lang as Language} initialData={processData} />

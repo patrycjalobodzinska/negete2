@@ -200,7 +200,7 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
     <section
       ref={sectionRef}
       data-section="services"
-      className="relative min-h-screen max-w-7xl mx-auto md:py-32 pb-12 px-6 ">
+      className="relative max-w-7xl mx-auto md:py-32 pb-12 px-6 ">
       <div className="">
         <div className="flex flex-col max-w-6xl gap-4 items-start">
           <div className=" relative z-10">

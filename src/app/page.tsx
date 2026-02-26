@@ -3,12 +3,14 @@ import HeroAlt from "./components/HeroAlt";
 import Services from "./components/Services";
 import Portfolio from "./components/Portfolio";
 import Process from "./components/Process";
+import Stats from "./components/Stats";
 import TrustedBy from "./components/TrustedBy";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import {
   getCachedSiteSettings,
   getCachedPortfolioSection,
+  getCachedStatsSection,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -29,10 +31,14 @@ export async function generateMetadata() {
   });
 }
 export default async function Home() {
-  const portfolioData = await getCachedPortfolioSection(defaultLanguage);
+  const [portfolioData, statsData] = await Promise.all([
+    getCachedPortfolioSection(defaultLanguage),
+    getCachedStatsSection(defaultLanguage),
+  ]);
   return (
     <main id="main-content" className="relative min-h-screen">
       <HeroAlt />
+      <Stats lang={defaultLanguage} initialData={statsData} />
       <Services lang={defaultLanguage} />
       <Portfolio lang={defaultLanguage} initialData={portfolioData} />
       <Process lang={defaultLanguage} />

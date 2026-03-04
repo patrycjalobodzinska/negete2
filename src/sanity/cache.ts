@@ -25,7 +25,7 @@ export async function getCachedContactSection(lang: Language) {
   return unstable_cache(
     () => fetchContactSection(lang),
     ["contact", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["contact"] }
   )();
 }
 
@@ -33,7 +33,7 @@ export async function getCachedProcessPage(lang: Language) {
   return unstable_cache(
     () => fetchProcessPage(lang),
     ["process-page", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["processPage"] }
   )();
 }
 
@@ -41,7 +41,7 @@ export async function getCachedHomepageProcess(lang: Language) {
   return unstable_cache(
     () => fetchHomepageProcess(lang),
     ["homepage-process", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["homepageProcess"] }
   )();
 }
 
@@ -49,7 +49,7 @@ export async function getCachedServicesSection(lang: Language) {
   return unstable_cache(
     () => fetchServicesSection(lang),
     ["services", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["servicesSection"] }
   )();
 }
 
@@ -57,7 +57,7 @@ export async function getCachedPortfolioSection(lang: Language) {
   return unstable_cache(
     () => fetchPortfolioSection(lang),
     ["portfolio", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["portfolioSection"] }
   )();
 }
 
@@ -65,7 +65,7 @@ export async function getCachedTrustedBy(lang: Language) {
   return unstable_cache(
     () => fetchTrustedBy(lang),
     ["trusted-by", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["trustedBy"] }
   )();
 }
 
@@ -76,7 +76,7 @@ export async function getCachedProjectBySlug(
   return unstable_cache(
     () => fetchProjectBySlug(slug, lang),
     ["project", slug, lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["project", `project-${slug}`] }
   )();
 }
 
@@ -86,7 +86,7 @@ export async function getCachedAllProjects(
   return unstable_cache(
     () => fetchAllProjects(lang),
     ["projects-list", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["project"] }
   )();
 }
 
@@ -94,7 +94,7 @@ export async function getCachedPublishedBlogCount(): Promise<number> {
   return unstable_cache(
     () => fetchPublishedBlogCount(),
     ["blog-count"],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["post"] }
   )();
 }
 
@@ -102,7 +102,7 @@ export async function getCachedPublishedBlogPosts(lang: Language) {
   return unstable_cache(
     () => fetchPublishedBlogPosts(lang),
     ["blog-posts", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["post"] }
   )();
 }
 
@@ -110,7 +110,7 @@ export async function getCachedBlogPostBySlug(slug: string, lang: Language) {
   return unstable_cache(
     () => fetchBlogPostBySlug(slug, lang),
     ["blog-post", slug, lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["post", `post-${slug}`] }
   )();
 }
 
@@ -118,7 +118,7 @@ export async function getCachedFaqSection(lang: Language) {
   return unstable_cache(
     () => fetchFaqSection(lang),
     ["faq", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["faqSection"] }
   )();
 }
 
@@ -126,7 +126,7 @@ export async function getCachedServiceCtaSection(lang: Language) {
   return unstable_cache(
     () => fetchServiceCtaSection(lang),
     ["service-cta", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["serviceCta"] }
   )();
 }
 
@@ -134,7 +134,7 @@ export async function getCachedSiteSettings(lang: Language) {
   return unstable_cache(
     () => fetchSiteSettings(lang),
     ["site-settings", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["siteSettings"] }
   )();
 }
 
@@ -142,7 +142,7 @@ export async function getCachedFooterData(lang: Language) {
   return unstable_cache(
     () => fetchFooterData(lang),
     ["footer", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["siteSettings"] }
   )();
 }
 
@@ -150,6 +150,6 @@ export async function getCachedStatsSection(lang: Language) {
   return unstable_cache(
     () => fetchStatsSection(lang),
     ["stats", lang],
-    { revalidate: REVALIDATE }
+    { revalidate: REVALIDATE, tags: ["statsSection"] }
   )();
 }

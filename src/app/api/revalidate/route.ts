@@ -1,7 +1,25 @@
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET;
+
+// Mapowanie typów dokumentów Sanity na tagi cache
+const TYPE_TO_TAGS: Record<string, string[]> = {
+  project: ["project"],
+  projectCategory: ["project"],
+  portfolioSection: ["portfolioSection", "project"],
+  servicesSection: ["servicesSection"],
+  service: ["servicesSection"],
+  processPage: ["processPage"],
+  homepageProcess: ["homepageProcess"],
+  trustedBy: ["trustedBy"],
+  faqSection: ["faqSection"],
+  serviceCta: ["serviceCta"],
+  siteSettings: ["siteSettings"],
+  statsSection: ["statsSection"],
+  contact: ["contact"],
+  post: ["post"],
+};
 
 export async function POST(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get("secret");
@@ -13,23 +31,21 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
     const docType = body._type as string | undefined;
+    const slug = body.slug?.current as string | undefined;
 
-    // Rewaliduj konkretne ścieżki zależnie od typu dokumentu
-    if (docType === "project") {
-      revalidatePath("/[lang]/realizacje", "page");
-      revalidatePath("/[lang]/realizacje/[slug]", "page");
-      revalidatePath("/[lang]", "page");
-    } else if (docType === "portfolioSection") {
-      revalidatePath("/[lang]", "page");
-      revalidatePath("/[lang]/realizacje", "page");
-    } else if (docType === "projectCategory") {
-      revalidatePath("/[lang]/realizacje", "page");
-    } else {
-      // Fallback — rewaliduj wszystko
-      revalidatePath("/", "layout");
+    const tags = docType ? (TYPE_TO_TAGS[docType] ?? ["project", "portfolioSection", "servicesSection", "siteSettings"]) : Object.values(TYPE_TO_TAGS).flat();
+
+    // Jeśli mamy konkretny slug projektu, inwaliduj też tag dla tego sluga
+    if (slug && docType === "project") {
+      revalidateTag(`project-${slug}`);
+    }
+    if (slug && docType === "post") {
+      revalidateTag(`post-${slug}`);
     }
 
-    return NextResponse.json({ revalidated: true, type: docType ?? "unknown" });
+    tags.forEach((tag) => revalidateTag(tag));
+
+    return NextResponse.json({ revalidated: true, type: docType ?? "unknown", tags });
   } catch {
     return NextResponse.json(
       { message: "Error revalidating" },

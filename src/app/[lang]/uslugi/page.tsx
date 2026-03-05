@@ -1,77 +1,15 @@
 import { type Language, languages } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Cpu, Code, Box, Zap, Award, Factory } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Footer from "../../components/Footer";
-
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string }>
-> = {
-  Cpu,
-  Code,
-  Box,
-  Zap,
-  Award,
-  Factory,
-};
-
-function getIconComponent(iconKey: string | null | undefined) {
-  if (!iconKey) return Cpu;
-  const normalized = iconKey.charAt(0).toUpperCase() + iconKey.slice(1).toLowerCase();
-  return SERVICE_ICONS[iconKey] ?? SERVICE_ICONS[normalized] ?? Cpu;
-}
 import {
   getCachedServicesSection,
   getCachedSiteSettings,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { getServiceIcon } from "@/lib/lucide-service-icons";
 import { t } from "@/i18n/dictionary";
-
-const MOCK_SERVICES = [
-  {
-    iconKey: "Cpu",
-    title: "Projektowanie Elektroniki & PCB",
-    slug: "projektowanie-pcb",
-    description:
-      "Schematy ideowe, obwody wielowarstwowe, symulacje oraz projektowanie pod kątem kompatybilności elektromagnetycznej (EMC/EMI).",
-  },
-  {
-    iconKey: "Code",
-    title: "Firmware & Embedded",
-    slug: "firmware",
-    description:
-      "Oprogramowanie wbudowane (C/C++), sterowniki mikrokontrolerów, systemy IoT oraz bezpieczna komunikacja bezprzewodowa.",
-  },
-  {
-    iconKey: "Box",
-    title: "Mechanika & Wzornictwo",
-    slug: "mechanika",
-    description:
-      "Projekty obudów w CAD 3D, dobór materiałów, projektowanie form wtryskowych oraz pełna dokumentacja techniczna 2D/3D.",
-  },
-  {
-    iconKey: "Zap",
-    title: "Szybkie Prototypowanie",
-    slug: "prototypowanie",
-    description:
-      "Weryfikacja koncepcji poprzez druk 3D, frezowanie CNC oraz montaż próbny układów elektronicznych (PCBA).",
-  },
-  {
-    iconKey: "Award",
-    title: "Certyfikacja i Testy",
-    slug: "certyfikacja",
-    description:
-      "Przygotowanie produktu do oznaczenia znakiem CE, badania wstępne oraz tworzenie dokumentacji wymaganej prawem.",
-  },
-  {
-    iconKey: "Factory",
-    title: "Produkcja Seryjna",
-    slug: "produkcja",
-    description:
-      "Organizacja łańcucha dostaw, nadzór nad produkcją elektroniki, kontrola jakości i skalowanie produkcji.",
-  },
-];
 
 type Props = {
   params: Promise<{ lang: string }>;
@@ -105,19 +43,18 @@ export default async function UslugiPage({ params }: Props) {
   const servicesData = await getCachedServicesSection(lang as Language);
   const services =
     servicesData?.services && servicesData.services.length > 0
-      ? servicesData.services.map((s, i) => ({
-          iconKey: s.iconKey || "Cpu",
+      ? servicesData.services.map((s) => ({
+          iconKey: s.iconKey ?? "Cpu",
           title: s.title,
           slug:
             s.slug ||
-            MOCK_SERVICES[i]?.slug ||
             s.title
               .toLowerCase()
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/(^-|-$)/g, ""),
           description: s.description,
         }))
-      : MOCK_SERVICES;
+      : [];
 
   const heading =
     servicesData?.heading || t(lang as Language, "uslugi.defaultHeading");
@@ -143,7 +80,7 @@ export default async function UslugiPage({ params }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {services.map((service, idx) => {
-            const IconComponent = getIconComponent(service.iconKey);
+            const IconComponent = getServiceIcon(service.iconKey);
             return (
               <Link
                 key={idx}

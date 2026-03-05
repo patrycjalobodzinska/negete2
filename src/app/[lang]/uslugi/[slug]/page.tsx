@@ -3,12 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Cpu,
-  Code,
-  Box,
-  Zap,
-  Award,
-  Factory,
   CheckCircle2,
   ArrowRight,
 } from "lucide-react";
@@ -20,20 +14,9 @@ import {
   getCachedSiteSettings,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
+import { getServiceIcon } from "@/lib/lucide-service-icons";
 import { ServiceJsonLd } from "../../../components/JsonLd";
 import { t } from "@/i18n/dictionary";
-
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string }>
-> = {
-  Cpu,
-  Code,
-  Box,
-  Zap,
-  Award,
-  Factory,
-};
 
 interface MockServiceDetail {
   iconKey: string;
@@ -703,7 +686,7 @@ export default async function UslugaDetailPage({ params }: Props) {
     (isEn ? mockService?.descriptionEn : mockService?.description) ||
     "";
   const iconKey = sanityService?.iconKey || mockService?.iconKey || "Cpu";
-  const IconComponent = SERVICE_ICONS[iconKey] || Cpu;
+  const IconComponent = getServiceIcon(iconKey);
 
   const longDescription =
     sanityService?.longDescription ??
@@ -891,7 +874,7 @@ export default async function UslugaDetailPage({ params }: Props) {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {allServices.map((related, idx) => {
-                const RelatedIcon = SERVICE_ICONS[related.iconKey] || Cpu;
+                const RelatedIcon = getServiceIcon(related.iconKey);
                 return (
                   <Link
                     key={idx}

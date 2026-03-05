@@ -64,10 +64,10 @@ export const servicesSection = defineType({
             }),
             defineField({
               name: "iconKey",
-              title: "Ikona (klucz)",
+              title: "Ikona",
               type: "string",
               description:
-                "Nazwa ikony z lucide-react, np. 'Cpu', 'Code', 'Box', 'Zap', 'Award', 'Factory'.",
+                "Nazwa w PascalCase. Dostępne m.in.: Cpu, Code, Box, Zap, Award, Factory, Rocket, Wrench, Settings, Mail, Phone, Building2, FileCode, CircuitBoard, Cog, Layout, Package, Truck, Shield, CheckCircle2, Star, Sparkles, Microchip, Boxes, Hammer, FlaskConical, TestTube, PenTool, Ruler.",
             }),
             defineField({
               name: "titlePl",

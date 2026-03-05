@@ -2,8 +2,6 @@
 
 import { useRef, useEffect, useState, Fragment } from "react";
 import Link from "next/link";
-import { Cpu, type LucideIcon } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import gsap from "gsap";
 import RocketSVG from "./RocketSVG";
 import {
@@ -13,20 +11,8 @@ import {
 } from "@/sanity/services";
 import type { Language } from "@/i18n/config";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { getServiceIcon } from "@/lib/lucide-service-icons";
 
-function getIcon(iconKey?: string): LucideIcon {
-  if (!iconKey) return Cpu;
-  const icon = (LucideIcons as Record<string, unknown>)[iconKey];
-  if (
-    icon != null &&
-    typeof icon !== "string" &&
-    typeof icon !== "number" &&
-    typeof icon !== "boolean"
-  ) {
-    return icon as LucideIcon;
-  }
-  return Cpu;
-}
 interface ServicesProps {
   lang?: Language;
   initialData?: ServicesSection | null;
@@ -197,7 +183,7 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
             const rightService = rightServices[rowIndex];
 
             const renderCard = (service: ServiceItem) => {
-              const Icon = getIcon(service.iconKey ?? undefined);
+              const Icon = getServiceIcon(service.iconKey);
               const slug = service.slug ?? undefined;
               const href = getPath(slug ? `/uslugi/${slug}` : "/uslugi");
               return (

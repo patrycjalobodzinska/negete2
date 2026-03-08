@@ -8,7 +8,7 @@ import {
   getCachedSiteSettings,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
-import { getServiceIcon } from "@/lib/lucide-service-icons";
+import LucideDynamicIcon from "@/components/LucideDynamicIcon";
 import { t } from "@/i18n/dictionary";
 
 type Props = {
@@ -79,16 +79,14 @@ export default async function UslugiPage({ params }: Props) {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {services.map((service, idx) => {
-            const IconComponent = getServiceIcon(service.iconKey);
-            return (
+          {services.map((service, idx) => (
               <Link
                 key={idx}
                 href={`/${lang}/uslugi/${service.slug}`}
                 className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/30 transition-all duration-300">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-400/20">
-                    <IconComponent className="w-6 h-6 text-cyan-400" />
+                    <LucideDynamicIcon iconKey={service.iconKey} className="w-6 h-6 text-cyan-400" />
                   </div>
                   <div>
                     <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
@@ -100,8 +98,7 @@ export default async function UslugiPage({ params }: Props) {
                   </div>
                 </div>
               </Link>
-            );
-          })}
+          ))}
         </div>
       </div>
       <Footer />

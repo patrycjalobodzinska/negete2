@@ -2,45 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Send, User, Building, MessageSquare, Phone } from "lucide-react";
+import { Mail, Phone, MapPin, Send, User, Building, MessageSquare } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { fetchContactSection, type ContactSection } from "@/sanity/contact";
-import { fetchFooterData } from "@/sanity/footer";
+import type { FooterContactItem } from "@/sanity/footer";
 import { languages, type Language } from "@/i18n/config";
 import { t } from "@/i18n/dictionary";
 import { usePathname } from "next/navigation";
-import type { FooterContactItem } from "@/sanity/footer";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const FALLBACK: ContactSection = {
-  heading: "Kontakt",
-  subtitle: "Skontaktuj się z nami i zbudujmy coś razem",
-  people: [
-    {
-      name: "Bartłomiej Zachara",
-      role: "Founder & Lead Engineer",
-      email: "b.zachara@negete.pl",
-      bio: "Z pasją projektuję i tworzę zaawansowane urządzenia elektroniczne. Specjalizuję się w kompleksowym rozwoju produktów - od koncepcji, przez projekt PCB, oprogramowanie embedded, aż po druk 3D obudów.",
-    },
-  ],
-  nameLabel: "Imię",
-  companyLabel: "Nazwa firmy",
-  messageLabel: "Opisz krótko jaki produkt chcesz z nami zbudować?",
-  submitButton: "Wyślij wiadomość",
-  successMessage:
-    "Dziękujemy! Twoja wiadomość została wysłana. Skontaktujemy się z Tobą wkrótce.",
-  errorMessage:
-    "Wystąpił błąd. Spróbuj ponownie lub skontaktuj się bezpośrednio przez email.",
-  requiredError: "To pole jest wymagane",
-  invalidEmail: "Podaj prawidłowy adres email",
+
+const CONTACT_ICONS: Record<string, React.ComponentType<any>> = {
+  Mail,
+  Phone,
+  MapPin,
 };
 
 interface ContactProps {
   lang?: Language;
   initialData?: ContactSection | null;
-  /** Dane kontaktowe (mail, tel) do wyświetlenia po prawej – z footerContactItems */
-  contactItems?: FooterContactItem[] | null;
+  contactItems?: FooterContactItem[];
   /** Na stronie /kontakt użyj H1 zamiast H2 */
   headingLevel?: "h1" | "h2";
 }
@@ -48,15 +30,12 @@ interface ContactProps {
 export default function Contact({
   lang: langProp,
   initialData: initialDataProp,
-  contactItems: contactItemsProp,
+  contactItems,
   headingLevel = "h2",
 }: ContactProps) {
   const pathname = usePathname();
   const [contactData, setContactData] = useState<ContactSection | null>(
     initialDataProp ?? null,
-  );
-  const [contactItems, setContactItems] = useState<FooterContactItem[] | null>(
-    contactItemsProp ?? null,
   );
   const [formData, setFormData] = useState({
     firstName: "",
@@ -100,17 +79,9 @@ export default function Contact({
       .catch((err) => console.error("Błąd pobierania sekcji kontakt:", err));
   }, [lang, initialDataProp]);
 
-  useEffect(() => {
-    if (contactItemsProp) return;
-    fetchFooterData(lang)
-      .then((data) => data?.contactItems && setContactItems(data.contactItems))
-      .catch((err) => console.error("Błąd pobierania stopki:", err));
-  }, [lang, contactItemsProp]);
+  if (!contactData) return null;
 
-  const data = contactData || FALLBACK;
-
-  const mailItem = contactItems?.find((i) => i.icon === "Mail");
-  const phoneItem = contactItems?.find((i) => i.icon === "Phone");
+  const data = contactData;
 
   return (
     <section
@@ -138,16 +109,13 @@ export default function Contact({
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-stretch lg:items-start justify-center">
-          {data.people.length > 0 && (
+          {(data.people.length > 0 || (contactItems && contactItems.length > 0)) && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
               className="w-full lg:max-w-sm shrink-0 flex flex-col gap-4">
-              <h3 className="text-xl font-medium text-white mb-1">
-                {t(lang, "about.title")}
-              </h3>
               {data.people.map((person, idx) => (
                 <motion.div
                   key={idx}
@@ -177,6 +145,27 @@ export default function Contact({
                   )}
                 </motion.div>
               ))}
+              {contactItems && contactItems.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="rounded-xl border-2 border-cyan-400/50 bg-white/5 shadow-lg shadow-cyan-500/10 p-5 flex flex-col gap-3">
+                  {contactItems.map((item, idx) => {
+                    const Icon = CONTACT_ICONS[item.icon] ?? Mail;
+                    return (
+                      <a
+                        key={idx}
+                        href={item.url}
+                        className="inline-flex items-center gap-2 text-gray-300 hover:text-cyan-400 text-sm transition-colors">
+                        <Icon className="w-4 h-4 shrink-0 text-cyan-400" />
+                        {item.text}
+                      </a>
+                    );
+                  })}
+                </motion.div>
+              )}
             </motion.div>
           )}
 
@@ -412,52 +401,6 @@ export default function Contact({
                 )}
               </Button>
             </form>
-
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
-              {mailItem && (
-                <a
-                  href={
-                    mailItem.url?.startsWith("mailto:")
-                      ? mailItem.url
-                      : `mailto:${mailItem.url || mailItem.text}`
-                  }
-                  className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
-                    <Mail className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-gray-500 mb-0.5">
-                      {t(lang, "contact.email")}
-                    </p>
-                    <p className="font-medium truncate">{mailItem.text}</p>
-                  </div>
-                </a>
-              )}
-              {phoneItem && (
-                <a
-                  href={
-                    phoneItem.url?.startsWith("tel:")
-                      ? phoneItem.url
-                      : `tel:${phoneItem.url || phoneItem.text}`
-                  }
-                  className="flex items-center gap-4 text-gray-300 hover:text-cyan-400 transition-colors group">
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0 group-hover:border-cyan-400/40 transition-colors">
-                    <Phone className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-gray-500 mb-0.5">
-                      {t(lang, "contact.phone")}
-                    </p>
-                    <p className="font-medium truncate">{phoneItem.text}</p>
-                  </div>
-                </a>
-              )}
-              {!mailItem && !phoneItem && (
-                <p className="text-gray-500 text-sm">
-                  {t(lang, "contact.noContactInfo")}
-                </p>
-              )}
-            </div>
           </motion.div>
         </div>
       </div>

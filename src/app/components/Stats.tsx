@@ -1,23 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  fetchStatsSection,
-  type StatsSection,
-  type StatItem,
-} from "@/sanity/stats";
+import { fetchStatsSection, type StatsSection } from "@/sanity/stats";
 import type { Language } from "@/i18n/config";
 
 interface StatsProps {
   lang?: Language;
   initialData?: StatsSection | null;
 }
-
-const FALLBACK_ITEMS: StatItem[] = [
-  { value: "50+", label: "Zrealizowanych projektów" },
-  { value: "10+", label: "Lat doświadczenia" },
-  { value: "100%", label: "Zaangażowania" },
-];
 
 export default function Stats({ lang = "pl", initialData }: StatsProps) {
   const [data, setData] = useState<StatsSection | null>(initialData ?? null);
@@ -31,7 +21,9 @@ export default function Stats({ lang = "pl", initialData }: StatsProps) {
       );
   }, [lang, initialData]);
 
-  const items = data?.items?.length ? data.items : FALLBACK_ITEMS;
+  const items = data?.items ?? [];
+
+  if (!items.length) return null;
   const orbitronStyle = { fontFamily: "var(--font-orbitron), sans-serif" };
 
   return (

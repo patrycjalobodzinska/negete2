@@ -149,9 +149,7 @@ export default async function ProjectsPage({ params, searchParams }: Props) {
           ) : (
             <div className="text-center py-20 lg:py-32">
               <p className="text-gray-400 text-xl lg:text-2xl">
-                {lang === "pl"
-                  ? "Brak projektów w tej kategorii"
-                  : "No projects in this category"}
+                {t(lang as Language, "realizacje.noProjectsInCategory")}
               </p>
             </div>
           )}

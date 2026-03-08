@@ -6,6 +6,7 @@ import {
   fetchProcessPage,
   type ProcessPageData,
   type ProcessPageCta,
+  type ProcessSection,
 } from "@/sanity/process";
 import type { Language } from "@/i18n/config";
 import { t } from "@/i18n/dictionary";
@@ -13,10 +14,17 @@ import {
   ICONS,
   PATH_D,
   PATH_D_MOBILE,
-  FALLBACK_STEPS,
   IMG_TOPS,
   CARD_TOPS,
 } from "./constants";
+
+const FALLBACK_STEPS: ProcessSection[] = [
+  { id: 0, title: "Odkrywanie", description: "", color: "#06b6d4", details: [] },
+  { id: 1, title: "Projektowanie", description: "", color: "#06b6d4", details: [] },
+  { id: 2, title: "Prototypowanie", description: "", color: "#06b6d4", details: [] },
+  { id: 3, title: "Weryfikacja", description: "", color: "#06b6d4", details: [] },
+  { id: 4, title: "Wdrożenie", description: "", color: "#06b6d4", details: [] },
+];
 import { ProcessHero } from "./ProcessHero";
 import { ProcessCta } from "./ProcessCta";
 import { useProcessAnimations } from "./useProcessAnimations";

@@ -8,56 +8,6 @@ import { t } from "@/i18n/dictionary";
 import { getCachedFaqSection, getCachedSiteSettings } from "@/sanity/cache";
 import type { FaqItem } from "@/sanity/faq";
 
-const MOCK_FAQ: {
-  questionPl: string;
-  questionEn: string;
-  answerPl: string;
-  answerEn: string;
-}[] = [
-  {
-    questionPl: "Jak mogę skontaktować się z NEGETE?",
-    questionEn: "How can I contact NEGETE?",
-    answerPl:
-      "Napisz do nas maila lub zadzwoń. Dane kontaktowe znajdziesz w zakładce Kontakt. Odpowiadamy zwykle w ciągu 24 godzin.",
-    answerEn:
-      "Send us an email or call. You can find contact details on the Contact page. We usually reply within 24 hours.",
-  },
-  {
-    questionPl: "Czy realizujecie projekty dla klientów zagranicznych?",
-    questionEn: "Do you work with international clients?",
-    answerPl:
-      "Tak. Pracujemy z klientami z całej Europy. Komunikacja w języku angielskim jest standardem.",
-    answerEn:
-      "Yes. We work with clients across Europe. Communication in English is standard.",
-  },
-  {
-    questionPl: "Ile trwa typowy projekt od koncepcji do prototypu?",
-    questionEn:
-      "How long does a typical project take from concept to prototype?",
-    answerPl:
-      "Zależy od złożoności: proste projekty elektroniczne 2–4 miesiące, pełny produkt z obudową i oprogramowaniem 4–8 miesięcy. Po wstępnej rozmowie przedstawimy harmonogram.",
-    answerEn:
-      "It depends on complexity: simple electronics 2–4 months, full product with enclosure and software 4–8 months. We will provide a timeline after an initial call.",
-  },
-  {
-    questionPl: "Czy oferujecie wsparcie po wdrożeniu?",
-    questionEn: "Do you offer support after deployment?",
-    answerPl:
-      "Tak. Oferujemy okres gwarancyjny, aktualizacje oprogramowania oraz wsparcie techniczne. Szczegóły ustalamy indywidualnie.",
-    answerEn:
-      "Yes. We offer warranty period, software updates and technical support. Details are agreed individually.",
-  },
-];
-
-function getMockFaqItems(lang: Language): FaqItem[] {
-  const isPl = lang === "pl";
-  return MOCK_FAQ.map((item, id) => ({
-    id,
-    question: isPl ? item.questionPl : item.questionEn,
-    answer: isPl ? item.answerPl : item.answerEn,
-  }));
-}
-
 export const revalidate = 3600;
 
 type Props = {
@@ -67,14 +17,14 @@ type Props = {
 export async function generateMetadata({ params }: Props) {
   const { lang } = await params;
   if (!languages.includes(lang as Language)) return {};
-  const settings = await getCachedSiteSettings(lang as Language);
+  const [settings, faqData] = await Promise.all([
+    getCachedSiteSettings(lang as Language),
+    getCachedFaqSection(lang as Language),
+  ]);
   const seo = settings?.faqPageSeo;
   return buildMetadata({
-    title: t(lang as Language, "faq.title"),
-    description:
-      lang === "pl"
-        ? "Najczęściej zadawane pytania o usługi i współpracę z NEGETE."
-        : "Frequently asked questions about NEGETE services and collaboration.",
+    title: faqData?.heading ?? t(lang as Language, "faq.title"),
+    description: faqData?.subtitle,
     siteName: settings?.siteName,
     lang,
     path: `/${lang}/faq`,
@@ -87,15 +37,9 @@ export default async function FaqPage({ params }: Props) {
   const { lang } = await params;
   if (!languages.includes(lang as Language)) notFound();
 
-  const [faqData, settings] = await Promise.all([
-    getCachedFaqSection(lang as Language),
-    getCachedSiteSettings(lang as Language),
-  ]);
+  const faqData = await getCachedFaqSection(lang as Language);
 
-  const items: FaqItem[] =
-    faqData && faqData.items?.length
-      ? faqData.items
-      : getMockFaqItems(lang as Language);
+  const items: FaqItem[] = faqData?.items ?? [];
   const heading = faqData?.heading ?? t(lang as Language, "faq.title");
   const subtitle = faqData?.subtitle;
 

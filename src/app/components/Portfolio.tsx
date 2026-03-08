@@ -13,63 +13,6 @@ import type { Language } from "@/i18n/config";
 import { t } from "@/i18n/dictionary";
 import { ThreeDMarquee } from "./ui/3d-marquee";
 
-const FALLBACK_PROJECTS: Array<{
-  _id: string;
-  title: string;
-  image: string;
-  imageAlt?: string;
-  span: string;
-  slug: string;
-}> = [
-  {
-    _id: "1",
-    title: "Smart IoT Device",
-    image:
-      "https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-2 md:row-span-2",
-    slug: "smart-iot-device",
-  },
-  {
-    _id: "2",
-    title: "Medical Equipment PCB",
-    image:
-      "https://images.pexels.com/photos/2582928/pexels-photo-2582928.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-1 md:row-span-1",
-    slug: "medical-equipment-pcb",
-  },
-  {
-    _id: "3",
-    title: "Industrial Automation",
-    image:
-      "https://images.pexels.com/photos/442160/pexels-photo-442160.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-1 md:row-span-1",
-    slug: "industrial-automation",
-  },
-  {
-    _id: "4",
-    title: "Wearable Technology",
-    image:
-      "https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-1 md:row-span-2",
-    slug: "wearable-technology",
-  },
-  {
-    _id: "5",
-    title: "Automotive Electronics",
-    image:
-      "https://images.pexels.com/photos/159298/gears-cogs-machine-machinery-159298.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-2 md:row-span-1",
-    slug: "automotive-electronics",
-  },
-  {
-    _id: "6",
-    title: "3D Printed Enclosure",
-    image:
-      "https://images.pexels.com/photos/1476321/pexels-photo-1476321.jpeg?auto=compress&cs=tinysrgb&w=800",
-    span: "md:col-span-1 md:row-span-1",
-    slug: "3d-printed-enclosure",
-  },
-];
 
 interface PortfolioProps {
   lang?: Language;
@@ -94,18 +37,13 @@ export default function Portfolio({
       );
   }, [lang, initialData]);
 
-  const projects =
-    portfolioData?.projects && portfolioData.projects.length > 0
-      ? portfolioData.projects
-      : FALLBACK_PROJECTS;
+  if (!portfolioData?.projects?.length) return null;
 
-  const projectsWithImages = (portfolioData?.projects ?? []).filter(
+  const projectsWithImages = portfolioData.projects.filter(
     (p) => p.image && String(p.image).trim(),
   );
-  const sourceForMarquee =
-    projectsWithImages.length > 0 ? projectsWithImages : FALLBACK_PROJECTS;
 
-  let items = sourceForMarquee.map((p) => ({
+  let items = projectsWithImages.map((p) => ({
     image: p.image,
     slug: p.slug,
     title: p.title,
@@ -120,7 +58,7 @@ export default function Portfolio({
       <div className="max-w-7xl mx-auto">
         <div className="text-center flex justify-between ">
           <h2 className="text-3xl sm:text-4xl font-medium text-white tracking-tight mb-4">
-            {portfolioData?.heading || (lang === "en" ? "Our projects" : "Nasze realizacje")}
+            {portfolioData.heading}
           </h2>
 
           <Link href={getPath("/realizacje")} className="group inline-block">

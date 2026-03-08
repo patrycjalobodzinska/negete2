@@ -24,10 +24,7 @@ export async function generateMetadata({ params }: Props) {
   const seo = settings?.blogListPageSeo;
   return buildMetadata({
     title: t(lang as Language, "blog.title"),
-    description:
-      lang === "pl"
-        ? "Artykuły i przemyślenia o technologii i projektowaniu"
-        : "Articles and insights on technology and design",
+    description: t(lang as Language, "blog.description"),
     siteName: settings?.siteName,
     lang,
     path: `/${lang}/blog`,

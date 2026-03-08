@@ -22,8 +22,6 @@ export function OrganizationJsonLd() {
     name: "NeGeTe",
     url: baseUrl,
     logo: `${baseUrl}/negete_logo.png`,
-    description:
-      "NeGeTe - Twój zewnętrzny dział R&D. Projektowanie elektroniki, mechaniki i oprogramowania. Od pomysłu do produktu.",
     foundingDate: "2024",
   };
   return <JsonLd data={data} />;

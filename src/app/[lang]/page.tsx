@@ -74,7 +74,7 @@ export default async function Home({ params }: Props) {
       <Contact
         lang={lang as Language}
         initialData={contactData}
-        contactItems={footerData?.contactItems ?? null}
+        contactItems={footerData?.contactItems ?? undefined}
       />
       <Footer />
     </main>

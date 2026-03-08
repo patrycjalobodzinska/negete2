@@ -1,7 +1,5 @@
 import type React from "react";
 import * as LucideIcons from "lucide-react";
-import type { ProcessSection } from "@/sanity/process";
-
 export const ICONS: Record<
   string,
   React.ComponentType<{ className?: string }>
@@ -37,37 +35,6 @@ export const PATH_D =
 /** Na mobile: prosta linia pionowa z lewej (widoczna obok kart) */
 export const PATH_D_MOBILE = "M 32 0 L 32 2000";
 
-export const FALLBACK_STEPS: ProcessSection[] = [
-  {
-    id: 0,
-    title: "Analiza potrzeb",
-    description:
-      "Zaczynamy od dogłębnego zrozumienia Twojego biznesu, celów i grupy docelowej.",
-    color: "#00f0ff",
-    details: [],
-  },
-  {
-    id: 1,
-    title: "Strategia i planowanie",
-    description: "Tworzymy kompleksową strategię działania i mierzalne cele.",
-    color: "#00f0ff",
-    details: [],
-  },
-  {
-    id: 2,
-    title: "Realizacja projektu",
-    description: "Realizujemy projekt etapami, dbając o jakość i terminowość.",
-    color: "#00f0ff",
-    details: [],
-  },
-  {
-    id: 3,
-    title: "Optymalizacja i rozwój",
-    description: "Wprowadzamy ulepszenia i skalujemy rozwiązania.",
-    color: "#00f0ff",
-    details: [],
-  },
-];
 
 export const IMG_TOPS = ["14%", "32%", "50%", "68%", "86%"];
 export const CARD_TOPS = ["12%", "30%", "48%", "66%", "84%"];

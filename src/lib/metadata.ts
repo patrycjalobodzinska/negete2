@@ -19,9 +19,6 @@ type BuildMetadataParams = {
   seo?: SeoLike | null;
 };
 
-const DEFAULT_DESCRIPTION =
-  "NeGeTe - Twój zewnętrzny dział R&D. Projektowanie elektroniki, mechaniki i oprogramowania. Od pomysłu do produktu.";
-
 /**
  * Buduje canonical URL i alternates (hreflang) dla strony.
  * path – pełna ścieżka np. "/", "/pl/faq", "/en/blog/post-slug"
@@ -61,8 +58,7 @@ export function buildMetadata({
   const canonicalUrl = canonicalOverride || canonical;
 
   const metaTitle = seo?.metaTitle || title;
-  const metaDescription =
-    seo?.metaDescription || description || DEFAULT_DESCRIPTION;
+  const metaDescription = seo?.metaDescription || description || undefined;
   const ogImage = seo?.ogImage || image;
   const fullTitle = metaTitle.includes(siteName)
     ? metaTitle

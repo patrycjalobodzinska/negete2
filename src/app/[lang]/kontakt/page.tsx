@@ -50,7 +50,7 @@ export default async function ContactPage({ params }: Props) {
       <Contact
         lang={lang as Language}
         initialData={contactData}
-        contactItems={footerData?.contactItems ?? null}
+        contactItems={footerData?.contactItems ?? undefined}
         headingLevel="h1"
       />
       <Footer />

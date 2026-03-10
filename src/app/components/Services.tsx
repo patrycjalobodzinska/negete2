@@ -32,14 +32,14 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    // Skip fetch if we already have data (either from initialData or previous fetch)
-    if (servicesData) return;
+    // Skip fetch only if we have valid initialData passed from server
+    if (initialData) return;
     fetchServicesSection(lang)
       .then((data) => data && setServicesData(data))
       .catch((err) =>
         console.error("Błąd pobierania sekcji usług z Sanity:", err),
       );
-  }, [lang, servicesData]);
+  }, [lang, initialData]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

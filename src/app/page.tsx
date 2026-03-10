@@ -9,7 +9,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import {
   getCachedSiteSettings,
-  getCachedPortfolioSection,
+  getCachedAllProjects,
   getCachedStatsSection,
   getCachedServicesSection,
   getCachedHomepageProcess,
@@ -46,7 +46,7 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  let portfolioData = null;
+  let projectsData = null;
   let statsData = null;
   let servicesData = null;
   let processData = null;
@@ -55,8 +55,8 @@ export default async function Home() {
   let footerData = null;
   
   try {
-    [portfolioData, statsData, servicesData, processData, trustedByData, contactData, footerData] = await Promise.all([
-      getCachedPortfolioSection(defaultLanguage),
+    [projectsData, statsData, servicesData, processData, trustedByData, contactData, footerData] = await Promise.all([
+      getCachedAllProjects(defaultLanguage),
       getCachedStatsSection(defaultLanguage),
       getCachedServicesSection(defaultLanguage),
       getCachedHomepageProcess(defaultLanguage),
@@ -73,7 +73,7 @@ export default async function Home() {
       <HeroAlt />
       <Stats lang={defaultLanguage} initialData={statsData} />
       <Services lang={defaultLanguage} initialData={servicesData} />
-      <Portfolio lang={defaultLanguage} initialData={portfolioData} />
+      <Portfolio lang={defaultLanguage} initialData={projectsData} />
       <Process lang={defaultLanguage} initialData={processData} />
       <TrustedBy lang={defaultLanguage} initialData={trustedByData} />
       <Contact lang={defaultLanguage} initialData={contactData} contactItems={footerData?.contactItems ?? undefined} />

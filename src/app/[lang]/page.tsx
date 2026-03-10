@@ -10,7 +10,7 @@ import Contact from "../components/Contact";
 import Footer from "../components/Footer";
 import {
   getCachedServicesSection,
-  getCachedPortfolioSection,
+  getCachedAllProjects,
   getCachedHomepageProcess,
   getCachedTrustedBy,
   getCachedContactSection,
@@ -56,16 +56,14 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function Home({ params }: Props) {
   const { lang } = await params;
-  console.log("[v0] Home page lang:", lang);
   const isSupported = languages.includes(lang as Language);
 
   if (!isSupported) {
-    console.log("[v0] Language not supported, returning notFound");
     notFound();
   }
 
   let servicesData = null;
-  let portfolioData = null;
+  let projectsData = null;
   let processData = null;
   let statsData = null;
   let trustedByData = null;
@@ -73,20 +71,17 @@ export default async function Home({ params }: Props) {
   let footerData = null;
 
   try {
-    console.log("[v0] Fetching data for lang:", lang);
-    [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
+    [servicesData, projectsData, processData, statsData, trustedByData, contactData, footerData] =
       await Promise.all([
         getCachedServicesSection(lang as Language),
-        getCachedPortfolioSection(lang as Language),
+        getCachedAllProjects(lang as Language),
         getCachedHomepageProcess(lang as Language),
         getCachedStatsSection(lang as Language),
         getCachedTrustedBy(lang as Language),
         getCachedContactSection(lang as Language),
         getCachedFooterData(lang as Language),
       ]);
-    console.log("[v0] Data fetched successfully, servicesData:", !!servicesData);
-  } catch (error) {
-    console.error("[v0] Error fetching data:", error);
+  } catch {
     // Data will be fetched client-side by components as fallback
   }
 
@@ -95,7 +90,7 @@ export default async function Home({ params }: Props) {
       <HeroAlt lang={lang as Language} />
       <Stats lang={lang as Language} initialData={statsData} />
       <Services lang={lang as Language} initialData={servicesData} />
-      <Portfolio lang={lang as Language} initialData={portfolioData} />
+      <Portfolio lang={lang as Language} initialData={projectsData} />
       <Process lang={lang as Language} initialData={processData} />
       <TrustedBy lang={lang as Language} initialData={trustedByData} />
       <Contact

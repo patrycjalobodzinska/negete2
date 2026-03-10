@@ -18,23 +18,41 @@ import { buildMetadata } from "@/lib/metadata";
 export const revalidate = 3600;
 
 export async function generateMetadata() {
-  const settings = await getCachedSiteSettings(defaultLanguage);
-  const seo = settings?.homePageSeo;
-  return buildMetadata({
-    title: "Strona główna",
-    description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
-    siteName: settings?.siteName,
-    lang: "pl",
-    path: "/",
-    seo,
-    image: settings?.defaultOgImage,
-  });
+  try {
+    const settings = await getCachedSiteSettings(defaultLanguage);
+    const seo = settings?.homePageSeo;
+    return buildMetadata({
+      title: "Strona główna",
+      description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
+      siteName: settings?.siteName,
+      lang: "pl",
+      path: "/",
+      seo,
+      image: settings?.defaultOgImage,
+    });
+  } catch (error) {
+    console.error("[v0] Error generating metadata:", error);
+    return buildMetadata({
+      title: "Strona główna",
+      description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
+      lang: "pl",
+      path: "/",
+    });
+  }
 }
 export default async function Home() {
-  const [portfolioData, statsData] = await Promise.all([
-    getCachedPortfolioSection(defaultLanguage),
-    getCachedStatsSection(defaultLanguage),
-  ]);
+  let portfolioData = null;
+  let statsData = null;
+  
+  try {
+    [portfolioData, statsData] = await Promise.all([
+      getCachedPortfolioSection(defaultLanguage),
+      getCachedStatsSection(defaultLanguage),
+    ]);
+  } catch (error) {
+    console.error("[v0] Error fetching homepage data:", error);
+  }
+  
   return (
     <main id="main-content" className="relative min-h-screen">
       <HeroAlt />

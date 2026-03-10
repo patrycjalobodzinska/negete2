@@ -31,17 +31,28 @@ type Props = {
 export async function generateMetadata({ params }: Props) {
   const { lang } = await params;
   if (!languages.includes(lang as Language)) return {};
-  const settings = await getCachedSiteSettings(lang as Language);
-  const seo = settings?.homePageSeo;
-  return buildMetadata({
-    title: t(lang as Language, "home.title"),
-    description: t(lang as Language, "home.description"),
-    siteName: settings?.siteName,
-    lang,
-    path: `/${lang}`,
-    seo,
-    image: settings?.defaultOgImage,
-  });
+  
+  try {
+    const settings = await getCachedSiteSettings(lang as Language);
+    const seo = settings?.homePageSeo;
+    return buildMetadata({
+      title: t(lang as Language, "home.title"),
+      description: t(lang as Language, "home.description"),
+      siteName: settings?.siteName,
+      lang,
+      path: `/${lang}`,
+      seo,
+      image: settings?.defaultOgImage,
+    });
+  } catch (error) {
+    console.error("[v0] Error generating metadata:", error);
+    return buildMetadata({
+      title: t(lang as Language, "home.title"),
+      description: t(lang as Language, "home.description"),
+      lang,
+      path: `/${lang}`,
+    });
+  }
 }
 
 export default async function Home({ params }: Props) {
@@ -52,16 +63,28 @@ export default async function Home({ params }: Props) {
     notFound();
   }
 
-  const [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
-    await Promise.all([
-      getCachedServicesSection(lang as Language),
-      getCachedPortfolioSection(lang as Language),
-      getCachedHomepageProcess(lang as Language),
-      getCachedStatsSection(lang as Language),
-      getCachedTrustedBy(lang as Language),
-      getCachedContactSection(lang as Language),
-      getCachedFooterData(lang as Language),
-    ]);
+  let servicesData = null;
+  let portfolioData = null;
+  let processData = null;
+  let statsData = null;
+  let trustedByData = null;
+  let contactData = null;
+  let footerData = null;
+
+  try {
+    [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
+      await Promise.all([
+        getCachedServicesSection(lang as Language),
+        getCachedPortfolioSection(lang as Language),
+        getCachedHomepageProcess(lang as Language),
+        getCachedStatsSection(lang as Language),
+        getCachedTrustedBy(lang as Language),
+        getCachedContactSection(lang as Language),
+        getCachedFooterData(lang as Language),
+      ]);
+  } catch (error) {
+    console.error("[v0] Error fetching homepage data:", error);
+  }
 
   return (
     <main id="main-content" className="relative min-h-screen">

@@ -32,6 +32,7 @@ export default function Services({ lang = "pl", initialData }: ServicesProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    // Skip fetch only if we have valid initialData passed from server
     if (initialData) return;
     fetchServicesSection(lang)
       .then((data) => data && setServicesData(data))

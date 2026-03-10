@@ -70,6 +70,7 @@ export default function ProcessPage({
   const mobileLineFillRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Skip fetch only if we have valid initialData passed from server
     if (initialData) return;
     fetchProcessPage(lang).then((data) => setProcessData(data));
   }, [lang, initialData]);

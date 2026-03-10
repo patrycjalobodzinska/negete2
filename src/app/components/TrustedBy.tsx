@@ -38,6 +38,7 @@ export default function TrustedBy({
   );
 
   useEffect(() => {
+    // Skip fetch only if we have valid initialData passed from server
     if (initialData) return;
     fetchTrustedBy(lang)
       .then((data) => data && setTrustedByData(data))

@@ -156,6 +156,7 @@ export default function Process({ lang = "pl", initialData }: ProcessProps) {
   );
 
   useEffect(() => {
+    // Skip fetch only if we have valid initialData passed from server
     if (initialData) return;
     fetchHomepageProcess(lang).then((data) => setProcessData(data));
   }, [lang, initialData]);

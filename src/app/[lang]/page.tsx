@@ -10,7 +10,7 @@ import Contact from "../components/Contact";
 import Footer from "../components/Footer";
 import {
   getCachedServicesSection,
-  getCachedPortfolioSection,
+  getCachedAllProjects,
   getCachedHomepageProcess,
   getCachedTrustedBy,
   getCachedContactSection,
@@ -31,17 +31,27 @@ type Props = {
 export async function generateMetadata({ params }: Props) {
   const { lang } = await params;
   if (!languages.includes(lang as Language)) return {};
-  const settings = await getCachedSiteSettings(lang as Language);
-  const seo = settings?.homePageSeo;
-  return buildMetadata({
-    title: t(lang as Language, "home.title"),
-    description: t(lang as Language, "home.description"),
-    siteName: settings?.siteName,
-    lang,
-    path: `/${lang}`,
-    seo,
-    image: settings?.defaultOgImage,
-  });
+  
+  try {
+    const settings = await getCachedSiteSettings(lang as Language);
+    const seo = settings?.homePageSeo;
+    return buildMetadata({
+      title: t(lang as Language, "home.title"),
+      description: t(lang as Language, "home.description"),
+      siteName: settings?.siteName,
+      lang,
+      path: `/${lang}`,
+      seo,
+      image: settings?.defaultOgImage,
+    });
+  } catch {
+    return buildMetadata({
+      title: t(lang as Language, "home.title"),
+      description: t(lang as Language, "home.description"),
+      lang,
+      path: `/${lang}`,
+    });
+  }
 }
 
 export default async function Home({ params }: Props) {
@@ -52,23 +62,35 @@ export default async function Home({ params }: Props) {
     notFound();
   }
 
-  const [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
-    await Promise.all([
-      getCachedServicesSection(lang as Language),
-      getCachedPortfolioSection(lang as Language),
-      getCachedHomepageProcess(lang as Language),
-      getCachedStatsSection(lang as Language),
-      getCachedTrustedBy(lang as Language),
-      getCachedContactSection(lang as Language),
-      getCachedFooterData(lang as Language),
-    ]);
+  let servicesData = null;
+  let projectsData = null;
+  let processData = null;
+  let statsData = null;
+  let trustedByData = null;
+  let contactData = null;
+  let footerData = null;
+
+  try {
+    [servicesData, projectsData, processData, statsData, trustedByData, contactData, footerData] =
+      await Promise.all([
+        getCachedServicesSection(lang as Language),
+        getCachedAllProjects(lang as Language),
+        getCachedHomepageProcess(lang as Language),
+        getCachedStatsSection(lang as Language),
+        getCachedTrustedBy(lang as Language),
+        getCachedContactSection(lang as Language),
+        getCachedFooterData(lang as Language),
+      ]);
+  } catch {
+    // Data will be fetched client-side by components as fallback
+  }
 
   return (
     <main id="main-content" className="relative min-h-screen">
       <HeroAlt lang={lang as Language} />
       <Stats lang={lang as Language} initialData={statsData} />
       <Services lang={lang as Language} initialData={servicesData} />
-      <Portfolio lang={lang as Language} initialData={portfolioData} />
+      <Portfolio lang={lang as Language} initialData={projectsData} />
       <Process lang={lang as Language} initialData={processData} />
       <TrustedBy lang={lang as Language} initialData={trustedByData} />
       <Contact

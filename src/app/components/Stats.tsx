@@ -13,6 +13,7 @@ export default function Stats({ lang = "pl", initialData }: StatsProps) {
   const [data, setData] = useState<StatsSection | null>(initialData ?? null);
 
   useEffect(() => {
+    // Skip fetch only if we have valid initialData passed from server
     if (initialData) return;
     fetchStatsSection(lang)
       .then((d) => d && setData(d))

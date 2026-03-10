@@ -11,6 +11,11 @@ import {
   getCachedSiteSettings,
   getCachedPortfolioSection,
   getCachedStatsSection,
+  getCachedServicesSection,
+  getCachedHomepageProcess,
+  getCachedTrustedBy,
+  getCachedContactSection,
+  getCachedFooterData,
 } from "@/sanity/cache";
 import { buildMetadata } from "@/lib/metadata";
 
@@ -30,8 +35,7 @@ export async function generateMetadata() {
       seo,
       image: settings?.defaultOgImage,
     });
-  } catch (error) {
-    console.error("[v0] Error generating metadata:", error);
+  } catch {
     return buildMetadata({
       title: "Strona główna",
       description: "Twój zewnętrzny dział R&D – od pomysłu do produktu",
@@ -40,28 +44,39 @@ export async function generateMetadata() {
     });
   }
 }
+
 export default async function Home() {
   let portfolioData = null;
   let statsData = null;
+  let servicesData = null;
+  let processData = null;
+  let trustedByData = null;
+  let contactData = null;
+  let footerData = null;
   
   try {
-    [portfolioData, statsData] = await Promise.all([
+    [portfolioData, statsData, servicesData, processData, trustedByData, contactData, footerData] = await Promise.all([
       getCachedPortfolioSection(defaultLanguage),
       getCachedStatsSection(defaultLanguage),
+      getCachedServicesSection(defaultLanguage),
+      getCachedHomepageProcess(defaultLanguage),
+      getCachedTrustedBy(defaultLanguage),
+      getCachedContactSection(defaultLanguage),
+      getCachedFooterData(defaultLanguage),
     ]);
-  } catch (error) {
-    console.error("[v0] Error fetching homepage data:", error);
+  } catch {
+    // Data will be fetched client-side by components as fallback
   }
   
   return (
     <main id="main-content" className="relative min-h-screen">
       <HeroAlt />
       <Stats lang={defaultLanguage} initialData={statsData} />
-      <Services lang={defaultLanguage} />
+      <Services lang={defaultLanguage} initialData={servicesData} />
       <Portfolio lang={defaultLanguage} initialData={portfolioData} />
-      <Process lang={defaultLanguage} />
-      <TrustedBy lang={defaultLanguage} />
-      <Contact lang={defaultLanguage} />
+      <Process lang={defaultLanguage} initialData={processData} />
+      <TrustedBy lang={defaultLanguage} initialData={trustedByData} />
+      <Contact lang={defaultLanguage} initialData={contactData} contactItems={footerData?.contactItems ?? undefined} />
       <Footer />
     </main>
   );

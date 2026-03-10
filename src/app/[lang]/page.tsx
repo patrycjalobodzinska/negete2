@@ -44,8 +44,7 @@ export async function generateMetadata({ params }: Props) {
       seo,
       image: settings?.defaultOgImage,
     });
-  } catch (error) {
-    console.error("[v0] Error generating metadata:", error);
+  } catch {
     return buildMetadata({
       title: t(lang as Language, "home.title"),
       description: t(lang as Language, "home.description"),
@@ -82,8 +81,8 @@ export default async function Home({ params }: Props) {
         getCachedContactSection(lang as Language),
         getCachedFooterData(lang as Language),
       ]);
-  } catch (error) {
-    console.error("[v0] Error fetching homepage data:", error);
+  } catch {
+    // Data will be fetched client-side by components as fallback
   }
 
   return (

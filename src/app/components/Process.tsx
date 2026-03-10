@@ -156,9 +156,10 @@ export default function Process({ lang = "pl", initialData }: ProcessProps) {
   );
 
   useEffect(() => {
-    if (initialData) return;
+    // Skip fetch if we already have data (either from initialData or previous fetch)
+    if (processData) return;
     fetchHomepageProcess(lang).then((data) => setProcessData(data));
-  }, [lang, initialData]);
+  }, [lang, processData]);
 
   const steps = processData?.groups || FALLBACK_STEPS;
   const heading = processData?.heading || "Nasz proces";

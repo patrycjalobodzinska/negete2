@@ -38,13 +38,14 @@ export default function TrustedBy({
   );
 
   useEffect(() => {
-    if (initialData) return;
+    // Skip fetch if we already have data (either from initialData or previous fetch)
+    if (trustedByData) return;
     fetchTrustedBy(lang)
       .then((data) => data && setTrustedByData(data))
       .catch((err) =>
         console.error("Błąd pobierania sekcji 'Zaufali nam' z Sanity:", err),
       );
-  }, [lang, initialData]);
+  }, [lang, trustedByData]);
 
   const companies = trustedByData?.companies || FALLBACK_COMPANIES;
   const heading = trustedByData?.heading || (lang === "en" ? "Trusted by" : "Zaufali nam");

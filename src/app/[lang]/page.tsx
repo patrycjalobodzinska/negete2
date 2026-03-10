@@ -56,9 +56,11 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function Home({ params }: Props) {
   const { lang } = await params;
+  console.log("[v0] Home page lang:", lang);
   const isSupported = languages.includes(lang as Language);
 
   if (!isSupported) {
+    console.log("[v0] Language not supported, returning notFound");
     notFound();
   }
 
@@ -71,6 +73,7 @@ export default async function Home({ params }: Props) {
   let footerData = null;
 
   try {
+    console.log("[v0] Fetching data for lang:", lang);
     [servicesData, portfolioData, processData, statsData, trustedByData, contactData, footerData] =
       await Promise.all([
         getCachedServicesSection(lang as Language),
@@ -81,7 +84,9 @@ export default async function Home({ params }: Props) {
         getCachedContactSection(lang as Language),
         getCachedFooterData(lang as Language),
       ]);
-  } catch {
+    console.log("[v0] Data fetched successfully, servicesData:", !!servicesData);
+  } catch (error) {
+    console.error("[v0] Error fetching data:", error);
     // Data will be fetched client-side by components as fallback
   }
 

@@ -28,13 +28,14 @@ export default function Portfolio({
   );
 
   useEffect(() => {
-    if (initialData) return;
+    // Skip fetch if we already have data (either from initialData or previous fetch)
+    if (portfolioData) return;
     fetchPortfolioSection(lang)
       .then((data) => data && setPortfolioData(data))
       .catch((err) =>
         console.error("Błąd pobierania sekcji portfolio z Sanity:", err),
       );
-  }, [lang, initialData]);
+  }, [lang, portfolioData]);
 
   if (!portfolioData?.projects?.length) return null;
 

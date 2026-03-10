@@ -13,13 +13,14 @@ export default function Stats({ lang = "pl", initialData }: StatsProps) {
   const [data, setData] = useState<StatsSection | null>(initialData ?? null);
 
   useEffect(() => {
-    if (initialData) return;
+    // Skip fetch if we already have data (either from initialData or previous fetch)
+    if (data) return;
     fetchStatsSection(lang)
       .then((d) => d && setData(d))
       .catch((err) =>
         console.error("Błąd pobierania sekcji statystyk z Sanity:", err),
       );
-  }, [lang, initialData]);
+  }, [lang, data]);
 
   const items = data?.items ?? [];
 

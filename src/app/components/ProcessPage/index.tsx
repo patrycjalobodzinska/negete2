@@ -70,9 +70,10 @@ export default function ProcessPage({
   const mobileLineFillRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (initialData) return;
+    // Skip fetch if we already have data (either from initialData or previous fetch)
+    if (processData) return;
     fetchProcessPage(lang).then((data) => setProcessData(data));
-  }, [lang, initialData]);
+  }, [lang, processData]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 1023px)"); // lg breakpoint
